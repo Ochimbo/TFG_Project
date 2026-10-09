@@ -1,0 +1,824 @@
+\documentclass[12pt, a4paper, oneside]{report}
+
+% ==========================================
+% PAQUETES Y CONFIGURACIÓN
+% ==========================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+
+% 'es-noshorthands' evita conflictos de babel con TikZ y pgfgantt
+\usepackage[spanish, es-tabla, es-noshorthands]{babel}
+
+\usepackage[top=3cm, bottom=3cm, left=3cm, right=2.5cm]{geometry} % Márgenes
+\usepackage{graphicx} % Para insertar imágenes
+\usepackage{xcolor} % Colores personalizados
+\usepackage{setspace} % Interlineado
+\setstretch{1.3}
+
+% Espaciado compacto para listas
+\usepackage{enumitem}
+\setlist{noitemsep, topsep=3pt, parsep=0pt, partopsep=0pt}
+
+\usepackage{booktabs} % Tablas profesionales
+\usepackage{tabularx} % Tablas con control de ancho
+\usepackage{array}    % Personalización de columnas
+\usepackage{multirow} % Celdas combinadas
+\usepackage{float}    % Posición exacta de tablas con [H]
+\usepackage{amsmath, amssymb} % Símbolos matemáticos
+\usepackage{csquotes}
+\usepackage{pdflscape} % Páginas apaisadas (Diagrama de Gantt)
+\usepackage{adjustbox} % Ajuste del Gantt a la página
+\usepackage{pgfgantt}  % Diagrama de Gantt nativo
+\usetikzlibrary{arrows.meta, positioning}
+
+% Leyendas de tablas y figuras debajo del elemento
+\usepackage{caption}
+\captionsetup{font=small, labelfont=bf, skip=6pt}
+
+% Bibliografía e índices de tablas y figuras en el índice general
+\usepackage[nottoc]{tocbibind}
+
+% Citas numéricas en formato IEEE [1], [2]
+\usepackage{cite}
+
+% Personalización de títulos
+\usepackage{titlesec}
+\titleformat{\chapter}[hang]
+  {\normalfont\Large\bfseries}
+  {\thechapter.\quad}
+  {0pt}
+  {}
+\titlespacing*{\chapter}{0pt}{0pt}{12pt}
+
+\titleformat{\section}
+  {\normalfont\large\bfseries}
+  {\thesection.\quad}
+  {0pt}
+  {}
+
+\titleformat{\subsection}
+  {\normalfont\bfseries}
+  {\thesubsection.\quad}
+  {0pt}
+  {}
+
+% Línea horizontal para la portada (\HRule)
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+% Encabezados y pies de página
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\headheight}{15pt}
+\fancyhf{}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+\fancyhead[R]{\small\leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}}
+
+% Hipervínculos
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=blue,
+    urlcolor=blue,
+    pdftitle={GEP Entregable 4 - Documento final - Kiara Kristin Rodríguez Uribe},
+    pdfauthor={Kiara Kristin Rodríguez Uribe}
+}
+
+% ==========================================
+% INICIO DEL DOCUMENTO
+% ==========================================
+\begin{document}
+
+% Numeración única (arábiga) de principio a fin del documento
+\pagenumbering{arabic}
+
+% ------------------------------------------
+% PORTADA
+% ------------------------------------------
+\begin{titlepage}
+    \thispagestyle{empty}
+
+    \includegraphics[height=1.8cm]{imagenes/logo_upc.png}
+    \hfill
+    \includegraphics[height=2.3cm]{imagenes/logo_fib.png}
+
+    \vspace{2.5cm}
+
+    \begin{center}
+        \HRule \\[0.4cm]
+        {\Large \bfseries DISEÑO E IMPLEMENTACIÓN DE UN CUADRO DE MANDO INTEGRAL PARA EL SOPORTE A LA TOMA DE DECISIONES EN EL SISTEMA DE EDUCACIÓN PRIMARIA DE CATALUÑA} \\[0.2cm]
+        \HRule \\[1.5cm]
+
+        {\large \textbf{Gestión de Proyectos (GEP)}}\\[0.2cm]
+        {\large \textbf{Entregable 4: Documento final}}\\[0.3cm]
+        {\large Grado en Ingeniería Informática (Sistemas de Información)}\\[1.5cm]
+    \end{center}
+
+    \vfill
+
+    \begin{flushleft}
+    \normalsize
+    \begin{tabular}{@{} l l @{}}
+        \textbf{Estudiante:}   & Kiara Kristin Rodríguez Uribe \\
+        \textbf{Directora:}    & Carme Martín Escofet (Dept. ESSI) \\
+        \textbf{Codirectora:}  & Maria Hitz Martinez (Dept. ESSI) \\
+        \textbf{Tutor GEP:}    & David Pardos Benito \\
+        \textbf{Fecha:}        & 5 de octubre de 2026
+    \end{tabular}
+    \end{flushleft}
+\end{titlepage}
+\setcounter{page}{2}
+
+% ------------------------------------------
+% ÍNDICES (GENERAL, TABLAS Y FIGURAS)
+% ------------------------------------------
+\tableofcontents
+\listoftables
+\listoffigures
+
+% ------------------------------------------
+% CAPÍTULO 1: CONTEXTUALIZACIÓN
+% ------------------------------------------
+\chapter{Contextualización}
+
+\section{Introducción y contexto}
+El presente Trabajo de Final de Grado (TFG) se enmarca en la especialidad de Sistemas de Información del Grado en Ingeniería Informática de la Facultad de Informática de Barcelona (FIB) de la Universitat Politècnica de Catalunya (UPC). Se trata de un TFG de modalidad académica, dirigido por Carme Martín Escofet y Maria Hitz Martinez (Departamento de Ingeniería de Servicios y Sistemas de Información, ESSI), que trabaja de forma central la competencia de sistemas de soporte a la decisión y \textit{Business Intelligence} (CSI2.6), junto con la concepción y gestión de sistemas de información (CSI2.2, CSI3.2) y su especificación, diseño e implementación (CSI4.1--CSI4.3).
+
+El entorno institucional de referencia es el Departamento de Educación de la Generalitat de Cataluña, responsable de la planificación, gestión y evaluación del sistema educativo no universitario. Cada curso, el Departamento y el \textit{Consell Superior d'Avaluació del Sistema Educatiu} realizan la evaluación diagnóstica de 6º de educación primaria para medir el grado de adquisición de las competencias básicas al finalizar la etapa \cite{csase_resultats}. Los microdatos anonimizados de estas pruebas se publican en el Portal de Datos Abiertos de la Generalitat \cite{transparencia_catalunya_2024}: más de 1,1 millones de registros (convocatorias 2009--2025) con las puntuaciones por competencia y subcompetencia y variables demográficas y de contexto del centro.
+
+\section{Definición de términos y conceptos clave}
+\begin{itemize}
+    \item \textbf{Business Intelligence (BI):} conjunto de estrategias, procesos y tecnologías que transforman datos en información analítica para dar soporte a la toma de decisiones \cite{sharda2014business}.
+    \item \textbf{Cuadro de Mando Integral (CMI) / Balanced Scorecard (BSC):} metodología de gestión estratégica de Kaplan y Norton que evalúa el rendimiento de una organización mediante un conjunto equilibrado de indicadores agrupados en perspectivas \cite{kaplan1992balanced}. En el sector público, la misión de la organización se sitúa en la cúspide del modelo \cite{niven2008balanced}.
+    \item \textbf{Indicador Clave de Rendimiento (KPI):} métrica cuantificable que mide el grado de cumplimiento de un objetivo estratégico.
+    \item \textbf{Modelado dimensional y esquema en estrella:} técnica de diseño de almacenes de datos que organiza la información en una tabla de hechos (medidas) rodeada de tablas de dimensiones (contexto de análisis) \cite{kimball2013data}.
+    \item \textbf{ETL (\textit{Extract, Transform, Load}):} proceso que extrae datos de las fuentes, los depura y transforma, y los carga en el modelo analítico \cite{kimball2013data}.
+    \item \textbf{Power BI, Power Query y DAX:} plataforma de analítica de Microsoft; Power Query (lenguaje M) implementa la ETL y DAX (\textit{Data Analysis Expressions}) define las medidas analíticas sobre el motor en memoria VertiPaq \cite{ferrari2019definitive}.
+    \item \textbf{Datos abiertos (\textit{Open Data}):} datos publicados de forma libre y gratuita que pueden ser reutilizados y redistribuidos sin restricciones técnicas ni legales.
+\end{itemize}
+
+\section{Descripción del problema a resolver}
+El conjunto de datos de las evaluaciones de 6º de primaria se publica como una única tabla plana de 32 columnas y más de un millón de filas \cite{transparencia_catalunya_2024}, mientras que los resultados oficiales se difunden mediante informes estáticos en PDF \cite{csase_resultats}. Esta situación presenta cuatro problemas:
+\begin{enumerate}
+    \item \textbf{Falta de accesibilidad analítica:} el fichero en bruto (240 MB) es inmanejable para perfiles no técnicos como directores, inspectores o docentes.
+    \item \textbf{Ausencia de análisis multidimensional:} no es inmediato cruzar el rendimiento en cada competencia con la naturaleza del centro, el hábitat, el área territorial o el género.
+    \item \textbf{Ocultación de carencias específicas:} las puntuaciones globales esconden diferencias entre subcompetencias (p.\,ej., comprensión lectora frente a expresión escrita).
+    \item \textbf{Inexistencia de un sistema de soporte a la decisión orientado a objetivos:} no existe una herramienta que relacione los indicadores con objetivos estratégicos ni que permita seguir su evolución temporal y detectar desviaciones.
+\end{enumerate}
+
+\section{Agentes implicados}
+La Tabla~\ref{tab:stakeholders} resume los actores implicados, distinguiendo a quién va dirigido el producto, quién lo usará y quién se beneficiará de sus resultados.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} p{3.6cm} p{3.6cm} X @{}}
+\toprule
+\textbf{Actor} & \textbf{Rol} & \textbf{Necesidad principal} \\ \midrule
+\textbf{Departamento de Educación} & Destinatario y propietario de los datos & Seguir la evolución de las competencias básicas en Cataluña y orientar la política educativa. \\ \addlinespace
+\textbf{Inspección y coordinación territorial} & Usuario (nivel táctico) & Detectar brechas territoriales y de equidad para priorizar recursos de refuerzo. \\ \addlinespace
+\textbf{Dirección de centro} & Usuario (nivel operativo) & Comparar sus resultados con los de centros de contexto similar (naturaleza, hábitat, territorio). \\ \addlinespace
+\textbf{Alumnado, familias y sociedad} & Beneficiarios indirectos & Mejores decisiones educativas y mayor transparencia sobre el sistema público. \\ \addlinespace
+\textbf{Directoras del TFG y tutor de GEP} & Supervisión y validación & Asegurar el rigor técnico y metodológico del proyecto. \\ \addlinespace
+\textbf{Desarrolladora (estudiante)} & Diseño e implementación & Construir la solución completa: ETL, modelo dimensional, KPIs y cuadros de mando. \\ \bottomrule
+\end{tabularx}
+\caption{Matriz de agentes implicados (\textit{stakeholders}).}
+\label{tab:stakeholders}
+\end{table}
+
+% ------------------------------------------
+% CAPÍTULO 2: JUSTIFICACIÓN
+% ------------------------------------------
+\chapter{Justificación}
+
+\section{Estudio de mercado y estado del arte}
+El sector educativo avanza hacia la toma de decisiones informada por datos (\textit{Data-Informed Decision Making}) \cite{mandinach2012data}. Sin embargo, la explotación de los resultados de 6º de primaria en Cataluña se apoya hoy en tres tipos de soluciones, todas ellas con limitaciones:
+\begin{itemize}
+    \item \textbf{Informes oficiales estáticos} \cite{csase_resultats}: ofrecen agregados de calidad, pero con cortes predefinidos que el usuario no puede filtrar ni cruzar.
+    \item \textbf{Visor del portal de datos abiertos} \cite{transparencia_catalunya_2024}: permite consultas y gráficos simples sobre la tabla plana, pero no dispone de modelo dimensional, indicadores ni vistas por perfil.
+    \item \textbf{Análisis manuales con hojas de cálculo:} duplican esfuerzos, son propensos a errores y no superan con fluidez el millón de filas.
+\end{itemize}
+En el ámbito académico, la analítica educativa (\textit{Educational Data Mining} y \textit{Learning Analytics}) se centra mayoritariamente en modelos predictivos o en plataformas de aprendizaje en línea \cite{romero2010educational}, sin articular un modelo de gestión estratégica como el CMI para la administración educativa. Ninguna solución existente puede, por tanto, \textbf{reutilizarse o adaptarse} directamente: se justifica diseñar una solución nueva, reutilizando eso sí los datos abiertos existentes y herramientas BI de mercado en lugar de desarrollar software a medida.
+
+\section{Comparativa de alternativas con criterios ponderados}
+Para pasar de una comparación descriptiva a una decisión de ingeniería, se han fijado seis criterios objetivos con un peso proporcional a su importancia para el proyecto. Cada alternativa se puntúa de 1 (muy deficiente) a 5 (excelente) y se calcula la puntuación ponderada $S = \sum_i w_i \cdot p_i$ (Tabla~\ref{tab:matriz_decision}).
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{} X c c c c c @{}}
+\toprule
+\textbf{Criterio} & \textbf{Peso} & \textbf{Power BI} & \textbf{Tableau} & \textbf{Superset} & \textbf{Dash/Streamlit} \\ \midrule
+C1. Coste de licencia en desarrollo & 20\% & 5 & 3 & 5 & 5 \\
+C2. ETL integrada en la herramienta & 20\% & 5 & 3 & 1 & 3 \\
+C3. Rendimiento con más de 1 M de filas & 20\% & 5 & 4 & 3 & 3 \\
+C4. Facilidad de uso para usuarios no técnicos & 15\% & 4 & 4 & 3 & 3 \\
+C5. Curva de aprendizaje y documentación & 10\% & 4 & 3 & 2 & 2 \\
+C6. Mantenibilidad y escalabilidad & 15\% & 4 & 4 & 3 & 2 \\ \midrule
+\textbf{Puntuación ponderada ($S$)} & \textbf{100\%} & \textbf{4,60} & \textbf{3,50} & \textbf{2,90} & \textbf{3,15} \\ \bottomrule
+\end{tabularx}
+\caption{Matriz de decisión ponderada de plataformas BI.}
+\label{tab:matriz_decision}
+\end{table}
+
+Las puntuaciones se justifican así: Power BI Desktop es gratuito \cite{ms_powerbi_pricing} e integra Power Query y el motor columnar VertiPaq, optimizado para agregaciones masivas \cite{ferrari2019definitive}. Tableau requiere licencias comerciales y una herramienta aparte (Tableau Prep) para la ETL \cite{tableau_pricing}. Apache Superset es libre, pero depende de una base de datos externa y de SQL para preparar los datos \cite{apache_superset}. Dash o Streamlit exigen programar a medida toda la interfaz y la lógica de negocio, lo que aumenta el coste de mantenimiento.
+
+\section{Justificación de la solución propuesta}
+\textbf{Dados estos criterios y esta ponderación, Power BI es la alternativa que mejor se adapta a las necesidades del proyecto} ($S = 4{,}60$), con más de un punto de ventaja sobre la segunda opción. La solución se apoya en tres pilares:
+\begin{enumerate}
+    \item \textbf{Modelo dimensional en estrella (Kimball)} \cite{kimball2013data}: frente a un modelo relacional normalizado (3FN), orientado a transacciones, el modelo dimensional reduce los \textit{joins}, maximiza la compresión en VertiPaq y usa conceptos del negocio (alumno, centro, año, competencia) comprensibles para el usuario.
+    \item \textbf{Ecosistema Power BI}: Power Query para una ETL repetible y DAX para los KPIs dinámicos \cite{ferrari2019definitive}.
+    \item \textbf{CMI adaptado al sector público} \cite{niven2008balanced}: los KPIs se organizan en cuatro perspectivas alineadas con la misión del sistema educativo (Sección~\ref{sec:alcance_min}).
+\end{enumerate}
+
+% ------------------------------------------
+% CAPÍTULO 3: ALCANCE
+% ------------------------------------------
+\chapter{Alcance del proyecto}
+
+\section{Objetivo general y subobjetivos}
+\textbf{Objetivo general:} diseñar e implementar un Cuadro de Mando Integral interactivo en Power BI, alimentado por los datos abiertos de la evaluación de 6º de primaria de Cataluña, que dé soporte a la toma de decisiones basada en evidencias del Departamento de Educación, la inspección y las direcciones de centro.
+
+\textbf{Subobjetivos:}
+\begin{enumerate}
+    \item \textbf{SO1 -- Auditoría de calidad de los datos:} caracterizar y depurar el dataset (32 columnas, 1,1 M de registros, 16 convocatorias).
+    \item \textbf{SO2 -- Catálogo de KPIs:} definir formalmente los indicadores agrupados en las cuatro perspectivas del CMI.
+    \item \textbf{SO3 -- Modelo dimensional:} diseñar un esquema en estrella con una tabla de hechos de resultados y las dimensiones Tiempo, Alumno, Contexto del centro y Competencia.
+    \item \textbf{SO4 -- ETL y lógica DAX:} implementar la ETL en Power Query y las medidas en DAX.
+    \item \textbf{SO5 -- Cuadros de mando por perfil:} construir paneles para los niveles estratégico, táctico y operativo.
+    \item \textbf{SO6 -- Validación:} verificar el rendimiento, la exactitud de los KPIs y la usabilidad.
+\end{enumerate}
+
+\section{Alcance mínimo garantizado y extensiones opcionales}
+\label{sec:alcance_min}
+Dado que el proyecto es ambicioso, se explicita qué quedará \textbf{implementado y validado} al finalizar el TFG (Tabla~\ref{tab:alcance}) y qué se considera una extensión que solo se abordará si hay holgura. Las extensiones no forman parte de la planificación ni del presupuesto.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} p{3.2cm} X @{}}
+\toprule
+\textbf{Tipo} & \textbf{Entregable} \\ \midrule
+\multirow{5}{3.2cm}{\textbf{Mínimo garantizado (implementado y validado)}}
+ & ETL completa en Power Query de las 16 convocatorias (2009--2025) con reglas de calidad documentadas. \\
+ & Modelo en estrella con 1 tabla de hechos y 4 dimensiones, documentado. \\
+ & Catálogo de 12 KPIs (3 por perspectiva) implementados en DAX. \\
+ & 3 cuadros de mando: estratégico (Departamento), táctico (Inspección) y operativo (Dirección de centro). \\
+ & Informe de validación: tiempos de respuesta, contraste con los informes oficiales y prueba de usabilidad. \\ \midrule
+\multirow{3}{3.2cm}{\textbf{Extensiones opcionales}}
+ & Publicación en Power BI Service y seguridad a nivel de fila (RLS) por territorio. \\
+ & Análisis predictivo o de tendencias avanzadas. \\
+ & Integración de fuentes adicionales (p.\,ej., indicadores socioeconómicos). \\ \bottomrule
+\end{tabularx}
+\caption{Alcance mínimo garantizado frente a extensiones opcionales.}
+\label{tab:alcance}
+\end{table}
+
+La Tabla~\ref{tab:kpis} concreta las cuatro perspectivas del CMI y los KPIs previstos. Como el dataset no contiene información económica, la perspectiva financiera clásica se sustituye por la de eficiencia y progreso, siguiendo la adaptación del BSC al sector público \cite{niven2008balanced}.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} p{3.4cm} p{3.6cm} X @{}}
+\toprule
+\textbf{Perspectiva} & \textbf{Objetivo} & \textbf{KPIs previstos} \\ \midrule
+Rendimiento académico (usuarios) & Mejorar el dominio de las competencias básicas & Puntuación media por competencia; puntuación por subcompetencia; \% de alumnado en nivel bajo. \\ \addlinespace
+Equidad e inclusión (procesos internos) & Reducir las brechas & Brecha de género; brecha pública--privada; dispersión de resultados. \\ \addlinespace
+Territorio y entorno (procesos internos) & Equilibrio territorial & Desviación de cada área respecto a Cataluña; diferencia por hábitat; posición relativa del área. \\ \addlinespace
+Eficiencia y progreso (aprendizaje y crecimiento) & Mejora continua & Variación interanual; tendencia de 5 años; \% de competencias que mejoran. \\ \bottomrule
+\end{tabularx}
+\caption{Perspectivas del CMI y catálogo previsto de KPIs.}
+\label{tab:kpis}
+\end{table}
+
+\section{Requisitos}
+\subsection{Requisitos funcionales}
+\begin{itemize}
+    \item \textbf{RF01 -- ETL:} importar y transformar automáticamente los microdatos, homogeneizando códigos y formatos entre convocatorias.
+    \item \textbf{RF02 -- Análisis multidimensional:} filtrar por año, área territorial, naturaleza del centro, hábitat y género.
+    \item \textbf{RF03 -- Subcompetencias:} desglosar cada competencia en sus subcompetencias (p.\,ej., comprensión lectora y expresión escrita).
+    \item \textbf{RF04 -- KPIs dinámicos:} calcular medias, distribuciones por nivel, variaciones interanuales y brechas.
+    \item \textbf{RF05 -- Interactividad:} filtrado cruzado y \textit{drill-down} desde Cataluña hasta el área territorial.
+    \item \textbf{RF06 -- Vistas por perfil:} paneles diferenciados por nivel de decisión.
+\end{itemize}
+
+\subsection{Requisitos no funcionales}
+\begin{itemize}
+    \item \textbf{RNF01 -- Rendimiento:} tiempo de respuesta inferior a 3 segundos al aplicar filtros sobre el volumen completo.
+    \item \textbf{RNF02 -- Usabilidad:} interfaz sin sobrecarga cognitiva para usuarios no técnicos \cite{few2006information}; puntuación SUS $\geq 68$ \cite{brooke1996sus}.
+    \item \textbf{RNF03 -- Privacidad (RGPD):} uso exclusivo de identificadores anonimizados, sin posibilidad de reidentificación.
+    \item \textbf{RNF04 -- Mantenibilidad:} incorporar nuevas convocatorias sin rediseñar el modelo.
+    \item \textbf{RNF05 -- Accesibilidad:} paletas de color aptas para daltonismo y contraste suficiente en todos los paneles.
+\end{itemize}
+
+\section{Obstáculos y riesgos}
+\label{sec:riesgos}
+Una primera exploración del dataset ya ha revelado problemas concretos de calidad: códigos que cambian entre convocatorias (\textit{Públic/Pública}, \textit{H/Home}, \textit{D/Dona}), 13.357 registros de 2024 con valores de hábitat corruptos (\textit{Fins a 10001}, \textit{Fins a 10002}\ldots, típicos de un arrastre en una hoja de cálculo), la ausencia de la convocatoria 2020 y competencias que solo existen en algunos años (inglés desde 2010; conocimiento del medio y expresión oral desde 2018). Además, \textbf{el dataset no incluye un identificador de centro}, por lo que el panel operativo ofrecerá una comparación de referencia por contexto y no los resultados de un centro concreto. La Tabla~\ref{tab:riesgos} resume los riesgos identificados; sus planes alternativos se detallan en la Sección~\ref{sec:planesB}.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} c X c c @{}}
+\toprule
+\textbf{Código} & \textbf{Riesgo} & \textbf{Probabilidad} & \textbf{Impacto} \\ \midrule
+R1 & Inconsistencias en los datos fuente mayores de lo previsto & Media (30\%) & Alto \\
+R2 & Rendimiento insuficiente del modelo (más de 3 s) & Baja (20\%) & Medio \\
+R3 & Subestimación del tiempo de redacción de la memoria & Alta (40\%) & Medio \\
+R4 & Baja disponibilidad de usuarios reales para la prueba de usabilidad & Alta (40\%) & Medio \\
+R5 & Avería o pérdida del equipo de trabajo & Muy baja (5\%) & Alto \\
+R6 & Desviación de la planificación por un alcance excesivo & Media (30\%) & Alto \\ \bottomrule
+\end{tabularx}
+\caption{Riesgos identificados, probabilidad estimada e impacto.}
+\label{tab:riesgos}
+\end{table}
+
+% ------------------------------------------
+% CAPÍTULO 4: METODOLOGÍA Y RIGOR
+% ------------------------------------------
+\chapter{Metodología y rigor}
+
+\section{Metodología de trabajo}
+Se adopta un enfoque híbrido que combina el ciclo de vida de Kimball para proyectos de \textit{Data Warehouse} \cite{kimball2008lifecycle} con prácticas de Scrum \cite{schwaber2020scrum}, estudiados en asignaturas de la especialidad. El ciclo de Kimball aporta la secuencia técnica (requisitos, modelo dimensional, ETL, aplicación BI y despliegue), mientras que Scrum aporta iteraciones cortas y la adaptación continua a lo que se descubra sobre los datos.
+
+La adaptación al proyecto es la siguiente: al haber una sola desarrolladora, se trabaja en \textbf{\textit{sprints} de dos semanas} con un \textit{backlog} priorizado según el alcance mínimo de la Tabla~\ref{tab:alcance}. Cada \textit{sprint} empieza con una planificación y termina con una revisión con las directoras (que actúan como \textit{product owner}) en la que se validan los incrementos: perfilado de datos, modelo, ETL, medidas y paneles.
+
+\section{Herramientas de seguimiento}
+\begin{itemize}
+    \item \textbf{Git y GitHub:} control de versiones del archivo de Power BI (formato \texttt{.pbip}), de las consultas M y DAX, de los scripts auxiliares y de la memoria.
+    \item \textbf{GitHub Projects:} tablero Kanban con el \textit{backlog}, las tareas T1--T23 y el registro de horas reales por tarea, que alimenta el control de costes (Sección~\ref{sec:control}).
+    \item \textbf{Overleaf / \LaTeX:} redacción de la memoria y de los entregables de GEP con formato bibliográfico IEEE.
+    \item \textbf{Reuniones de seguimiento:} quincenales con las directoras y revisiones de los entregables con el tutor de GEP.
+\end{itemize}
+
+\section{Métodos de validación}
+Cada subobjetivo tiene un criterio de aceptación verificable:
+\begin{itemize}
+    \item \textbf{Exactitud de los datos (SO1, SO4):} conteos de registros por convocatoria antes y después de la ETL, y contraste de las medias calculadas con las publicadas en los informes oficiales \cite{csase_resultats} (tolerancia de $\pm 0{,}5$ puntos).
+    \item \textbf{Rendimiento (RNF01):} medición de los tiempos de consulta con DAX Studio \cite{dax_studio} y con el analizador de rendimiento de Power BI.
+    \item \textbf{Usabilidad (RNF02):} prueba con al menos 5 usuarios con perfiles representativos, tareas guiadas y el cuestionario SUS \cite{brooke1996sus}, complementada con una evaluación heurística \cite{nielsen1993usability}.
+    \item \textbf{Alineación estratégica (SO2):} revisión del catálogo de KPIs con las directoras.
+\end{itemize}
+
+% ------------------------------------------
+% CAPÍTULO 5: PLANIFICACIÓN TEMPORAL
+% ------------------------------------------
+\chapter{Planificación temporal}
+
+\section{Datos globales del proyecto}
+El TFG tiene una carga de 18 créditos ECTS. La normativa española fija entre 25 y 30 horas de trabajo por crédito \cite{boe_rd1125_2003} y la FIB establece 30 horas por crédito para el TFG \cite{fib_normativa_tfg}, por lo que la dedicación total es de \textbf{18 $\times$ 30 = 540 horas}. El proyecto empezó el 15 de septiembre de 2026 y finaliza con la defensa en el periodo ordinario del primer cuatrimestre (19--25 de enero de 2027): 19 semanas, con una media de 28,4 horas semanales.
+
+La dedicación no es uniforme. Se distinguen tres fases (Tabla~\ref{tab:fases}): una fase inicial más ligera, compatible con los entregables de GEP; una fase de desarrollo técnico; y una fase final más intensa, que coincide con las vacaciones de Navidad, sin docencia.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} p{1.6cm} p{4.2cm} c c X @{}}
+\toprule
+\textbf{Fase} & \textbf{Periodo} & \textbf{Semanas} & \textbf{Horas} & \textbf{Foco principal} \\ \midrule
+Fase I & 14 sep -- 11 oct 2026 & 1--4 & 94 h & Gestión del proyecto (GEP) y perfilado de datos. \\
+Fase II & 12 oct -- 6 dic 2026 & 5--12 & 220 h & Requisitos, KPIs, modelo, ETL y medidas DAX. \\
+Fase III & 7 dic 2026 -- 25 ene 2027 & 13--19 & 226 h & Cuadros de mando, validación, cierre y defensa. \\ \midrule
+\textbf{Total} & & \textbf{19} & \textbf{540 h} & \textbf{18 ECTS $\times$ 30 h} \\ \bottomrule
+\end{tabularx}
+\caption{Distribución de la carga de trabajo por fases.}
+\label{tab:fases}
+\end{table}
+
+\section{Descripción de las tareas}
+El trabajo se descompone en 23 tareas codificadas como T1--T23 y agrupadas en siete paquetes. Ninguna supera las 50 horas. Las horas se han estimado de forma ascendente (\textit{bottom-up}) a partir de los entregables de cada tarea. Las tareas de seguimiento (T5) y de redacción de la memoria (T6) son \textbf{concurrentes} con el resto durante todo el proyecto. Las dependencias de precedencia se expresan como $T_i < T_j$ (T$_j$ no puede empezar hasta que termina T$_i$).
+
+\subsection{Gestión del proyecto (T1--T6)}
+\begin{itemize}
+    \item \textbf{T1 -- Contextualización y alcance (15 h):} estudio del contexto, estado del arte, objetivos, requisitos y riesgos. Recursos: tutor de GEP y bibliografía.
+    \item \textbf{T2 -- Planificación temporal (12 h):} definición de tareas, estimaciones, dependencias, Gantt y planes alternativos. Dependencia: T1 $<$ T2.
+    \item \textbf{T3 -- Gestión económica y sostenibilidad (12 h):} presupuesto por actividad, control de costes e informe de sostenibilidad. Dependencia: T2 $<$ T3.
+    \item \textbf{T4 -- Documento final de GEP (11 h):} integración de los entregables anteriores y de las correcciones del tutor. Dependencia: T3 $<$ T4.
+    \item \textbf{T5 -- Seguimiento y control (20 h, semanas 1--19):} reuniones quincenales con las directoras (unos 10 encuentros de 1 h con su preparación) y control semanal de horas, riesgos y desviaciones. Sin dependencias.
+    \item \textbf{T6 -- Redacción de la memoria del TFG (50 h, semanas 5--19):} empieza al terminar GEP y documenta cada incremento a medida que se completa (unas 3,3 h/semana). Dependencia: T4 $<$ T6.
+\end{itemize}
+
+\subsection{Análisis y requisitos (T7--T9)}
+\begin{itemize}
+    \item \textbf{T7 -- Perfilado y auditoría del dataset (30 h):} análisis exploratorio de las 32 columnas por convocatoria, nulos, dominios de valores y anomalías. Recursos: Python (pandas) y Power Query.
+    \item \textbf{T8 -- Análisis de requisitos por perfil (20 h):} definición de los perfiles de usuario, de sus preguntas de negocio y de las historias de usuario. Dependencia: T1 $<$ T8.
+    \item \textbf{T9 -- Catálogo de KPIs del CMI (25 h):} ficha formal de los 12 KPIs (fórmula, objetivo, perspectiva y umbrales). Dependencias: T7, T8 $<$ T9.
+\end{itemize}
+
+\subsection{Diseño (T10--T11)}
+\begin{itemize}
+    \item \textbf{T10 -- Diseño del modelo dimensional (25 h):} granularidad, tabla de hechos, dimensiones y diccionario de datos (diagramas con draw.io). Dependencia: T9 $<$ T10.
+    \item \textbf{T11 -- Prototipado UX/UI (20 h):} bocetos de los tres paneles según buenas prácticas de diseño de cuadros de mando \cite{few2006information} (Figma). Dependencia: T9 $<$ T11.
+\end{itemize}
+
+\subsection{Implementación de la ETL (T12--T13)}
+\begin{itemize}
+    \item \textbf{T12 -- ETL I: extracción, limpieza y homogeneización (35 h):} carga del CSV, tipado, conversión de la coma decimal, unificación de códigos y corrección de los valores anómalos. Dependencia: T7 $<$ T12.
+    \item \textbf{T13 -- ETL II: dimensiones, hechos y carga (30 h):} despivotado de competencias, generación de claves sustitutas, construcción de la estrella y verificación de conteos. Dependencias: T10, T12 $<$ T13.
+\end{itemize}
+
+\subsection{Lógica analítica en DAX (T14--T15)}
+\begin{itemize}
+    \item \textbf{T14 -- Medidas DAX base (40 h):} medias, distribuciones por nivel de logro y brechas de género y titularidad. Dependencia: T13 $<$ T14.
+    \item \textbf{T15 -- Inteligencia temporal y comparativas (30 h):} variaciones interanuales, tendencias y desviaciones respecto a Cataluña. Dependencia: T14 $<$ T15.
+\end{itemize}
+
+\subsection{Cuadros de mando (T16--T18)}
+\begin{itemize}
+    \item \textbf{T16 -- Panel estratégico del Departamento (25 h):} visión global del CMI y semáforos por perspectiva. Dependencias: T11, T14 $<$ T16.
+    \item \textbf{T17 -- Panel táctico de Inspección (25 h):} comparativas territoriales, de equidad y \textit{drill-down}. Dependencias: T15, T16 $<$ T17.
+    \item \textbf{T18 -- Panel operativo de Dirección de centro (20 h):} comparación con centros de contexto similar. Dependencias: T15, T16 $<$ T18.
+\end{itemize}
+
+\subsection{Validación (T19--T21)}
+\begin{itemize}
+    \item \textbf{T19 -- Optimización del rendimiento (20 h):} medición con DAX Studio, reducción de cardinalidad y refactorización de medidas. Dependencias: T17, T18 $<$ T19.
+    \item \textbf{T20 -- Validación analítica de los KPIs (15 h):} contraste con los informes oficiales. Dependencia: T15 $<$ T20.
+    \item \textbf{T21 -- Prueba de usabilidad (15 h):} sesiones con usuarios y cuestionario SUS. Dependencias: T17, T18 $<$ T21.
+\end{itemize}
+
+\subsection{Cierre (T22--T23)}
+\begin{itemize}
+    \item \textbf{T22 -- Revisión final de la memoria (20 h):} integración de resultados, conclusiones y correcciones de las directoras. Dependencias: T19, T20 $<$ T22.
+    \item \textbf{T23 -- Preparación de la defensa (25 h):} presentación, demostración y ensayos cronometrados. Dependencias: T19, T20 $<$ T23.
+\end{itemize}
+
+\section{Recursos}
+\textbf{Recursos humanos:} la estudiante desempeña todos los roles del proyecto (jefa de proyecto, analista, ingeniera de datos, desarrolladora BI, especialista en QA y redactora técnica), con la supervisión de las directoras del TFG y del tutor de GEP. La Tabla~\ref{tab:resumen_tareas} asigna un rol a cada tarea, asignación que se usa en el presupuesto.
+
+\textbf{Recursos materiales:} portátil ASUS TUF Gaming F15 con monitor externo; Power BI Desktop, Power Query, DAX Studio, Python (pandas), draw.io, Figma (plan gratuito), Git y GitHub, y Overleaf; conexión a Internet y espacio de trabajo propio.
+
+\section{Resumen de tareas}
+La Tabla~\ref{tab:resumen_tareas} resume las tareas con su código, horas, semanas, dependencias y recursos.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.0}
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabularx}{\textwidth}{@{} l X c c l l @{}}
+\toprule
+\textbf{Cód.} & \textbf{Tarea} & \textbf{Horas} & \textbf{Sem.} & \textbf{Dependencias} & \textbf{Rol / recursos} \\ \midrule
+T1 & Contextualización y alcance & 15 & 1--2 & -- & PM, tutor GEP \\
+T2 & Planificación temporal & 12 & 2--3 & T1 & PM, tutor GEP \\
+T3 & Gestión económica y sostenibilidad & 12 & 3--4 & T2 & PM, tutor GEP \\
+T4 & Documento final de GEP & 11 & 4 & T3 & PM, \LaTeX \\
+T5 & Seguimiento y control & 20 & 1--19 & -- & PM, directoras \\
+T6 & Redacción de la memoria & 50 & 5--19 & T4 & RT, Overleaf \\
+T7 & Perfilado y auditoría del dataset & 30 & 1--3 & -- & ID, Python \\
+T8 & Análisis de requisitos por perfil & 20 & 4--5 & T1 & AN \\
+T9 & Catálogo de KPIs del CMI & 25 & 6--7 & T7, T8 & AN, directoras \\
+T10 & Diseño del modelo dimensional & 25 & 8 & T9 & ID, draw.io \\
+T11 & Prototipado UX/UI & 20 & 9--10 & T9 & BI, Figma \\
+T12 & ETL I: limpieza y homogeneización & 35 & 5--7 & T7 & ID, Power Query \\
+T13 & ETL II: dimensiones, hechos y carga & 30 & 9--10 & T10, T12 & ID, Power Query \\
+T14 & Medidas DAX base & 40 & 11--12 & T13 & BI, Power BI \\
+T15 & Inteligencia temporal y comparativas & 30 & 13--14 & T14 & BI, Power BI \\
+T16 & Panel estratégico (Departamento) & 25 & 13--14 & T11, T14 & BI, Power BI \\
+T17 & Panel táctico (Inspección) & 25 & 15--16 & T15, T16 & BI, Power BI \\
+T18 & Panel operativo (Dirección de centro) & 20 & 15--16 & T15, T16 & BI, Power BI \\
+T19 & Optimización del rendimiento & 20 & 17 & T17, T18 & BI, DAX Studio \\
+T20 & Validación analítica de KPIs & 15 & 15--16 & T15 & QA, informes oficiales \\
+T21 & Prueba de usabilidad & 15 & 17--18 & T17, T18 & QA, usuarios \\
+T22 & Revisión final de la memoria & 20 & 18--19 & T19, T20 & RT, directoras \\
+T23 & Preparación de la defensa & 25 & 18--19 & T19, T20 & PM \\ \midrule
+\multicolumn{2}{@{}l}{\textbf{Total}} & \textbf{540} & & & \\ \bottomrule
+\end{tabularx}
+\caption{Resumen de tareas, horas, semanas, dependencias y recursos. Roles: PM (jefa de proyecto), AN (analista), ID (ingeniera de datos), BI (desarrolladora BI), QA (validación), RT (redactora técnica).}
+\label{tab:resumen_tareas}
+\end{table}
+
+\section{Diagrama de Gantt}
+La Figura~\ref{fig:gantt} muestra el calendario en semanas. La concurrencia es explícita: T5 y T6 se desarrollan en paralelo al resto; T12 (limpieza) se adelanta al diseño del modelo porque solo depende del perfilado; T11 avanza en paralelo con la ETL; y T20 valida los KPIs mientras se construyen los paneles. La carga semanal resultante oscila entre 19 y 34 horas.
+
+\begin{landscape}
+\begin{figure}[p]
+\centering
+\begin{adjustbox}{max width=\linewidth, max totalheight=0.93\textheight}
+\begin{ganttchart}[
+    vgrid={*1{dotted}},
+    hgrid,
+    x unit=0.9cm,
+    y unit chart=0.42cm,
+    title/.style={fill=gray!20, draw=black},
+    title label font=\bfseries\footnotesize,
+    bar/.style={fill=blue!35, draw=black},
+    bar height=0.6,
+    bar label font=\footnotesize,
+    group/.style={fill=black},
+    group height=0.25,
+    group label font=\bfseries\footnotesize,
+    milestone/.style={fill=red!70, draw=black},
+    milestone label font=\itshape\footnotesize
+]{1}{19}
+\gantttitle{Sep}{3} \gantttitle{Oct}{4} \gantttitle{Nov}{5} \gantttitle{Dic}{4} \gantttitle{Ene}{3} \\
+\gantttitlelist{1,...,19}{1} \\
+\ganttgroup{Gestión del proyecto}{1}{19} \\
+\ganttbar{T1: Contextualización y alcance}{1}{2} \\
+\ganttbar{T2: Planificación temporal}{2}{3} \\
+\ganttbar{T3: Gestión económica y sostenibilidad}{3}{4} \\
+\ganttbar{T4: Documento final GEP}{4}{4} \\
+\ganttbar[bar/.append style={fill=gray!45}]{T5: Seguimiento y control}{1}{19} \\
+\ganttbar[bar/.append style={fill=gray!45}]{T6: Redacción de la memoria}{5}{19} \\
+\ganttgroup{Análisis y requisitos}{1}{7} \\
+\ganttbar[bar/.append style={fill=teal!40}]{T7: Perfilado del dataset}{1}{3} \\
+\ganttbar[bar/.append style={fill=teal!40}]{T8: Requisitos por perfil}{4}{5} \\
+\ganttbar[bar/.append style={fill=teal!40}]{T9: Catálogo de KPIs}{6}{7} \\
+\ganttgroup{Diseño}{8}{10} \\
+\ganttbar[bar/.append style={fill=orange!45}]{T10: Modelo dimensional}{8}{8} \\
+\ganttbar[bar/.append style={fill=orange!45}]{T11: Prototipado UX/UI}{9}{10} \\
+\ganttgroup{ETL y DAX}{5}{14} \\
+\ganttbar[bar/.append style={fill=green!40}]{T12: ETL I -- limpieza}{5}{7} \\
+\ganttbar[bar/.append style={fill=green!40}]{T13: ETL II -- estrella}{9}{10} \\
+\ganttbar[bar/.append style={fill=green!40}]{T14: Medidas DAX base}{11}{12} \\
+\ganttbar[bar/.append style={fill=green!40}]{T15: Inteligencia temporal DAX}{13}{14} \\
+\ganttgroup{Cuadros de mando}{13}{16} \\
+\ganttbar[bar/.append style={fill=violet!35}]{T16: Panel estratégico}{13}{14} \\
+\ganttbar[bar/.append style={fill=violet!35}]{T17: Panel táctico}{15}{16} \\
+\ganttbar[bar/.append style={fill=violet!35}]{T18: Panel operativo}{15}{16} \\
+\ganttgroup{Validación}{15}{18} \\
+\ganttbar[bar/.append style={fill=yellow!55}]{T19: Optimización rendimiento}{17}{17} \\
+\ganttbar[bar/.append style={fill=yellow!55}]{T20: Validación analítica}{15}{16} \\
+\ganttbar[bar/.append style={fill=yellow!55}]{T21: Prueba de usabilidad}{17}{18} \\
+\ganttgroup{Cierre}{18}{19} \\
+\ganttbar[bar/.append style={fill=red!30}]{T22: Revisión final memoria}{18}{19} \\
+\ganttbar[bar/.append style={fill=red!30}]{T23: Preparación de la defensa}{18}{19} \\
+\ganttmilestone{H1: Fin de GEP}{4} \\
+\ganttmilestone{H2: Modelo y ETL completados}{10} \\
+\ganttmilestone{H3: KPIs implementados}{14} \\
+\ganttmilestone{H4: Cuadros de mando completados}{16} \\
+\ganttmilestone{H5: Defensa (19--25 ene)}{19}
+\end{ganttchart}
+\end{adjustbox}
+\caption{Diagrama de Gantt del proyecto (semanas 1--19, del 14 de septiembre de 2026 al 24 de enero de 2027).}
+\label{fig:gantt}
+\end{figure}
+\end{landscape}
+
+\section{Gestión del riesgo: planes alternativos}
+\label{sec:planesB}
+Las tareas de los planes B \textbf{no forman parte de la planificación estándar ni aparecen en el Gantt}: solo se activan si el riesgo se materializa. En cada reunión de seguimiento (T5) se revisa si aparece alguno de los riesgos definidos, o uno nuevo, y se reajusta la planificación. La Tabla~\ref{tab:planesB} detalla las tareas alternativas, su efecto en la duración y los recursos adicionales.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{@{} c X p{3.2cm} p{2.8cm} @{}}
+\toprule
+\textbf{Riesgo} & \textbf{Plan B (tareas alternativas)} & \textbf{Impacto en la duración} & \textbf{Recursos adicionales} \\ \midrule
+R1 & T12b: reglas adicionales de limpieza; si no basta, acotar el histórico a 2018--2025 (esquema estable). & +20 h en las semanas 6--7; sin retraso de hitos (holgura de T11). & 20 h de ingeniera de datos. \\ \addlinespace
+R2 & T19b: precalcular agregados en Power Query y simplificar las medidas más costosas. & +20 h en la semana 17; absorbido por la holgura de las semanas 18--19. & 10 h de ingeniera de datos y 10 h de desarrolladora BI. \\ \addlinespace
+R3 & T22b: adelantar capítulos con T6 y usar las vacaciones de Navidad. & +15 h; 0 días de retraso en la defensa. & 15 h de redactora técnica. \\ \addlinespace
+R4 & T21b: prueba con perfiles simulados (estudiantes y docentes conocidos) más evaluación heurística \cite{nielsen1993usability}. & +8 h en la semana 18. & 8 h de QA. \\ \addlinespace
+R5 & Recuperación desde GitHub en un ordenador de los laboratorios de la FIB. & +6 h; retraso menor de 1 semana. & 6 h; equipos de la FIB. \\ \addlinespace
+R6 & Renunciar a las extensiones opcionales y priorizar el alcance mínimo (Tabla~\ref{tab:alcance}). & Recupera la planificación sin horas adicionales. & Ninguno. \\ \bottomrule
+\end{tabularx}
+\caption{Planes alternativos ante los riesgos identificados.}
+\label{tab:planesB}
+\end{table}
+
+Con estas medidas, ninguno de los riesgos compromete la defensa en el periodo ordinario.
+
+% ------------------------------------------
+% CAPÍTULO 6: GESTIÓN ECONÓMICA
+% ------------------------------------------
+\chapter{Gestión económica}
+El presupuesto sigue la estructura propuesta en la asignatura \cite{fib_costos}: costes de personal por actividad (CPA), costes genéricos (CG), contingencia (C) e imprevistos (I). Se valora como si fuera un encargo profesional.
+
+\section{Costes de personal por actividad (CPA)}
+El coste por hora de cada rol parte del salario bruto anual (SBA) de mercado en Barcelona \cite{glassdoor_barcelona}, al que se suma un 30\% de cotizaciones a la Seguridad Social a cargo de la empresa, repartido entre 1.760 horas laborables anuales:
+\begin{equation}
+\text{Coste/hora} = \frac{\text{SBA} \times 1{,}30}{1.760\ \text{h}}
+\end{equation}
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.05}
+\begin{tabularx}{\textwidth}{@{} X r r r r @{}}
+\toprule
+\textbf{Rol} & \textbf{SBA (\texteuro{})} & \textbf{\texteuro{}/h} & \textbf{Horas} & \textbf{Coste (\texteuro{})} \\ \midrule
+Jefa de proyecto (PM) & 45.000 & 33,24 & 95 & 3.157,80 \\
+Analista de negocio (AN) & 38.000 & 28,07 & 45 & 1.263,15 \\
+Ingeniera de datos (ID) & 39.000 & 28,81 & 120 & 3.457,20 \\
+Desarrolladora BI (BI) & 34.000 & 25,11 & 180 & 4.519,80 \\
+Especialista en QA (QA) & 30.000 & 22,16 & 30 & 664,80 \\
+Redactora técnica (RT) & 26.000 & 19,20 & 70 & 1.344,00 \\ \midrule
+\textbf{Total} & & & \textbf{540} & \textbf{14.406,75} \\ \bottomrule
+\end{tabularx}
+\caption{Tarifas por rol y coste total de personal.}
+\label{tab:tarifas}
+\end{table}
+
+Para asegurar la trazabilidad con la planificación, la Tabla~\ref{tab:cpa} asigna el coste de personal a cada tarea del Gantt.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{0.95}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{} l X c r r @{}}
+\toprule
+\textbf{Tarea} & \textbf{Descripción} & \textbf{Rol} & \textbf{Horas} & \textbf{Coste (\texteuro{})} \\ \midrule
+T1 & Contextualización y alcance & PM & 15 & 498,60 \\
+T2 & Planificación temporal & PM & 12 & 398,88 \\
+T3 & Gestión económica y sostenibilidad & PM & 12 & 398,88 \\
+T4 & Documento final de GEP & PM & 11 & 365,64 \\
+T5 & Seguimiento y control & PM & 20 & 664,80 \\
+T6 & Redacción de la memoria & RT & 50 & 960,00 \\
+T7 & Perfilado y auditoría del dataset & ID & 30 & 864,30 \\
+T8 & Análisis de requisitos por perfil & AN & 20 & 561,40 \\
+T9 & Catálogo de KPIs del CMI & AN & 25 & 701,75 \\
+T10 & Diseño del modelo dimensional & ID & 25 & 720,25 \\
+T11 & Prototipado UX/UI & BI & 20 & 502,20 \\
+T12 & ETL I: limpieza y homogeneización & ID & 35 & 1.008,35 \\
+T13 & ETL II: dimensiones, hechos y carga & ID & 30 & 864,30 \\
+T14 & Medidas DAX base & BI & 40 & 1.004,40 \\
+T15 & Inteligencia temporal y comparativas & BI & 30 & 753,30 \\
+T16 & Panel estratégico & BI & 25 & 627,75 \\
+T17 & Panel táctico & BI & 25 & 627,75 \\
+T18 & Panel operativo & BI & 20 & 502,20 \\
+T19 & Optimización del rendimiento & BI & 20 & 502,20 \\
+T20 & Validación analítica de KPIs & QA & 15 & 332,40 \\
+T21 & Prueba de usabilidad & QA & 15 & 332,40 \\
+T22 & Revisión final de la memoria & RT & 20 & 384,00 \\
+T23 & Preparación de la defensa & PM & 25 & 831,00 \\ \midrule
+\multicolumn{3}{@{}l}{\textbf{Total CPA}} & \textbf{540} & \textbf{14.406,75} \\ \bottomrule
+\end{tabularx}
+\caption{Costes de personal por actividad (Tarea | Rol | Horas | Coste).}
+\label{tab:cpa}
+\end{table}
+
+\section{Costes genéricos (CG)}
+Siguiendo el método de la asignatura \cite{fib_costos}, cada coste genérico se calcula dividiendo su importe anual entre las horas laborables reales del año (1.760 h) y multiplicando el resultado por las 540 horas del proyecto:
+\begin{itemize}
+    \item \textbf{Amortización del hardware:} portátil de 800 \texteuro{} amortizado en 4 años (7.040 h): 0,1136 \texteuro{}/h.
+    \item \textbf{Software:} todas las herramientas son gratuitas (Power BI Desktop, DAX Studio, Python, Git, draw.io, Figma y Overleaf en sus planes gratuitos): 0 \texteuro{}.
+    \item \textbf{Espacio de trabajo:} 8 m$^2$ de vivienda dedicados al proyecto, a un precio de referencia de 23 \texteuro{}/m$^2$ al mes en Barcelona \cite{idealista_barcelona}: 2.208 \texteuro{}/año.
+    \item \textbf{Internet:} conexión de fibra a 40 \texteuro{}/mes: 480 \texteuro{}/año.
+    \item \textbf{Electricidad:} consumo medido de 85 W (portátil y monitor) a 0,20 \texteuro{}/kWh: 0,017 \texteuro{}/h.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.05}
+\begin{tabularx}{\textwidth}{@{} X r r @{}}
+\toprule
+\textbf{Concepto} & \textbf{\texteuro{}/h} & \textbf{Coste imputado (540 h)} \\ \midrule
+Amortización del hardware (800 \texteuro{} / 7.040 h) & 0,1136 & 61,36 \texteuro{} \\
+Software & 0,0000 & 0,00 \texteuro{} \\
+Espacio de trabajo (2.208 \texteuro{} / 1.760 h) & 1,2545 & 677,45 \texteuro{} \\
+Internet (480 \texteuro{} / 1.760 h) & 0,2727 & 147,27 \texteuro{} \\
+Electricidad (0,085 kWh $\times$ 0,20 \texteuro{}) & 0,0170 & 9,18 \texteuro{} \\ \midrule
+\textbf{Total CG} & \textbf{1,6578} & \textbf{895,26 \texteuro{}} \\ \bottomrule
+\end{tabularx}
+\caption{Costes genéricos imputados al proyecto.}
+\label{tab:cg}
+\end{table}
+
+El resultado sin hardware (1,54 \texteuro{}/h) justifica cuantitativamente la tasa aproximada de 1,50 \texteuro{}/h que se había supuesto en entregas anteriores.
+
+\section{Contingencia (C)}
+La contingencia cubre errores de estimación no anticipados y se calcula como un porcentaje del coste del proyecto. Según la asignatura, ese porcentaje depende del sector y del nivel de detalle del presupuesto: cuanto más detallado, menor \cite{fib_costos}. Se fija en un \textbf{10\%} por las siguientes razones:
+\begin{itemize}
+    \item \textbf{No un 5\%:} es el primer proyecto BI de la desarrolladora, el volumen de datos es elevado y la calidad de los datos ya ha mostrado anomalías (Sección~\ref{sec:riesgos}); un 5\% sería insuficiente.
+    \item \textbf{No un 15--20\%:} el presupuesto está detallado tarea a tarea, la fuente de datos es fija y pública (sin dependencias de terceros) y los riesgos identificados ya tienen su propia partida de imprevistos.
+\end{itemize}
+\begin{equation}
+C = 0{,}10 \times (\text{CPA} + \text{CG}) = 0{,}10 \times 15.302{,}01 = 1.530{,}20\ \text{\texteuro{}}
+\end{equation}
+
+\section{Imprevistos (I)}
+Cada imprevisto se valora con el coste de su plan B (horas adicionales $\times$ tarifa del rol de la Tabla~\ref{tab:planesB}) ponderado por su probabilidad: $I = \sum P(R_i) \times \text{Coste}_{\text{Plan B},i}$. La probabilidad de R1 se eleva al 30\% tras las anomalías ya detectadas en el dataset.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.05}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{} c X r c r @{}}
+\toprule
+\textbf{Riesgo} & \textbf{Cálculo del plan B} & \textbf{Coste (\texteuro{})} & \textbf{$P$} & \textbf{Imputado (\texteuro{})} \\ \midrule
+R1 & 20 h ID $\times$ 28,81 & 576,20 & 30\% & 172,86 \\
+R2 & 10 h ID $\times$ 28,81 + 10 h BI $\times$ 25,11 & 539,20 & 20\% & 107,84 \\
+R3 & 15 h RT $\times$ 19,20 & 288,00 & 40\% & 115,20 \\
+R4 & 8 h QA $\times$ 22,16 & 177,28 & 40\% & 70,91 \\
+R5 & 6 h BI $\times$ 25,11 & 150,66 & 5\% & 7,53 \\
+R6 & Reducción de alcance (sin coste) & 0,00 & 30\% & 0,00 \\ \midrule
+\multicolumn{4}{@{}l}{\textbf{Total imprevistos}} & \textbf{474,34} \\ \bottomrule
+\end{tabularx}
+\caption{Cálculo de la partida de imprevistos.}
+\label{tab:imprevistos}
+\end{table}
+
+\section{Presupuesto total}
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.05}
+\begin{tabularx}{0.8\textwidth}{@{} X r @{}}
+\toprule
+\textbf{Partida} & \textbf{Importe (\texteuro{})} \\ \midrule
+Costes de personal por actividad (CPA) & 14.406,75 \\
+Costes genéricos (CG) & 895,26 \\ \midrule
+\textbf{Subtotal (CPA + CG)} & \textbf{15.302,01} \\
+Contingencia (10\%) & 1.530,20 \\
+Imprevistos & 474,34 \\ \midrule
+\textbf{Total sin IVA} & \textbf{17.306,55} \\
+IVA (21\%) & 3.634,38 \\ \midrule
+\textbf{Total con IVA} & \textbf{20.940,93} \\ \bottomrule
+\end{tabularx}
+\caption{Presupuesto total del proyecto.}
+\label{tab:presupuesto}
+\end{table}
+
+\section{Control de gestión}
+\label{sec:control}
+Las horas reales dedicadas a cada tarea se registran a diario en GitHub Projects. Al cerrar cada tarea, y de forma agregada al final de cada \textit{sprint} (cada dos semanas) y en cada hito del Gantt, se calculan los siguientes indicadores \cite{fib_costos, pmi2021pmbok}:
+Siendo $t_e$ y $t_r$ las tarifas estimada y real, $h_e$ y $h_r$ las horas estimadas y reales, y $C_e$ y $C_r$ los costes estimado y real de una tarea:
+\begin{itemize}
+    \item \textbf{Desviación en tarifa:} $D_t = (t_e - t_r) \times h_r$.
+    \item \textbf{Desviación en eficiencia (consumo):} $D_h = (h_e - h_r) \times t_e$.
+    \item \textbf{Desviación total por tarea:} $D = C_e - C_r$, y en porcentaje $D/C_e \times 100$.
+    \item \textbf{Índices de valor ganado:} $\text{CPI} = \text{EV}/\text{AC}$ (eficiencia en coste) y $\text{SPI} = \text{EV}/\text{PV}$ (eficiencia en plazo), donde un valor inferior a 1 indica desviación desfavorable.
+    \item \textbf{Consumo de reservas:} porcentaje gastado de las partidas de contingencia e imprevistos.
+\end{itemize}
+
+Las desviaciones negativas se cubren primero con la partida de imprevistos, si las causa un riesgo identificado, y después con la de contingencia. Como los imprevistos funcionan como un sistema de compensación, lo reservado para los riesgos que no se materialicen puede cubrir a los que sí lo hagan. Si la desviación acumulada supera el 10\% del coste previsto o el CPI o el SPI bajan de 0,9 durante dos \textit{sprints} consecutivos, se revisa el proyecto con las directoras: según la naturaleza del problema, se ajusta el alcance (renunciando primero a las extensiones opcionales) y se replanifica.
+
+% ------------------------------------------
+% CAPÍTULO 7: SOSTENIBILIDAD
+% ------------------------------------------
+\chapter{Sostenibilidad y compromiso social}
+
+\section{Autoevaluación}
+Tras responder la encuesta de autoevaluación de la competencia de sostenibilidad, he valorado todas las cuestiones con la respuesta \textit{«Bastante»}. El resultado indica un nivel intermedio-alto y homogéneo en las tres dimensiones: tengo una base sólida y consciente, pero aún no un dominio experto en ninguna de ellas.
+
+En la \textbf{dimensión económica}, el grado me ha dado herramientas para estimar costes, analizar la viabilidad y gestionar proyectos, y este TFG me ha obligado a construir un presupuesto por actividades con indicadores de control. Mi margen de mejora está en valorar los costes y beneficios a lo largo de toda la vida útil de un sistema, más allá de su desarrollo.
+
+En la \textbf{dimensión social} conozco los principios de privacidad y protección de datos (RGPD) y soy consciente de que la tecnología puede reducir o ampliar desigualdades. Este proyecto me ha hecho reflexionar sobre cómo un indicador mal presentado puede estigmatizar a un territorio o a un tipo de centro. Me falta, sin embargo, experiencia en métodos para medir de forma objetiva el impacto social de una solución.
+
+En la \textbf{dimensión ambiental} entiendo los conceptos de consumo energético, huella de carbono y ciclo de vida del hardware, pero hasta este proyecto no los había cuantificado en un desarrollo de software ni había considerado el coste ambiental de procesar datos en la nube.
+
+Como \textbf{puntos fuertes} destaco el conocimiento equilibrado de las tres dimensiones, la capacidad de análisis económico y la sensibilidad hacia la ética de los datos. Como \textbf{puntos débiles}, que ninguna respuesta alcance el nivel máximo refleja que mis conocimientos son más teóricos que aplicados: me cuesta traducirlos en indicadores medibles, especialmente en las dimensiones ambiental y social. Me propongo aprovechar el TFG para pasar del «bastante» a un dominio práctico, incorporando criterios de sostenibilidad en cada decisión de diseño y documentando sus efectos.
+
+\section{Matriz de sostenibilidad}
+La Tabla~\ref{tab:matriz_sost} resume el análisis según la matriz de la FIB \cite{fib_sostenibilitat}, que cruza las tres dimensiones con el proyecto puesto en producción (PPP), la vida útil y los riesgos. Los apartados siguientes la desarrollan.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{@{} p{2.0cm} X X X @{}}
+\toprule
+\textbf{Dimensión} & \textbf{PPP} & \textbf{Vida útil} & \textbf{Riesgos} \\ \midrule
+\textbf{Económica} & Presupuesto de 17.306,55 \texteuro{} (sin IVA) sin costes de licencia. & Ahorro de horas de análisis manual en el Departamento, la inspección y los centros. & Costes de licencias si se amplía a muchos usuarios con licencia Pro. \\ \addlinespace
+\textbf{Ambiental} & 45,9 kWh y 11,5 kg de CO$_2$; se reutiliza hardware existente. & Datos procesados una sola vez y consumidos agregados, en lugar de que cada analista descargue y procese el fichero de 240 MB. & Crecimiento del volumen de datos y de los refrescos en la nube. \\ \addlinespace
+\textbf{Social} & Formación de la estudiante en BI y en ética de datos. & Transparencia y detección de brechas de equidad. & Interpretación descontextualizada o estigmatización de territorios. \\ \bottomrule
+\end{tabularx}
+\caption{Matriz de sostenibilidad del proyecto.}
+\label{tab:matriz_sost}
+\end{table}
+
+\section{Dimensión económica}
+\textbf{PPP -- Reflexión sobre el coste estimado:} el coste del proyecto (17.306,55 \texteuro{} sin IVA) se concentra en un 83\% en personal, ya que el software es gratuito y el hardware ya existía. Es un coste razonable para un sistema BI de este alcance, y el detalle por tarea y las reservas de contingencia e imprevistos lo hacen realista.
+
+\textbf{Vida útil -- Situación actual:} hoy el coste del análisis lo asume cada usuario: los equipos de inspección y de dirección dedican horas a descargar, filtrar y resumir los datos en hojas de cálculo, sin poder reutilizar el trabajo de otros.
+
+\textbf{Mejora económica:} el CMI centraliza ese trabajo. Como hipótesis prudente, si solo un 10\% de los más de 2.000 centros con primaria de Cataluña lo usaran y ahorraran 2 horas al año (a 30 \texteuro{}/h), el ahorro sería de unos 12.000 \texteuro{} anuales, a los que se suma el ahorro de la inspección. Como los datos son públicos y anónimos, el panel puede publicarse en la web con una única licencia Pro \cite{ms_powerbi_pricing}, de modo que el coste de explotación es muy bajo (una licencia y unas 20 horas anuales para cargar cada nueva convocatoria). Con estos supuestos, la inversión se recuperaría en un plazo de uno a dos años.
+
+\section{Dimensión ambiental}
+\textbf{PPP -- Impacto estimado:} el consumo eléctrico del desarrollo será de $540\ \text{h} \times 0{,}085\ \text{kWh/h} = 45{,}9$ kWh. Con un factor de emisión conservador de 0,25 kg de CO$_2$/kWh, superior al del mix de generación publicado por REE en los últimos años \cite{ree_emisiones}, la huella será de unos $11{,}5$ kg de CO$_2$.
+
+\textbf{Minimización del impacto:} se reutiliza un portátil existente, sin comprar hardware nuevo; se reutilizan datos abiertos ya recogidos, sin nuevas campañas de recogida; el trabajo es en remoto, sin desplazamientos; y el modelo se optimiza eliminando columnas innecesarias para reducir la memoria y la CPU necesarias en cada consulta.
+
+\textbf{Vida útil -- Situación actual y mejora:} actualmente cada analista descarga el fichero completo (240 MB) y lo procesa en su equipo, repitiendo el mismo cálculo muchas veces. Con el CMI los datos se transforman una sola vez y los usuarios consumen agregados comprimidos, lo que reduce el tráfico de datos y el procesamiento redundante. Además, los paneles interactivos sustituyen la impresión de informes.
+
+\section{Dimensión social}
+\textbf{PPP -- Aportación personal:} el proyecto me permitirá consolidar competencias de ingeniería de datos, modelado dimensional y diseño de cuadros de mando, muy demandadas en el mercado laboral, y desarrollar una conciencia crítica sobre el uso ético de los datos públicos.
+
+\textbf{Vida útil -- Situación actual y mejora:} hoy la información sobre los resultados educativos llega en formatos poco accesibles para perfiles no técnicos. El CMI democratiza su acceso y permite identificar brechas de género, de titularidad y territoriales, para orientar los recursos de refuerzo de manera más justa. Para evitar la estigmatización, los paneles mostrarán siempre los datos en su contexto (hábitat, naturaleza) y no permitirán identificar a centros ni a alumnos (RGPD).
+
+\textbf{Necesidad real:} sí existe. La administración educativa promueve la toma de decisiones basada en datos \cite{mandinach2012data}, publica los microdatos como datos abiertos y, sin embargo, no dispone de una herramienta interactiva orientada a objetivos para explotarlos.
+
+% ------------------------------------------
+% BIBLIOGRAFÍA (ESTILO IEEE)
+% ------------------------------------------
+\bibliographystyle{IEEEtran}
+\bibliography{bibliografia}
+
+\end{document}
