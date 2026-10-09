@@ -149,7 +149,7 @@
 \section{Introducción y contexto}
 El presente Trabajo de Final de Grado (TFG) se enmarca en la especialidad de Sistemas de Información del Grado en Ingeniería Informática de la Facultad de Informática de Barcelona (FIB) de la Universitat Politècnica de Catalunya (UPC). Se trata de un TFG de modalidad académica, dirigido por Carme Martín Escofet y Maria Hitz Martinez (Departamento de Ingeniería de Servicios y Sistemas de Información, ESSI), que trabaja de forma central la competencia de sistemas de soporte a la decisión y \textit{Business Intelligence} (CSI2.6), junto con la concepción y gestión de sistemas de información (CSI2.2, CSI3.2) y su especificación, diseño e implementación (CSI4.1--CSI4.3).
 
-El entorno institucional de referencia es el Departamento de Educación de la Generalitat de Cataluña, responsable de la planificación, gestión y evaluación del sistema educativo no universitario. Cada curso, el Departamento y el \textit{Consell Superior d'Avaluació del Sistema Educatiu} realizan la evaluación diagnóstica de 6º de educación primaria para medir el grado de adquisición de las competencias básicas al finalizar la etapa \cite{csase_resultats}. Los microdatos anonimizados de estas pruebas se publican en el Portal de Datos Abiertos de la Generalitat \cite{transparencia_catalunya_2024}: más de 1,1 millones de registros (convocatorias 2009--2025) con las puntuaciones por competencia y subcompetencia y variables demográficas y de contexto del centro.
+El entorno institucional de referencia es el Departamento de Educación de la Generalitat de Cataluña, responsable de la planificación, gestión y evaluación del sistema educativo no universitario. Cada curso, el Departamento y el \textit{Consell Superior d'Avaluació del Sistema Educatiu} realizan la evaluación diagnóstica de 6.\textordmasculine{} de educación primaria para medir el grado de adquisición de las competencias básicas al finalizar la etapa \cite{csase_resultats}. Los microdatos anonimizados de estas pruebas se publican en el Portal de Datos Abiertos de la Generalitat \cite{transparencia_catalunya_2024}: más de 1,1 millones de registros (convocatorias 2009--2025) con las puntuaciones por competencia y subcompetencia y variables demográficas y de contexto del centro.
 
 \section{Definición de términos y conceptos clave}
 \begin{itemize}
@@ -163,7 +163,7 @@ El entorno institucional de referencia es el Departamento de Educación de la Ge
 \end{itemize}
 
 \section{Descripción del problema a resolver}
-El conjunto de datos de las evaluaciones de 6º de primaria se publica como una única tabla plana de 32 columnas y más de un millón de filas \cite{transparencia_catalunya_2024}, mientras que los resultados oficiales se difunden mediante informes estáticos en PDF \cite{csase_resultats}. Esta situación presenta cuatro problemas:
+El conjunto de datos de las evaluaciones de 6.\textordmasculine{} de primaria se publica como una única tabla plana de 32 columnas y más de un millón de filas \cite{transparencia_catalunya_2024}, mientras que los resultados oficiales se difunden mediante informes estáticos en PDF \cite{csase_resultats}. Esta situación presenta cuatro problemas:
 \begin{enumerate}
     \item \textbf{Falta de accesibilidad analítica:} el fichero en bruto (240 MB) es inmanejable para perfiles no técnicos como directores, inspectores o docentes.
     \item \textbf{Ausencia de análisis multidimensional:} no es inmediato cruzar el rendimiento en cada competencia con la naturaleza del centro, el hábitat, el área territorial o el género.
@@ -198,7 +198,7 @@ La Tabla~\ref{tab:stakeholders} resume los actores implicados, distinguiendo a q
 \chapter{Justificación}
 
 \section{Estudio de mercado y estado del arte}
-El sector educativo avanza hacia la toma de decisiones informada por datos (\textit{Data-Informed Decision Making}) \cite{mandinach2012data}. Sin embargo, la explotación de los resultados de 6º de primaria en Cataluña se apoya hoy en tres tipos de soluciones, todas ellas con limitaciones:
+El sector educativo avanza hacia la toma de decisiones informada por datos (\textit{Data-Informed Decision Making}) \cite{mandinach2012data}. Sin embargo, la explotación de los resultados de 6.\textordmasculine{} de primaria en Cataluña se apoya hoy en tres tipos de soluciones, todas ellas con limitaciones:
 \begin{itemize}
     \item \textbf{Informes oficiales estáticos} \cite{csase_resultats}: ofrecen agregados de calidad, pero con cortes predefinidos que el usuario no puede filtrar ni cruzar.
     \item \textbf{Visor del portal de datos abiertos} \cite{transparencia_catalunya_2024}: permite consultas y gráficos simples sobre la tabla plana, pero no dispone de modelo dimensional, indicadores ni vistas por perfil.
@@ -245,7 +245,7 @@ Las puntuaciones se justifican así: Power BI Desktop es gratuito \cite{ms_power
 \chapter{Alcance del proyecto}
 
 \section{Objetivo general y subobjetivos}
-\textbf{Objetivo general:} diseñar e implementar un Cuadro de Mando Integral interactivo en Power BI, alimentado por los datos abiertos de la evaluación de 6º de primaria de Cataluña, que dé soporte a la toma de decisiones basada en evidencias del Departamento de Educación, la inspección y las direcciones de centro.
+\textbf{Objetivo general:} diseñar e implementar un Cuadro de Mando Integral interactivo en Power BI, alimentado por los datos abiertos de la evaluación de 6.\textordmasculine{} de primaria de Cataluña, que dé soporte a la toma de decisiones basada en evidencias del Departamento de Educación, la inspección y las direcciones de centro.
 
 \textbf{Subobjetivos:}
 \begin{enumerate}
@@ -765,7 +765,7 @@ Las desviaciones negativas se cubren primero con la partida de imprevistos, si l
 \chapter{Sostenibilidad y compromiso social}
 
 \section{Autoevaluación}
-Tras responder la encuesta de autoevaluación de la competencia de sostenibilidad, he valorado todas las cuestiones con la respuesta \textit{«Bastante»}. El resultado indica un nivel intermedio-alto y homogéneo en las tres dimensiones: tengo una base sólida y consciente, pero aún no un dominio experto en ninguna de ellas.
+Tras responder la encuesta de autoevaluación de la competencia de sostenibilidad, he valorado todas las cuestiones con la respuesta \textit{\guillemotleft{}Bastante\guillemotright{}}. El resultado indica un nivel intermedio-alto y homogéneo en las tres dimensiones: tengo una base sólida y consciente, pero aún no un dominio experto en ninguna de ellas.
 
 En la \textbf{dimensión económica}, el grado me ha dado herramientas para estimar costes, analizar la viabilidad y gestionar proyectos, y este TFG me ha obligado a construir un presupuesto por actividades con indicadores de control. Mi margen de mejora está en valorar los costes y beneficios a lo largo de toda la vida útil de un sistema, más allá de su desarrollo.
 
@@ -773,7 +773,7 @@ En la \textbf{dimensión social} conozco los principios de privacidad y protecci
 
 En la \textbf{dimensión ambiental} entiendo los conceptos de consumo energético, huella de carbono y ciclo de vida del hardware, pero hasta este proyecto no los había cuantificado en un desarrollo de software ni había considerado el coste ambiental de procesar datos en la nube.
 
-Como \textbf{puntos fuertes} destaco el conocimiento equilibrado de las tres dimensiones, la capacidad de análisis económico y la sensibilidad hacia la ética de los datos. Como \textbf{puntos débiles}, que ninguna respuesta alcance el nivel máximo refleja que mis conocimientos son más teóricos que aplicados: me cuesta traducirlos en indicadores medibles, especialmente en las dimensiones ambiental y social. Me propongo aprovechar el TFG para pasar del «bastante» a un dominio práctico, incorporando criterios de sostenibilidad en cada decisión de diseño y documentando sus efectos.
+Como \textbf{puntos fuertes} destaco el conocimiento equilibrado de las tres dimensiones, la capacidad de análisis económico y la sensibilidad hacia la ética de los datos. Como \textbf{puntos débiles}, que ninguna respuesta alcance el nivel máximo refleja que mis conocimientos son más teóricos que aplicados: me cuesta traducirlos en indicadores medibles, especialmente en las dimensiones ambiental y social. Me propongo aprovechar el TFG para pasar del \guillemotleft{}bastante\guillemotright{} a un dominio práctico, incorporando criterios de sostenibilidad en cada decisión de diseño y documentando sus efectos.
 
 \section{Matriz de sostenibilidad}
 La Tabla~\ref{tab:matriz_sost} resume el análisis según la matriz de la FIB \cite{fib_sostenibilitat}, que cruza las tres dimensiones con el proyecto puesto en producción (PPP), la vida útil y los riesgos. Los apartados siguientes la desarrollan.
