@@ -1,0 +1,386 @@
+\documentclass[12pt, a4paper, twoside]{report}
+
+% ==========================================
+% PAQUETES Y CONFIGURACIÓN
+% ==========================================
+\usepackage[utf8]{inputenc}
+\usepackage[spanish, es-tabla]{babel} % Idioma principal: español
+\usepackage[top=3cm, bottom=3cm, left=3.5cm, right=2.5cm]{geometry} % Márgenes
+\usepackage{graphicx} % Para insertar imágenes
+\usepackage{xcolor} % Colores personalizados
+\usepackage{setspace} % Interlineado
+\onehalfspacing % Interlineado 1.5
+
+\usepackage{booktabs} % Tablas profesionales
+\usepackage{tabularx} % Tablas con control de ancho
+\usepackage{array}    % Permite personalizar columnas en tablas
+\usepackage{float}    % Permite forzar la posición exacta de tablas con [H]
+\usepackage{amsmath, amssymb} % Símbolos matemáticos
+\usepackage{csquotes}
+
+% Citas numéricas en formato IEEE [1], [2]
+\usepackage{cite}
+
+% Personalización de títulos (Muestra "1. Título" en lugar de "Capítulo 1")
+\usepackage{titlesec}
+\titleformat{\chapter}[hang]
+  {\normalfont\Large\bfseries}
+  {\thechapter.\quad}
+  {0pt}
+  {}
+\titlespacing*{\chapter}{0pt}{0pt}{15pt}
+
+\titleformat{\section}
+  {\normalfont\large\bfseries}
+  {\thesection.\quad}
+  {0pt}
+  {}
+
+\titleformat{\subsection}
+  {\normalfont\bfseries}
+  {\thesubsection.\quad}
+  {0pt}
+  {}
+
+% Línea horizontal para la portada (\HRule)
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+% Encabezados y pies de página
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\headheight}{15pt}
+\fancyhf{}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+\fancyhead[LE,RO]{\leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Hipervínculos
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=blue,
+    urlcolor=blue,
+    pdftitle={GEP Entregable 3 - Gestión Económica y Sostenibilidad},
+    pdfauthor={Kiara Kristin Rodríguez Uribe}
+}
+
+% ==========================================
+% INICIO DEL DOCUMENTO
+% ==========================================
+\begin{document}
+
+% ------------------------------------------
+% PORTADA CORREGIDA Y ADAPTADA A GEP 3
+% ------------------------------------------
+\begin{titlepage}
+    \linewidth=16cm
+    \thispagestyle{empty}
+    
+    \includegraphics[height=1.8cm]{imagenes/logo_upc.png} 
+    \hfill
+    \includegraphics[height=2.3cm]{imagenes/logo_fib.png}
+    
+    \vspace{1.2cm}
+    
+    \begin{center}
+        {\Large \textbf{UNIVERSIDAD POLITÉCNICA DE CATALUÑA}}\\[0.2cm]
+        {\large \textbf{Facultad de Informática de Barcelona (FIB)}}\\[1.0cm]
+        
+        \HRule \\[0.4cm]
+        {\Large \bfseries DISEÑO E IMPLEMENTACIÓN DE UN CUADRO DE MANDO INTEGRAL PARA EL SOPORTE A LA TOMA DE DECISIONES EN EL SISTEMA DE EDUCACIÓN PRIMARIA DE CATALUÑA} \\[0.2cm]
+        \HRule \\[1.0cm]
+        
+        {\large \textbf{Gestión de Proyectos (GEP)}}\\[0.2cm]
+        {\large \textbf{Entregable 3: Gestión Económica y Sostenibilidad}}\\[0.3cm]
+        {\large \textbf{Grado en Ingeniería Informática (Sistemas de Información)}}\\[1.2cm]
+    \end{center}
+
+    \vfill
+
+    \begin{flushleft}
+    \normalsize
+    \begin{tabular}{@{} l l @{}}
+        \textbf{Estudiante:}   & Kiara Kristin Rodríguez Uribe \\
+        \textbf{Director/a:}   & Carme Martín Escofet (Dept. ESSI) \\
+        \textbf{Codirector/a:} & Maria Hitz Martinez (Dept. ESSI) \\
+        \textbf{Tutor/a GEP:}  & David Pardos Benito \\
+        \textbf{Fecha:}        & 5 de octubre de 2026
+    \end{tabular}
+    \end{flushleft}
+\end{titlepage}
+
+% ------------------------------------------
+% ÍNDICES (GENERAL, FIGURAS Y TABLAS)
+% ------------------------------------------
+\clearpage
+\pagenumbering{roman}
+
+\tableofcontents % ÍNDICE GENERAL
+\newpage
+\listoftables    % LISTA DE TABLAS
+
+\clearpage
+\pagenumbering{arabic}
+
+% ------------------------------------------
+% CAPÍTULO 1: GESTIÓN ECONÓMICA Y PRESUPUESTO
+% ------------------------------------------
+
+\chapter{Gestión Económica y Presupuesto del Proyecto}
+
+El objetivo de la gestión económica en el ámbito de la ingeniería de software y los sistemas de información es planificar, estimar, estructurar y controlar minuciosamente los recursos financieros requeridos para la ejecución exitosa del proyecto \cite{fib_costos}. En el marco de este Trabajo de Final de Grado (TFG), la planificación abarca una carga lectiva total de 450 horas de trabajo.
+
+Para garantizar la viabilidad del proyecto como si se tratara de un encargo profesional en el sector privado, el análisis presupuestario incluye la identificación de los costes directos (recursos humanos, amortización de hardware y software), costes indirectos (gastos generales de infraestructura), reservas de contingencia, gestión probabilística de riesgos e impuestos aplicables.
+
+\section{Estimación e Imputación de Costes Directos}
+Los costes directos corresponden a aquellos recursos que se pueden atribuir de forma unívoca y exclusiva al desarrollo del proyecto.
+
+\subsection{Recursos Humanos y Tarifas Salariales Justificadas}
+El desarrollo del proyecto abarca un ciclo de vida completo de Business Intelligence (BI): desde la gestión de proyecto y análisis de requerimientos hasta el modelado dimensional, la arquitectura ETL, el desarrollo DAX, la validación QA y la documentación final. 
+
+Para reflejar fielmente la realidad laboral, las 450 horas se distribuyen entre seis roles profesionales. Las tarifas horarias se han determinado a partir de las medias salariales brutas anuales (SBA) del sector informático en la zona de Barcelona publicadas en la plataforma de referencia Glassdoor \cite{glassdoor_barcelona}.
+
+A fin de obtener el coste real por hora para la empresa, se aplica la normativa laboral agregando un 30\% en concepto de cotizaciones a la Seguridad Social e impuestos a cargo del empleador sobre el salario bruto. Asumiendo una jornada laboral estándar de 1.760 horas anuales según el convenio colectivo TIC, la fórmula aplicada para cada rol es:
+
+\begin{equation}
+\text{Coste Hora Empresa} = \frac{\text{SBA} \times 1,30}{1.760 \text{ horas/año}}
+\end{equation}
+
+A continuación se detallan las responsabilidades y el cálculo asociado a cada perfil:
+\begin{enumerate}
+    \item \textbf{Cap de Projecte / Project Manager (PM):} Encargado de la planificación de hitos (GEP), coordinación de reuniones, control presupuestario y seguimiento de riesgos.
+    \item \textbf{Analista de Negocio / Business Analyst:} Responsable de definir los requisitos analíticos, seleccionar las métricas clave y estructurar las cuatro perspectivas del Cuadro de Mando Integral (CMI).
+    \item \textbf{Enginyer de Dades / ETL Architect:} Diseñador del flujo de extracción, limpieza y transformación en Power Query sobre la base de datos de más de 1,1 millones de registros.
+    \item \textbf{Desenvolupador BI y DAX Specialist:} Encargado de construir el modelo dimensional en estrella (\textit{Star Schema}) y programar las medidas y cálculos dinámicos complejos mediante lenguaje DAX.
+    \item \textbf{Especialista en QA / Validación:} Responsable de auditar la calidad de los datos, verificar el rendimiento de la compresión VertiPaq y validar la precisión de las métricas.
+    \item \textbf{Redactor Técnico / Documentador:} Encargado de redactar las memorias técnicas, la guía de usuario para los centros educativos y el informe de sostenibilidad.
+\end{enumerate}
+
+La Tabla~\ref{tab:costes_rrhh} resume el desglose de horas asignadas, el sueldo bruto de mercado y el coste total imputable.
+
+\begin{table}[h!]
+\centering
+\caption{Desglose de costes directos de Recursos Humanos (Sueldos base Glassdoor Barcelona 2026).}
+\label{tab:costes_rrhh}
+% --- Configuración de tabla compacta ---
+\small
+\renewcommand{\arraystretch}{0.85}
+\setlength{\tabcolsep}{4pt}
+% ---------------------------------------
+\begin{tabularx}{\textwidth}{@{} X c c c r @{}}
+\toprule
+\textbf{Rol Profesional} & \textbf{Dedicación (h)} & \textbf{SBA (€)} & \textbf{Tarifa (€/h)} & \textbf{Coste Total (€)} \\ \midrule
+Cap de Projecte / Project Manager & 50 & 45.000 & 33,00 & 1.650,00 \\ \addlinespace[2pt]
+Analista de Negocio / Business Analyst & 70 & 38.000 & 28,00 & 1.960,00 \\ \addlinespace[2pt]
+Enginyer de Dades / ETL Architect & 110 & 39.000 & 29,00 & 3.190,00 \\ \addlinespace[2pt]
+Desenvolupador BI y DAX & 140 & 34.000 & 25,00 & 3.500,00 \\ \addlinespace[2pt]
+Especialista en QA / Validación & 40 & 30.000 & 22,00 & 880,00 \\ \addlinespace[2pt]
+Redactor Técnico / Documentador & 40 & 26.000 & 19,00 & 760,00 \\ \midrule
+\textbf{Total Recursos Humanos} & \textbf{450} & -- & -- & \textbf{11.940,00} \\ \bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Amortización del Maquinario (Hardware)}
+El equipo informático utilizado para la elaboración del proyecto es un ordenador portátil personal \textbf{ASUS TUF Gaming F15}, adquirido originalmente por un importe de $800,00 \text{ €}$.
+
+Siguiendo la normativa fiscal e instrucciones de la FIB sobre amortización de equipos informáticos \cite{fib_costos}, se establece una vida útil estándar de 4 años ($7.040 \text{ horas laborables}$, calculadas sobre una base de $1.760 \text{ h/año}$). El coste de amortización por hora trabajada se determina mediante:
+
+\begin{equation}
+\text{Coste Amortización Horaria} = \frac{800,00 \text{ €}}{7.040 \text{ h}} = 0,1136 \text{ €/h}
+\end{equation}
+
+Dado que la dedicación exclusiva al proyecto consta de 450 horas, el coste real de amortización a imputar al TFG es:
+
+\begin{equation}
+\text{Coste Hardware Imputado} = 450 \text{ h} \times 0,1136 \text{ €/h} = 51,14 \text{ €}
+\end{equation}
+
+\subsection{Licenciamiento de Software}
+Para mantener la eficiencia presupuestaria del proyecto, la arquitectura del sistema se ha diseñado utilizando exclusivamente herramientas open-source o con licencias comunitarias y educativas gratuitas:
+\begin{itemize}
+    \item \textbf{Microsoft Power BI Desktop:} Licencia gratuita de desarrollo para modelado, ETL y cuadros de mando.
+    \item \textbf{PostgreSQL y Python (Pandas/Polars):} Software libre bajo licencia open-source para tratamiento analítico previo.
+    \item \textbf{Entorno de desarrollo e hipervínculos (Git, GitHub, Overleaf):} Planes gratuitos académicos para el control de versiones y edición de la memoria en \LaTeX.
+\end{itemize}
+Por consiguiente, el coste derivado del software asciende a \textbf{0,00 €}.
+
+\section{Costes Indirectos y Gastos Generales}
+Los costes indirectos representan aquellos gastos corrientes e imprevistos de infraestructura necesarios para mantener la actividad durante las 450 horas de trabajo. Incluyen la parte proporcional de la factura del suministro eléctrico, la conexión a Internet de alta velocidad, la climatización y el coste de uso del espacio de trabajo en el domicilio particular.
+
+Siguiendo las pautas metodológicas de la asignatura GEP \cite{fib_costos}, se aplica una tasa plana estandarizada de $1,50 \text{ €/h}$ de uso:
+
+\begin{equation}
+\text{Costes Indirectos Totales} = 450 \text{ h} \times 1,50 \text{ €/h} = 675,00 \text{ €}
+\end{equation}
+
+\section{Gestión de Contingencias y Matriz de Riesgos}
+Para absorber las posibles desviaciones en el desarrollo del proyecto y responder adecuadamente ante imprevistos técnicos, la planificación presupuestaria distingue dos fondos diferenciados:
+
+\subsection{Reserva de Contingencia}
+Cubre la incertidumbre inherente a las estimaciones del proyecto (por ejemplo, imprecisiones en el cálculo de horas por tarea). Se calcula aplicando un margen estándar del \textbf{5\%} sobre el total de los costes directos ($11.991,14 \text{ €}$):
+
+\begin{equation}
+\text{Reserva de Contingencia} = 0,05 \times 11.991,14 \text{ €} = 599,56 \text{ €}
+\end{equation}
+
+\subsection{Reserva de Imprevistos (Gestión de Riesgos)}
+A diferencia de la contingencia general, la reserva de imprevistos se dota de forma cuantitativa evaluando la matriz de riesgos definida en la fase GEP 2 \cite{fib_costos}. Para cada riesgo identificado, se multiplica la probabilidad de ocurrencia ($P$) por el coste estimado de implantar el Plan B o plan de mitigación asociado:
+
+\begin{equation}
+\text{Reserva por Riesgo} = P(\text{Riesgo}) \times \text{Coste Plan B}
+\end{equation}
+
+\begin{table}[H]
+\centering
+\caption{Cálculo de la reserva de imprevistos según la matriz de riesgos.}
+\label{tab:reserva_riesgos}
+% --- Configuración de tabla compacta ---
+\small
+\renewcommand{\arraystretch}{0.85}
+\setlength{\tabcolsep}{4pt}
+% ---------------------------------------
+\begin{tabularx}{\textwidth}{@{} X c c r @{}}
+\toprule
+\textbf{Riesgo / Incidencia Identificada} & \textbf{Probabilidad ($P$)} & \textbf{Coste Plan B (€)} & \textbf{Reserva (€)} \\ \midrule
+Inconsistencias y nulos en Power Query (Limpieza extra) & 15\% & 400,00 & 60,00 \\ \addlinespace[2pt]
+Degradación del rendimiento DAX (Reescritura de medidas) & 10\% & 350,00 & 35,00 \\ \midrule
+\textbf{Total Reserva de Imprevistos} & -- & -- & \textbf{95,00} \\ \bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Presupuesto Global y Facturación del Proyecto}
+La suma consolidada de costes directos, costes indirectos, reserva de contingencia y reserva de imprevistos constituye la base imponible del proyecto. Para la facturación formal como servicio profesional, se aplica la tasa legal del 21\% del Impuesto sobre el Valor Añadido (IVA). La Tabla~\ref{tab:presupuesto_consolidado} detalla la estructura presupuestaria final.
+
+\begin{table}[H]
+\centering
+\caption{Resumen del presupuesto general y factura del proyecto.}
+\label{tab:presupuesto_consolidado}
+% --- Configuración de tabla compacta ---
+\small
+\renewcommand{\arraystretch}{0.85}
+\setlength{\tabcolsep}{4pt}
+% ---------------------------------------
+\begin{tabularx}{0.85\textwidth}{@{} X r @{}}
+\toprule
+\textbf{Concepto Presupuestario} & \textbf{Importe (€)} \\ \midrule
+Recursos Humanos (Mano de Obra Directa) & 11.940,00 \\
+Amortización de Hardware (ASUS TUF Gaming F15) & 51,14 \\
+Licenciamiento de Software & 0,00 \\ \midrule
+\textbf{Subtotal Costes Directos} & \textbf{11.991,14} \\ \addlinespace[2pt]
+Costes Indirectos (Gastos Generales: $1,50 \text{ €/h}$) & 675,00 \\
+Reserva de Contingencia (5\% sobre Costes Directos) & 599,56 \\
+Reserva de Imprevistos (Matriz de Riesgos) & 95,00 \\ \midrule
+\textbf{Base Imposable (Presupuesto sin IVA)} & \textbf{13.360,70} \\ \addlinespace[2pt]
+Impuesto sobre el Valor Añadido (IVA 21\%) & 2.805,75 \\ \midrule
+\textbf{Factura Total del Proyecto (con IVA)} & \textbf{16.166,45} \\ \bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Mecanismos de Control de Costes y Desviaciones}
+Durante la ejecución del TFG, el control financiero se lleva a cabo semanalmente alineando la metodología del Valor Ganado (EVM - \textit{Earned Value Management}) con el seguimiento del esfuerzo real \cite{fib_costos}.
+
+Se registran las horas dedicadas por cada rol y se evalúan dos tipos principales de desviaciones:
+\begin{enumerate}
+    \item \textbf{Desviación en Tarifa (Cost Variance - CV):} Mide el impacto financiero si el coste horario real difiere de la estimación inicial:
+    \begin{equation}
+    \text{Desviación Tarifa} = (\text{Tarifa Estimada} - \text{Tarifa Real}) \times \text{Horas Reales}
+    \end{equation}
+    \item \textbf{Desviación en Eficiencia (Schedule Variance - SV):} Mide el desfase provocado por haber invertido más o menos horas de las planificadas para completar una tarea:
+    \begin{equation}
+    \text{Desviación Eficiencia} = (\text{Horas Estimadas} - \text{Horas Reales}) \times \text{Tarifa Estimada}
+    \end{equation}
+\end{enumerate}
+
+Cualquier desviación negativa que supere el 10\% en un sprint desencadenará una revisión de los requisitos con la dirección del TFG y, si fuera necesario, la reasignación de horas de la reserva de contingencia.
+
+
+% ------------------------------------------
+% CAPÍTULO 2: INFORME DE SOSTENIBILIDAD
+% ------------------------------------------
+
+\chapter{Informe de Sostenibilidad y Matriz FIB}
+
+La evaluación de la sostenibilidad en los proyectos de ingeniería informática es un requisito fundamental dentro del marco académico de la FIB \cite{fib_sostenibilitat}. El objetivo es garantizar que la solución analítica desarrollada satisfaga las necesidades presentes sin comprometer el entorno ambiental, garantizando la viabilidad económica y promoviendo el bienestar social.
+
+\section{Marco de Sostenibilidad y Matriz Tridimensional}
+El análisis se articula en torno a la Matriz de Sostenibilidad estandarizada de la FIB \cite{fib_sostenibilitat}, la cual cruza las tres dimensiones fundamentales (\textit{Ambiental}, \textit{Económica} y \textit{Social}) con las tres etapas del ciclo de vida del software: \textit{Planificación y Desarrollo (PPP)}, \textit{Vida Útil del Sistema} y \textit{Gestión de Riesgos}.
+
+\begin{table}[H]
+\centering
+\caption{Matriz de Sostenibilidad del proyecto (Modelo FIB).}
+\label{tab:matriz_sostenibilidad}
+% --- Configuración de tabla compacta ---
+\small
+\renewcommand{\arraystretch}{0.85}
+\setlength{\tabcolsep}{3pt}
+% ---------------------------------------
+\begin{tabularx}{\textwidth}{@{} p{2.0cm} X X X @{}}
+\toprule
+\textbf{Dimensión} & \textbf{PPP (Desarrollo)} & \textbf{Vida Útil del Sistema} & \textbf{Riesgos y Mitigación} \\ \midrule
+\textbf{Ambiental} & Consumo elèctric ($38,25 \text{ kWh}$). Emisión de $9,56 \text{ kg CO}_2$. & Eficiencia en consultas (VertiPaq) y ahorro de soporte impreso. & Incremento masivo del dataset con consumo excesivo en servidor. \\ \addlinespace[2pt]
+\textbf{Económica} & Ajuste al presupuesto de desarrollo ($13.360,70 \text{ €}$) en 450h. & Reducción de costes operativos mediante automatización CMI. & Costes adicionales por reestructuración del modelo dimensional. \\ \addlinespace[2pt]
+\textbf{Social} & Adquisición de competencias analíticas y rigor metodológico. & Mejora de la transparencia y democratización de datos educativos. & Brecha digital o reticencia al uso por usuarios no técnicos. \\ \bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Dimensión Ambiental}
+La dimensión ambiental evalúa la huella ecológica dejada tanto durante la fase de desarrollo del proyecto como durante la utilización futura de la herramienta.
+
+\subsection{Consumo Energético durante el Desarrollo (PPP)}
+Para calcular el impacto ambiental directo derivado del trabajo del desarrollador, se cuantifica el consumo del portátil ASUS TUF Gaming F15 trabajando junto con un monitor secundario externo. El consumo promedio medido para este equipamiento bajo cargas de trabajo analíticas (ETL y compresión en memoria) es de \textbf{85 W/h} ($0,085 \text{ kWh/h}$).
+
+Para las 450 horas de desarrollo del TFG, el consumo eléctrico total asciende a:
+
+\begin{equation}
+\text{Consumo Elèctric Total} = 450 \text{ h} \times 0,085 \text{ kWh/h} = 38,25 \text{ kWh}
+\end{equation}
+
+Tomando como referencia el factor de emisión medio del mix eléctrico español reportado por Red Eléctrica de España ($0,25 \text{ kg CO}_2/\text{kWh}$) \cite{ree_emisiones}, la huella de carbono total emitida durante la fase de desarrollo es:
+
+\begin{equation}
+\text{Huella de Carbono (PPP)} = 38,25 \text{ kWh} \times 0,25 \text{ kg CO}_2/\text{kWh} = 9,56 \text{ kg CO}_2
+\end{equation}
+
+\subsection{Impacto Ambiental durante la Vida Útil y Mitigación}
+En la fase de explotación, la implantación del Cuadro de Mando Integral sustituye la generación tradicional de informes estáticos impresos y el envío masivo de ficheros pesados en formato hoja de cálculo. Esto se traduce en:
+\begin{itemize}
+    \item \textbf{Ahorro de papel y tinta:} Eliminación de memorias analíticas impresas en papel en las inspecciones zonales.
+    \item \textbf{Optimización del procesamiento en la nube/servidores:} El modelado dimensional en estrella y el uso del motor columnar VertiPaq permiten altas tasas de compresión de datos, reduciendo el consumo de memoria RAM y CPU en las consultas de los usuarios finales.
+\end{itemize}
+
+\section{Dimensión Económica}
+El análisis económico evalúa la sostenibilidad financiera del sistema, garantizando que los beneficios generados superen los costes de desarrollo y mantenimiento.
+
+\subsection{Evaluación del Coste de Desarrollo}
+El proyecto se ha completado dentro de las restricciones financieras estimadas, fijando una base imponible de $13.360,70 \text{ €}$. El uso de herramientas sin coste de licencia (Power BI Desktop, PostgreSQL, Python) ha permitido destinar el 89\% del presupuesto directamente a la retribución del capital humano, maximizando el valor añadido del proyecto.
+
+\subsection{Retorno de la Inversión (ROI) y Viabilidad en Explotación}
+En la fase de vida útil, la herramienta automatiza la extracción y consolidación de los datos abiertos del Departamento de Educación. 
+
+Anteriormente, la preparación manual de informes por parte de directores e inspectores requería decenas de horas hombre por centro educativo. La disponibilidad de un Cuadro de Mando de actualización automática permite reducir este tiempo en más de un 60\%, amortizando el coste de desarrollo del proyecto dentro del primer año de implantación institucional.
+
+\section{Dimensión Social}
+La dimensión social analiza la repercusión de la solución sobre las personas y la sociedad en general.
+
+\subsection{Impacto en el Desarrollador (Aprendizaje y Ética)}
+El proyecto ha permitido afianzar competencias avanzadas en ingeniería de datos, modelado analítico, gestión presupuestaria rigurosa y diseño de experiencia de usuario. Asimismo, ha fomentado una conciencia ética sobre la importancia de la calidad y neutralidad de los datos públicos.
+
+\subsection{Impacto en los Stakeholders y la Sociedad}
+La comunidad educativa (directores de escuela, coordinadores de zona e investigadores) es la principal beneficiaria del sistema. El Cuadro de Mando Integral:
+\begin{itemize}
+    \item \textbf{Democratiza la información:} Facilita el acceso interactivo a análisis complejos a perfiles no técnicos mediante interfaces visuales intuitivas.
+    \item \textbf{Promueve la equidad educativa:} Permite identificar brechas de rendimiento asociadas al género, la tipología del centro (\textit{público/concertado}) o el entorno sociodemográfico, facilitando una asignación más justa de los recursos de refuerzo pedagógico.
+    \item \textbf{Garantía de privacidad (RGPD):} El sistema opera exclusivamente con microdatos anonimizados (\textit{CODI\_ALUMNE}), asegurando el cumplimiento estricto del Reglamento General de Protección de Datos \cite{transparencia_catalunya_2024}.
+\end{itemize}
+
+
+% ------------------------------------------
+% BIBLIOGRAFÍA EN ESTILO IEEE
+% ------------------------------------------
+\clearpage
+\bibliographystyle{IEEEtran}
+\bibliography{bibliografia}
+
+\end{document}

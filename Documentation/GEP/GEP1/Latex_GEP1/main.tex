@@ -1,0 +1,356 @@
+\documentclass[12pt, a4paper, twoside]{report}
+
+% ==========================================
+% PAQUETES Y CONFIGURACIÓN
+% ==========================================
+\usepackage[utf8]{inputenc}
+\usepackage[spanish, es-tabla]{babel} % Idioma principal: español
+\usepackage[top=3cm, bottom=3cm, left=3.5cm, right=2.5cm]{geometry} % Márgenes
+\usepackage{graphicx} % Para insertar imágenes
+\usepackage{xcolor} % Colores personalizados
+\usepackage{setspace} % Interlineado
+\onehalfspacing % Interlineado 1.5
+
+\usepackage{booktabs} % Tablas profesionales
+\usepackage{tabularx} % Tablas con control de ancho
+\usepackage{array}    % Permite personalizar columnas en tablas
+\usepackage{float}    % Permite forzar la posición exacta de tablas con [H]
+\usepackage{amsmath, amssymb} % Símbolos matemáticos
+\usepackage{csquotes}
+
+% Citas numéricas en formato IEEE [1], [2]
+\usepackage{cite}
+
+% Personalización de títulos (Muestra "1. Título" en lugar de "Capítulo 1")
+\usepackage{titlesec}
+\titleformat{\chapter}[hang]
+  {\normalfont\Large\bfseries}
+  {\thechapter.\quad}
+  {0pt}
+  {}
+\titlespacing*{\chapter}{0pt}{0pt}{15pt}
+
+\titleformat{\section}
+  {\normalfont\large\bfseries}
+  {\thesection.\quad}
+  {0pt}
+  {}
+
+\titleformat{\subsection}
+  {\normalfont\bfseries}
+  {\thesubsection.\quad}
+  {0pt}
+  {}
+
+% Línea horizontal para la portada (\HRule)
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+% Encabezados y pies de página
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\headheight}{15pt}
+\fancyhf{}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+\fancyhead[LE,RO]{\leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Hipervínculos
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=blue,
+    urlcolor=blue,
+    pdftitle={GEP Entregable 1 - Kiara Kristin Rodríguez Uribe},
+    pdfauthor={Kiara Kristin Rodríguez Uribe}
+}
+
+% ==========================================
+% INICIO DEL DOCUMENTO
+% ==========================================
+\begin{document}
+
+% ------------------------------------------
+% PORTADA
+% ------------------------------------------
+\begin{titlepage}
+    \linewidth=16cm
+    \thispagestyle{empty}
+    
+    \includegraphics[height=1.8cm]{imagenes/logo_upc.png} 
+    \hfill
+    \includegraphics[height=2.3cm]{imagenes/logo_fib.png}
+    
+    \vspace{1.5cm}
+    
+    \begin{center}
+        {\Large \textbf{UNIVERSIDAD POLITÉCNICA DE CATALUÑA}}\\[0.2cm]
+        {\large \textbf{Facultad de Informática de Barcelona (FIB)}}\\[1.2cm]
+        
+        \HRule \\[0.4cm]
+        {\Large \bfseries DISEÑO E IMPLEMENTACIÓN DE UN CUADRO DE MANDO INTEGRAL PARA EL SOPORTE A LA TOMA DE DECISIONES EN EL SISTEMA DE EDUCACIÓN PRIMARIA DE CATALUÑA} \\[0.2cm]
+        \HRule \\[1.2cm]
+        
+        {\large \textbf{Gestión de Proyectos (GEP)}}\\[0.2cm]
+        {\large \textbf{Entregable 1: Contextualización y alcance}}\\[0.3cm]
+        {\large \textbf{Grado en Ingeniería Informática (Sistemas de Información)}}\\[1.5cm]
+    \end{center}
+
+    \vfill
+
+    \begin{flushleft}
+    \normalsize
+    \begin{tabular}{@{} l l @{}}
+        \textbf{Estudiante:}   & Kiara Kristin Rodríguez Uribe \\
+        \textbf{Director/a:}   & Carme Martín Escofet (Dept. ESSI) \\
+        \textbf{Codirector/a:} & Maria Hitz Martinez (Dept. ESSI) \\
+        \textbf{Tutor/a GEP:}  & David Pardos Benito \\
+        \textbf{Fecha:}        & 22 de septiembre de 2026
+    \end{tabular}
+    \end{flushleft}
+\end{titlepage}
+
+% ------------------------------------------
+% ÍNDICES (GENERAL, FIGURAS Y TABLAS)
+% ------------------------------------------
+\clearpage
+\pagenumbering{roman}
+
+\tableofcontents % ÍNDICE GENERAL
+\newpage
+\listoftables    % LISTA DE TABLAS
+
+\clearpage
+\pagenumbering{arabic}
+
+% ------------------------------------------
+% CAPÍTULO 1: CONTEXTUALIZACIÓN E INTRODUCCIÓN
+% ------------------------------------------
+
+\chapter{Contextualización e Introducción}
+
+\section{Marco de la organización y entorno}
+El presente Trabajo de Final de Grado (TFG) se enmarca en la especialidad de Sistemas de Información del Grado en Ingeniería Informática de la Facultad de Informática de Barcelona (FIB) de la Universidad Politécnica de Cataluña (UPC). El proyecto responde a la necesidad de modernizar y optimizar la gestión analítica de los datos educativos en el ámbito público.
+
+El entorno institucional en el que se contextualiza este trabajo corresponde al Departamento de Educación de la Generalitat de Cataluña, organismo encargado de la planificación, gestión y evaluación del sistema educativo no universitario en la comunidad autónoma. Anualmente, el Departamento realiza las evaluaciones de diagnóstico de 6º de educación primaria para medir el grado de adquisición de las competencias básicas en el alumnado al finalizar la etapa de educación primaria.
+
+A través del Portal de Datos Abiertos de la Generalitat de Cataluña (\textit{Open Data}), el Departamento pone a disposición pública un conjunto de microdatos históricos anonimizados que recogen más de 1,1 millones de registros correspondientes a las pruebas de evaluación \cite{transparencia_catalunya_2024}. El análisis eficiente y visual de este gran volumen de datos resulta fundamental para orientar las políticas educativas y respaldar la toma de decisiones estratégicas en los centros escolares.
+
+\section{Definición de términos y conceptos clave}
+Para contextualizar adecuadamente la solución tecnológica propuesta, se definen a continuación los conceptos teóricos y tecnológicos fundamentales:
+
+\begin{itemize}
+    \item \textbf{Business Intelligence (BI):} Conjunto de estrategias, tecnologías y arquitecturas del software transformadoras de datos primarios en información analítica estructurada para dar soporte a la toma de decisiones estratégicas y operativas \cite{turban2014business}.
+    \item \textbf{Cuadro de Mando Integral (CMI) / Balanced Scorecard (BSC):} Metodología de gestión estratégica propuesta por Kaplan y Norton \cite{kaplan1992balanced} que permite evaluar el rendimiento global de una organización mediante un conjunto equilibrado de indicadores clave (KPIs) agrupados en distintas perspectivas.
+    \item \textbf{Indicador Clave de Rendimiento (KPI):} Métrica cuantificable utilizada para evaluar el grado de cumplimiento de los objetivos estratégicos y operativos establecidos en una organización.
+    \item \textbf{Almacén de Datos (Data Warehouse) y Modelado Dimensional:} Arquitectura de almacenamiento orientada al análisis de datos. Utiliza patrones de diseño dimensional (modelo en estrella o copo de nieve), estructurando la información en tablas de hechos y tablas de dimensiones \cite{kimball2013data}.
+    \item \textbf{ETL (Extract, Transform, Load):} Proceso mediante el cual se extraen datos de fuentes heterogéneas, se limpian, transforman y consolidan, para finalmente cargarlos en un modelo dimensional listo para ser analizado \cite{kimball2013data}.
+    \item \textbf{Power BI y Power Query / DAX:} Ecosistema de herramientas de analítica empresarial de Microsoft utilizado para la extracción y transformación de datos, modelado relacional y creación de informes interactivos \cite{ferrari2016definitive}.
+    \item \textbf{Datos Abiertos (Open Data):} Datos digitales accesibles de forma libre y gratuita que pueden ser reutilizados y redistribuidos por la ciudadanía sin restricciones técnicas o legales.
+\end{itemize}
+
+\section{Identificación del problema a resolver}
+Actualmente, el conjunto de datos de las evaluaciones de 6º de primaria de Cataluña se encuentra disponible en formato de tabla plana con 32 columnas y más de un millón de filas \cite{transparencia_catalunya_2024}. A pesar de la riqueza cuantitativa de estos datos, la organización y la comunidad educativa se enfrentan a los siguientes obstáculos:
+
+\begin{enumerate}
+    \item \textbf{Falta de accesibilidad analítica:} La información en bruto o en formato tabular estático resulta inmanejable para perfiles no técnicos (directores de centro, inspectores o docentes), lo que impide una interpretación rápida de los resultados.
+    \item \textbf{Ausencia de agregación multidimensional:} Resulta complejo realizar análisis cruzados inmediatos entre el rendimiento académico en las distintas competencias (Lingüística, Matemática, Conocimiento del Medio) y factores determinantes como la naturaleza del centro (\textit{público, concertado, privado}), el hábitat poblacional, la región territorial o la brecha de género.
+    \item \textbf{Dificultad en el seguimiento de subcompetencias:} Las puntuaciones globales ocultan carencias específicas en áreas clave (por ejemplo, comprensión lectora frente a expresión escrita en competencias lingüísticas, o cálculo frente a geometría en matemáticas).
+    \item \textbf{Inexistencia de un sistema centralizado de soporte a la decisión:} No se dispone de una herramienta visual orientada a objetivos estratégicos que permita comparar evoluciones temporales ni detectar desviaciones críticas de forma automatizada a pesar de sí tener informes de análisis simples de los datos.
+\end{enumerate}
+
+\section{Actores implicados (Stakeholders)}
+La implantación de la solución analítica repercute en diferentes perfiles de usuarios. La Tabla~\ref{tab:stakeholders} resume los principales actores identificados, sus roles y sus necesidades específicas.
+
+\begin{table}[h!]
+\centering
+\caption{Matriz de actores implicados (Stakeholders).}
+\label{tab:stakeholders}
+\small
+\begin{tabularx}{\textwidth}{@{} p{3.8cm} p{4.2cm} X @{}}
+\toprule
+\textbf{Actor / Perfil} & \textbf{Rol en el sistema} & \textbf{Necesidad principal} \\ \midrule
+\textbf{Dirección de Centro Educativo} & Usuario final (Toma de decisiones operativa y táctica) & Evaluar el rendimiento global de su centro en comparación con el entorno territorial y ajustar proyectos pedagógicos. \\ \addlinespace
+\textbf{Inspectores y Coordinadores de Zona} & Usuario final (Supervisión estratégica) & Identificar brechas territoriales, analizar la equidad según la naturaleza del centro y asignar recursos de refuerzo. \\ \addlinespace
+\textbf{Departamento de Educación} & Propietario del dominio y emisor de datos & Disponer de indicadores consolidados sobre la evolución de las competencias básicas en Cataluña a lo largo de los años. \\ \addlinespace
+\textbf{Comunidad Educativa y Analistas} & Consultores externos & Acceder a información agregada y transparente sobre el estado general del sistema educativo de primaria. \\ \addlinespace
+\textbf{Desarrolladora (Estudiante TFG)} & Diseñadora e implementadora & Diseñar la arquitectura ETL, el modelado dimensional y la interfaz interactiva en Power BI. \\ \bottomrule
+\end{tabularx}
+\end{table}
+
+
+% ------------------------------------------
+% CAPÍTULO 2: JUSTIFICACIÓN DE LA SOLUCIÓN ELEGIDA
+% ------------------------------------------
+
+\chapter{Justificación de la Solución Elegida}
+
+\section{Análisis de la situación actual y soluciones existentes}
+En los últimos años, el sector educativo público ha experimentado una transición progresiva hacia el paradigma del \textit{Data-Informed Decision Making} (DIDM) o toma de decisiones informada en datos \cite{mandinach2012data}. En el contexto de la educación primaria en Cataluña, el Departamento de Educación recoge periódicamente un volumen masivo de datos procedentes de las evaluaciones diagnósticas de 6º de primaria. Sin embargo, la gestión analítica actual presenta importantes limitaciones en el estado del arte operativo:
+
+\begin{itemize}
+    \item \textbf{Informes estáticos y archivos tabulares descentralizados:} La difusión de resultados suele realizarse mediante documentos PDF estáticos de síntesis global o mediante la publicación de datasets en bruto (archivos CSV o tablas planas Excel) \cite{transparencia_catalunya_2024}. Estos formatos dificultan la exploración interactiva y limitan la capacidad de reacción de los equipos directivos e inspectores.
+    \item \textbf{Análisis aislados y baja latencia analítica:} La explotación de datos se realiza habitualmente de forma puntual mediante hojas de cálculo tradicionales, lo que genera duplicidad de esfuerzos, riesgo de errores en la manipulación manual de datos y la imposibilidad de mantener un histórico unificado y escalable.
+    \item \textbf{Inexistencia de un enfoque integral de gestión estratégica:} En el ámbito académico se han desarrollado diversos trabajos sobre \textit{Educational Data Mining} (EDM) y \textit{Learning Analytics} \cite{romero2010educational}. No obstante, la mayoría de estas soluciones se centran en modelos predictivos puntuales o en plataformas de aprendizaje en línea (LMS), descuidando la articulación de un modelo de gestión estratégica consolidado como el Cuadro de Mando Integral (\textit{Balanced Scorecard}), apto para la administración pública educativa.
+\end{itemize}
+
+\section{Comparativa de alternativas tecnológicas y metodológicas}
+Para seleccionar la solución óptima en el diseño de la arquitectura del sistema, se han evaluado las alternativas tanto a nivel de modelado de datos como de plataformas tecnológicas de visualización.
+
+\subsection{Modelado de datos: Enfoque Relacional vs. Enfoque Dimensional}
+La estructuración de un conjunto de datos que supera los 1,1 millones de registros requiere elegir entre una arquitectura relacional normalizada (3NF - Tercera Forma Normal) y una arquitectura dimensional analítica basada en la metodología de Kimball \cite{kimball2013data}. La Tabla~\ref{tab:comp_modelado} sintetiza esta comparativa.
+
+\begin{table}[h!]
+\centering
+\caption{Comparativa entre el modelo relacional tradicional y el modelo dimensional.}
+\label{tab:comp_modelado}
+\small
+\begin{tabularx}{\textwidth}{@{} p{3.2cm} p{5.0cm} X @{}}
+\toprule
+\textbf{Criterio} & \textbf{Modelo Relacional (3NF)} & \textbf{Modelo Dimensional (Kimball)} \\ \midrule
+\textbf{Propósito principal} & Transaccional (OLTP): inserción y edición rápida. & Analítico (OLAP): consulta masiva y agregación. \\ \addlinespace
+\textbf{Estructura} & Altamente normalizada, múltiples tablas interconectadas. & Desnormalizada en estrella (\textit{Star Schema}) con hechos y dimensiones. \\ \addlinespace
+\textbf{Rendimiento en consultas} & Bajo en agregaciones masivas debido a múltiples uniones (\textit{joins}). & Muy alto, optimizado para filtrado multidimensional y cálculo de KPIs. \\ \addlinespace
+\textbf{Usabilidad para el usuario} & Compleja de entender para perfiles no técnicos. & Intuitiva, basada en conceptos del negocio educativo (alumno, centro, año). \\ \bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Plataformas de Business Intelligence}
+Se ha llevado a cabo un análisis comparativo entre las principales herramientas de Business Intelligence y analítica visual del mercado: Microsoft Power BI, Tableau y herramientas de código abierto / desarrollo a medida (\textit{Python Dash / Streamlit}).
+
+\begin{table}[h!]
+\centering
+\caption{Comparativa de herramientas de analítica y visualización.}
+\label{tab:comp_herramientas}
+\small
+\begin{tabularx}{\textwidth}{@{} p{3.0cm} p{3.2cm} p{3.2cm} X @{}}
+\toprule
+\textbf{Criterio} & \textbf{Microsoft Power BI} & \textbf{Tableau} & \textbf{Python Dash / Streamlit} \\ \midrule
+\textbf{Motor ETL Integrado} & Nativo y robusto (Power Query / M). & Limitado (Requiere Tableau Prep por separado). & Programación a medida (Pandas / Polars). \\ \addlinespace
+\textbf{Curva de aprendizaje} & Baja - Media (Entorno intuitivo tipo Office). & Media - Alta. Dominio básico intuitivo, pero experto complejo. & Alta (Requiere desarrollo de software avanzado). \\ \addlinespace
+\textbf{Modelado y DAX} & Excelente motor tabular en memoria (VertiPaq). & Bueno en visualización, más limitado en expresiones analíticas. & Manual mediante código. \\ \addlinespace
+\textbf{Coste / Licenciamiento} & Power BI Desktop gratuito (Idóneo para TFG). & Licencias comerciales de elevado coste. & Gratuito / Código abierto. \\ \bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Justificación de la solución propuesta}
+A la luz del análisis comparativo, la solución propuesta se fundamenta en la integración de tres pilares metodológicos y tecnológicos:
+
+\begin{enumerate}
+    \item \textbf{Adopción del modelo dimensional en estrella (Kimball):} Se construirá una tabla de hechos central que almacenará los microdatos de las evaluaciones (puntuaciones globales y por subcompetencia), rodeada por tablas de dimensiones clave: \textit{Dimensión Centro} (naturaleza, área territorial, hábitat), \textit{Dimensión Alumno/Demografía} (género, mes/año de nacimiento), \textit{Dimensión Tiempo} (año de la prueba) y \textit{Dimensión Competencia}.
+    \item \textbf{Elección del ecosistema Power BI (Power Query y DAX):} Power BI Desktop ofrece una plataforma integral sin coste de licenciamiento para la etapa de desarrollo. Power Query permitirá implementar los procesos ETL (limpieza, pivotado y transformación de las 32 columnas del dataset) de forma repetible, mientras que el lenguaje DAX (\textit{Data Analysis Expressions}) facilitará el cálculo dinámico de métricas complejas y percentiles \cite{ferrari2016definitive}.
+    \item \textbf{Marco metodológico del Cuadro de Mando Integral (CMI):} Adaptando la metodología de Kaplan y Norton al sector público educativo \cite{niven2008balanced}, el sistema organizará los indicadores clave (KPIs) en cuatro perspectivas estratégicas:
+    \begin{itemize}
+        \item \textit{Perspectiva de Rendimiento Académico:} Evolución de medias globales y subcompetencias (comprensión lectora, cálculo, etc.).
+        \item \textit{Perspectiva de Equidad e Inclusión:} Análisis de brechas según género y tipología de centro (público vs. concertado/privado).
+        \item \textit{Perspectiva Territorial y Entorno:} Comparativa del rendimiento por región territorial y tamaño de municipio (hábitat).
+        \item \textit{Perspectiva de Eficiencia y Progreso Temporal:} Variación interanual de los resultados diagnósticos.
+    \end{itemize}
+\end{enumerate}
+
+
+% ------------------------------------------
+% CAPÍTULO 3: ALCANCE DEL PROYECTO
+% ------------------------------------------
+
+\chapter{Alcance del Proyecto}
+
+\section{Objetivo general}
+El objetivo principal de este Trabajo de Final de Grado es diseñar e implementar un Cuadro de Mando Integral (CMI) interactivo sobre la plataforma Microsoft Power BI, alimentado por el dataset de datos abiertos de las evaluaciones de 6º de educación primaria de Cataluña \cite{transparencia_catalunya_2024}, con el propósito de proporcionar a los distintos actores del sistema educativo (directores de centro, inspectores y administración) una herramienta analítica avanzada para el soporte a la toma de decisiones basada en evidencias sobre datos.
+
+\section{Subobjetivos}
+Para alcanzar el objetivo general, el proyecto se desglosa en los siguientes subobjetivos técnicos y metodológicos:
+
+\begin{enumerate}
+    \item \textbf{Análisis y auditoría de la calidad de los datos:} Inspeccionar, caracterizar y depurar la estructura del dataset original (32 columnas y más de 1,1 millones de registros) identificando inconsistencias, valores nulos o cambios de formato entre convocatorias.
+    \item \textbf{Diseño de la arquitectura dimensional:} Construir un modelo analítico en estrella (\textit{Star Schema}) aplicando la metodología de Kimball \cite{kimball2013data}, estructurado en una tabla de hechos de evaluaciones y sus correspondientes dimensiones (Centro, Alumno, Tiempo y Competencia).
+    \item \textbf{Definición del catálogo de KPIs por perspectiva:} Formalizar un conjunto equilibrado de indicadores clave de rendimiento (KPIs) agrupados en las cuatro perspectivas del Cuadro de Mando Integral adaptado al ámbito educativo \cite{niven2008balanced}.
+    \item \textbf{Desarrollo del flujo ETL y lógica DAX:} Implementar los procesos automatizados de extracción, transformación y carga mediante Power Query, así como las medidas y cálculos analíticos complejos mediante lenguaje DAX \cite{ferrari2016definitive}.
+    \item \textbf{Diseño e implementación de la interfaz de usuario (Dashboards):} Construir cuadros de mando visuales, navegables e interactivos orientados a los requisitos específicos de cada perfil de usuario (\textit{stakeholder}).
+    \item \textbf{Evaluación del rendimiento y validación:} Probar la eficiencia del modelo con el volumen masivo de datos y validar la usabilidad de la herramienta analítica.
+\end{enumerate}
+
+\section{Requisitos del sistema}
+
+\subsection{Requisitos funcionales}
+Los requisitos funcionales (RF) definen el comportamiento y las capacidades operativas que debe ofrecer el sistema de Business Intelligence:
+
+\begin{itemize}
+    \item \textbf{RF01 - Extracción y consolidación ETL:} El sistema debe importar y transformar automáticamente el conjunto de microdatos de la Generalitat de Cataluña, normalizando las 32 variables cuantitativas y cualitativas.
+    \item \textbf{RF02 - Análisis multidimensional agregable:} El usuario debe poder consultar y filtrar las métricas globales por año, región territorial (\textit{AREA\_TERRI-
+    TORIAL}), naturaleza del centro (\textit{público, concertado, privado}) y hábitat poblacional.
+    \item \textbf{RF03 - Desglose analítico por subcompetencias:} El sistema debe permitir la exploración detallada del rendimiento por áreas específicas dentro de cada materia (p. ej., comprensión lectora vs. expresión escrita en \textit{PCAT/PCAST}, o numeración vs. geometría en \textit{PMAT}).
+    \item \textbf{RF04 - Cálculo dinámico de KPIs:} La herramienta debe calcular de forma automática promedios ponderados, distribuciones por niveles de logro, variaciones interanuales y brechas de género.
+    \item \textbf{RF05 - Interactividad y drill-down:} Los informes deben ofrecer capacidades de filtrado cruzado, navegación jerárquica y profundización en el detalle (\textit{drill-down}) desde la visión autonómica hasta la escala territorial/centro.
+    \item \textbf{RF06 - Vistas segmentadas por perfil de usuario:} El sistema debe organizar la información en paneles diferenciados según el nivel de decisión (operativo/centro, táctico/zona o estratégico/autonómico).
+\end{itemize}
+
+\subsection{Requisitos no funcionales}
+Los requisitos no funcionales (RNF) establecen los atributos de calidad, rendimiento y restricciones del sistema:
+
+\begin{itemize}
+    \item \textbf{RNF01 - Rendimiento y tiempo de respuesta:} El modelo dimensional debe estar optimizado para mantener un tiempo de respuesta inferior a 3 segundos en la actualización de filtros e interactividad visual sobre un volumen superior a 1,1 millones de filas.
+    \item \textbf{RNF02 - Usabilidad y experiencia de usuario (UX):} La interfaz debe ser intuitiva, accesible y libre de sobrecarga cognitiva para usuarios no técnicos, siguiendo las buenas prácticas de diseño de cuadros de mando.
+    \item \textbf{RNF03 - Anonimización y privacidad de datos:} El sistema garantiza el cumplimiento del Reglamento General de Protección de Datos (RGPD), operando exclusivamente con identificadores anonimizados de alumnos (\textit{CODI\_ALUMNE}) sin posibilidad de reidentificación.
+    \item \textbf{RNF04 - Escalabilidad y mantenibilidad:} La arquitectura ETL debe permitir la incorporación futura de nuevas convocatorias anuales de evaluación sin necesidad de rediseñar el modelo de datos.
+\end{itemize}
+
+\section{Obstáculos y riesgos potenciales}
+Durante la planificación del proyecto se han identificado diversos riesgos que podrían impactar en el desarrollo de la solución. La Tabla~\ref{tab:matriz_riesgos} sintetiza estos obstáculos, evaluando su probabilidad, impacto y el plan de mitigación diseñado para cada caso.
+
+\begin{table}[H]
+\centering
+\caption{Matriz de identificación y mitigación de riesgos potenciales.}
+\label{tab:matriz_riesgos}
+\footnotesize
+\renewcommand{\arraystretch}{0.95}
+\begin{tabularx}{\textwidth}{@{} p{2.8cm} p{2.2cm} p{1.6cm} X @{}}
+\toprule
+\textbf{Riesgo / Obstáculo} & \textbf{Probabilidad} & \textbf{Impacto} & \textbf{Plan de mitigación} \\ \midrule
+\textbf{Calidad e inconsistencia en los datos fuente} & Media & Alto & Definir reglas de validación en Power Query para tratar valores nulos, registros duplicados y cambios de nomenclatura entre años. \\ \addlinespace[2pt]
+\textbf{Degradación del rendimiento por volumen de datos} & Media & Alto & Diseñar un modelo dimensional en estrella estricto, optimizando las relaciones y eliminando columnas innecesarias para maximizar la compresión VertiPaq. \\ \addlinespace[2pt]
+\textbf{Complejidad en la definición formal de KPIs} & Baja & Medio & Basar la selección de indicadores en la literatura científica de gestión educativa \cite{niven2008balanced} y validar la propuesta con los tutores del proyecto. \\ \addlinespace[2pt]
+\textbf{Desviación en la planificación temporal} & Media & Medio & Utilizar una metodología de trabajo iterativa (Scrum/Agile) con entregas incrementales priorizando los requisitos funcionales clave. \\ \bottomrule
+\end{tabularx}
+\end{table}
+
+
+% ------------------------------------------
+% CAPÍTULO 4: METODOLOGÍA DE TRABAJO Y RIGOR
+% ------------------------------------------
+
+\chapter{Metodología de Trabajo y Rigor}
+
+\section{Metodología de trabajo}
+Para garantizar la consecución del proyecto en los plazos fijados y con los estándares de calidad exigidos por la FIB, se adopta un enfoque híbrido que combina la agilidad del marco Scrum / Agile \cite{schwaber2020scrum} con la metodología clásica del ciclo de vida de Kimball para proyectos de \textit{Data Warehouse} y \textit{Business Intelligence} \cite{kimball2013data}.
+
+Esta combinación permite estructurar el desarrollo técnico en sprints iterativos e incrementales, adaptándose a posibles descubrimientos o ajustes en la calidad de los datos sin perder el rigor metodológico exigido en la ingeniería de datos:
+
+\begin{enumerate}
+    \item \textbf{Fase 1: Planificación y análisis de requisitos (Sprint 1):} Definición de objetivos, alcance, arquitectura de KPIs por perspectiva del CMI y selección de herramientas tecnológicas (Entregables GEP 1 y 2).
+    \item \textbf{Fase 2: Modelado de datos y arquitectura ETL (Sprints 2 y 3):} Descarga, limpieza, perfilado e integración de los microdatos en Power Query. Construcción del esquema en estrella (\textit{Star Schema}) con tablas de hechos y dimensiones.
+    \item \textbf{Fase 3: Implementación de la lógica de negocio y DAX (Sprint 4):} Programación de medidas, columnas calculadas y ratios dinámicos en DAX para dar soporte a las cuatro perspectivas del CMI \cite{ferrari2016definitive}.
+    \item \textbf{Fase 4: Diseño de interfaz y experiencia de usuario (Sprint 5):} Elaboración de los cuadros de mando interactivos en Power BI Desktop, aplicando principios de diseño visual, accesibilidad y navegación jerárquica (\textit{drill-down}).
+    \item \textbf{Fase 5: Validación, pruebas y memoria final (Sprint 6):} Evaluación del rendimiento del modelo, validación de la precisión de las métricas con la dirección del TFG y redacción de la memoria final del proyecto.
+\end{enumerate}
+
+\section{Herramientas de seguimiento y gestión}
+Para el control de la planificación, la gestión documental y el seguimiento del trabajo con los directores y el tutor de GEP, se emplean las siguientes herramientas:
+
+\begin{itemize}
+    \item \textbf{Control de versiones de datos y proyectos (Git / GitHub):} Control de cambios y respaldo del código en lenguajes DAX, M (Power Query) y scripts de procesamiento auxiliar.
+    \item \textbf{Gestión de tareas (Trello / GitHub Projects):} Tablero Kanban para la gestión del \textit{backlog}, seguimiento de historias de usuario y control de hitos por sprint.
+    \item \textbf{Redacción técnica (Overleaf / \LaTeX):} Edición profesional de la memoria del proyecto asegurando el cumplimiento de la normativa tipográfica y el formato bibliográfico IEEE.
+    \item \textbf{Comunicación y tutorías periódicas:} Reuniones de seguimiento quincenales con las directoras del proyecto (Carme Martín Escofet y Maria Hitz Martinez, Dept. ESSI) para la validación de avances técnicos, así como seguimiento de la asignatura GEP con el tutor (David Pardos Benito).
+\end{itemize}
+
+
+% ------------------------------------------
+% BIBLIOGRAFÍA ESTILO IEEE
+% ------------------------------------------
+\clearpage
+\bibliographystyle{IEEEtran}
+\bibliography{bibliografia}
+
+\end{document}

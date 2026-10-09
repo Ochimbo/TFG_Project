@@ -1,0 +1,440 @@
+\documentclass[12pt, a4paper, twoside]{report}
+
+% ==========================================
+% PAQUETES Y CONFIGURACIÓN
+% ==========================================
+\usepackage[utf8]{inputenc}
+
+% 'es-noshorthands' deshabilita los atajos de babel que interfieren con TikZ y pgfgantt (como el punto decimal)
+\usepackage[spanish, es-tabla, es-noshorthands]{babel} 
+
+\usepackage[top=3cm, bottom=3cm, left=3.5cm, right=2.5cm]{geometry} % Márgenes
+\usepackage{graphicx} % Para insertar imágenes
+\usepackage{xcolor} % Colores personalizados
+\usepackage{setspace} % Interlineado
+\onehalfspacing % Interlineado 1.5
+
+% Ajuste de espaciado compacto y natural para listas
+\usepackage{enumitem}
+\setlist{noitemsep, topsep=3pt, parsep=0pt, partopsep=0pt}
+
+\usepackage{booktabs} % Tablas profesionales
+\usepackage{tabularx} % Tablas con control de ancho
+\usepackage{array}    % Permite personalizar columnas en tablas
+\usepackage{float}    % Permite forzar la posición exacta de tablas con [H]
+\usepackage{amsmath, amssymb} % Símbolos matemáticos
+\usepackage{csquotes}
+
+% Paquete para el Diagrama de Gantt nativo
+\usepackage{pgfgantt}
+
+% Citas numéricas en formato IEEE [1], [2]
+\usepackage{cite}
+
+% Personalización de títulos
+\usepackage{titlesec}
+\titleformat{\chapter}[hang]
+  {\normalfont\Large\bfseries}
+  {\thechapter.\quad}
+  {0pt}
+  {}
+\titlespacing*{\chapter}{0pt}{0pt}{15pt}
+
+\titleformat{\section}
+  {\normalfont\large\bfseries}
+  {\thesection.\quad}
+  {0pt}
+  {}
+
+\titleformat{\subsection}
+  {\normalfont\bfseries}
+  {\thesubsection.\quad}
+  {0pt}
+  {}
+
+% Línea horizontal para la portada (\HRule)
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+% Encabezados y pies de página
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\headheight}{15pt}
+\fancyhf{}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+\fancyhead[LE,RO]{\leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Hipervínculos
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=blue,
+    urlcolor=blue,
+    pdftitle={GEP Entregable 2 - Kiara Kristin Rodríguez Uribe},
+    pdfauthor={Kiara Kristin Rodríguez Uribe}
+}
+
+% ==========================================
+% INICIO DEL DOCUMENTO
+% ==========================================
+\begin{document}
+
+% ------------------------------------------
+% PORTADA
+% ------------------------------------------
+\begin{titlepage}
+    \linewidth=16cm
+    \thispagestyle{empty}
+    
+    % Muestra la imagen si existe, o un marco seguro si aún no se ha subido
+    \IfFileExists{imagenes/logo_upc.png}{%
+      \includegraphics[height=1.8cm]{imagenes/logo_upc.png}%
+    }{%
+      \framebox[3.5cm][c]{\small Logo UPC}%
+    }
+    \hfill
+    \IfFileExists{imagenes/logo_fib.png}{%
+      \includegraphics[height=2.3cm]{imagenes/logo_fib.png}%
+    }{%
+      \framebox[3.5cm][c]{\small Logo FIB}%
+    }
+    
+    \vspace{1.5cm}
+    
+    \begin{center}
+        {\Large \textbf{UNIVERSIDAD POLITÉCNICA DE CATALUÑA}}\\[0.2cm]
+        {\large \textbf{Facultad de Informática de Barcelona (FIB)}}\\[1.2cm]
+        
+        \HRule \\[0.4cm]
+        {\Large \bfseries DISEÑO E IMPLEMENTACIÓN DE UN CUADRO DE MANDO INTEGRAL PARA EL SOPORTE A LA TOMA DE DECISIONES EN EL SISTEMA DE EDUCACIÓN PRIMARIA DE CATALUÑA} \\[0.2cm]
+        \HRule \\[1.2cm]
+        
+        {\large \textbf{Gestión de Proyectos (GEP)}}\\[0.2cm]
+        {\large \textbf{Entregable 2: Planificación temporal}}\\[0.3cm]
+        {\large \textbf{Grado en Ingeniería Informática (Sistemas de Información)}}\\[1.5cm]
+    \end{center}
+
+    \vfill
+
+    \begin{flushleft}
+    \normalsize
+    \begin{tabular}{@{} l l @{}}
+        \textbf{Estudiante:}   & Kiara Kristin Rodríguez Uribe \\
+        \textbf{Director/a:}   & Carme Martín Escofet (Dept. ESSI) \\
+        \textbf{Codirector/a:} & Maria Hitz Martinez (Dept. ESSI) \\
+        \textbf{Tutor/a GEP:}  & David Pardos Benito \\
+        \textbf{Fecha:}        & 6 de octubre de 2026
+    \end{tabular}
+    \end{flushleft}
+\end{titlepage}
+
+% ------------------------------------------
+% ÍNDICES (GENERAL, TABLAS Y FIGURAS)
+% ------------------------------------------
+\clearpage
+\pagenumbering{roman}
+
+\tableofcontents % ÍNDICE GENERAL
+\newpage
+\listoftables    % LISTA DE TABLAS
+\newpage
+\listoffigures   % LISTA DE FIGURAS
+
+\clearpage
+\pagenumbering{arabic}
+
+% ------------------------------------------
+% CAPÍTULO 1: DATOS GLOBALES DEL PROYECTO
+% ------------------------------------------
+
+\chapter{Datos Globales del Proyecto}
+
+\section{Parámetros iniciales de la planificación}
+El presente Trabajo de Final de Grado (TFG) se enmarca en el itinerario de Sistemas de Información del Grado en Ingeniería Informática de la Facultad de Informática de Barcelona (FIB). La carga lectiva oficial asignada al TFG es de 18 créditos ECTS. De acuerdo con la normativa académica de la Universidad Politécnica de Cataluña (UPC), cada crédito ECTS equivale a 25 horas de trabajo dedicado por parte del estudiante, lo que fija el volumen total de trabajo del proyecto en 450 horas efectivas \cite{ieee1058}.
+
+El proyecto dio comienzo formal el 15 de septiembre de 2026 y está planificado para culminar con la entrega de la memoria final y la defensa oral frente al tribunal evaluador durante el período ordinario de defensa del primer cuatrimestre, establecido oficialmente entre el martes 19 de enero de 2027 y el lunes 25 de enero de 2027. La Tabla~\ref{tab:datos_globales} sintetiza los parámetros constitutivos de la planificación global.
+
+\begin{table}[H]
+\centering
+\caption{Parámetros globales de la planificación temporal del TFG.}
+\label{tab:datos_globales}
+\small
+\begin{tabularx}{\textwidth}{@{} p{5.8cm} X @{}}
+\toprule
+\textbf{Parámetro Global} & \textbf{Valor / Valoración formal} \\ \midrule
+\textbf{Fecha de inicio del proyecto} & 15 de septiembre de 2026 \\ \addlinespace
+\textbf{Fecha estimada de finalización} & 25 de enero de 2027 \\ \addlinespace
+\textbf{Duración total estimada} & 450 horas lectivas de trabajo personal \\ \addlinespace
+\textbf{Duración del periodo lectivo} & 19 semanas cronológicas completas \\ \addlinespace
+\textbf{Dedicación media equivalente} & $\sim 23.7$ horas / semana \\ \addlinespace
+\textbf{Fecha prevista de defensa} & 19 al 25 de enero de 2027 (Periodo ordinario 1r Q. FIB) \\ \bottomrule
+\end{tabularx}
+\end{table}
+
+\newpage\section{Justificación del calendario y fases de dedicación}
+A diferencia de un modelo rígido de dedicación constante, la distribución horaria de este TFG se ha diseñado mediante una estrategia adaptativa por fases, considerando las exigencias académicas simultáneas de la asignatura Gestión de Proyectos (GEP) durante las primeras semanas de curso \cite{pmi2021pmbok}.
+
+Asimismo, el modelo de seguimiento combina dos dinámicas diferenciadas: por un lado, una interacción continuada con el tutor de GEP orientada a la entrega y corrección progresiva de los documentos de gestión; por otro lado, un esquema de reuniones inicialmente puntuales y esporádicas con las directoras del TFG, el cual irá incrementando su frecuencia y nivel de seguimiento a medida que arranque el desarrollo técnico intensivo del proyecto.
+
+El calendario de trabajo se divide en tres fases operativas claramente diferenciadas:
+
+\begin{enumerate}[itemsep=7pt]
+    \item \textbf{Fase I: Inicialización y Gestión GEP (Semanas 1 a 4: 15 sept -- 12 oct):} Durante este primer bloque, la prioridad de dedicación se sitúa en la elaboración de los entregables de la asignatura GEP (Contextualización y Alcance, Planificación Temporal, Sostenibilidad y Presupuesto), refinados a través de las revisiones con el tutor de GEP, junto con las primeras reuniones de orientación puntual con las directoras. En estas 4 semanas se invierten aproximadamente 15 horas semanales, dedicadas a la gestión formal y a la toma de contacto con el dataset de \textit{Open Data Catalunya} \cite{transparencia_catalunya_2024}.
+    
+    \item \textbf{Fase II: Desarrollo Técnico Intensivo (Semanas 5 a 15: 13 oct -- 20 dic):} Una vez consolidados los entregables de GEP y definido el alcance definitivo del proyecto, la dedicación aumenta hasta las 24--26 horas semanales. En este período se intensifica el seguimiento con las directoras del TFG para validar el avance en la ingeniería de datos: modelado dimensional Kimball \cite{kimball2013data}, arquitectura ETL en Power Query, programación DAX de KPIs \cite{ferrari2016definitive} y diseño de cuadros de mando interactivos en Power BI.
+    
+    \item \textbf{Fase III: Pruebas, Memoria y Defensa (Semanas 16 a 19: 21 dic -- 25 ene):} Periodo enfocado en la validación analítica de la herramienta, la optimización del rendimiento en el motor VertiPaq, la redacción final de la memoria del TFG en \LaTeX, y la preparación del acto de defensa oral a celebrarse en el período ordinario oficial de la FIB (19 al 25 de enero de 2027).
+\end{enumerate}
+
+La Tabla~\ref{tab:distribucion_fases} desglosa la distribución del esfuerzo por fases temporales.
+
+\begin{table}[H]
+\centering
+\caption{Distribución temporal del trabajo y carga horaria por fases.}
+\label{tab:distribucion_fases}
+\small
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{0.85}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{} p{2.0cm} p{3.6cm} >{\centering\arraybackslash}p{1.6cm} >{\centering\arraybackslash}p{1.6cm} X @{}}
+\toprule
+\textbf{Fase} & \textbf{Periodo cronológico} & \textbf{Semanas} & \textbf{Horas} & \textbf{Foco principal} \\ \midrule
+\textbf{Fase I} & 15 Sept -- 12 Oct 2026 & 4 & 60 h & Entregables GEP 1--3, tutorías GEP y exploración del dataset. \\ \addlinespace[2pt]
+\textbf{Fase II} & 13 Oct -- 20 Dic 2026 & 11 & 270 h & Desarrollo técnico (ETL, DAX, Power BI, CMI) y seguimiento técnico. \\ \addlinespace[2pt]
+\textbf{Fase III} & 21 Dic 2026 -- 25 Ene 2027 & 4 & 120 h & Validación, memoria escrita final y defensa (19--25 Ene). \\ \midrule
+\textbf{TOTAL} & & \textbf{19} & \textbf{450 h} & \textbf{Carga total equivalente de 18 ECTS.} \\ \bottomrule
+\end{tabularx}
+\caption{Distribución temporal del trabajo y carga horaria por fases.}
+\label{tab:distribucion_fases}
+\end{table}
+\end{table}
+\subsection{Estrategia de seguimiento y flexibilidad temporal}
+Como se evidencia en la Tabla~\ref{tab:distribucion_fases}, la mayor concentración del esfuerzo lectivo se focaliza en la Fase II, garantizando un margen de maniobra adecuado frente a eventuales desviaciones en el desarrollo técnico. Esta distribución asimétrica responde a dos factores clave en la dinámica del proyecto:
+
+\begin{itemize}[itemsep=5pt]
+    \item \textbf{Compatibilización académica:} El diseño de la Fase I contempla una dedicación moderada ($\sim 15$ h/semana) para asegurar la asimilación de los conceptos de gestión de proyectos sin colisionar con las entregas iniciales de GEP ni la carga lectiva simultánea del cuatrimestre.
+    \item \textbf{Reserva de contingencias:} La reserva de 120 horas en la Fase III actúa como un margen de seguridad estratégico. Este bloque no solo cubre la redacción final de la memoria y la preparación del soporte visual de la defensa, sino que permite absorber posibles imprevistos en la optimización de métricas DAX o en el filtrado del dataset sin poner en riesgo la fecha oficial de presentación.
+\end{itemize}
+
+Esta estructuración por fases sirve de marco global para la descomposición operativa de las tareas y sus dependencias, las cuales se detallan formalmente a continuación en el siguiente capítulo.
+
+% ------------------------------------------
+% CAPÍTULO 2: ESPECIFICACIÓN Y DESCRIPCIÓN DE TAREAS
+% ------------------------------------------
+
+\chapter{Especificación y Descripción de Tareas}
+
+\section{Estructura de Descomposición del Trabajo (EDT / WBS)}
+Para abordar de forma sistemática las 450 horas del proyecto, el trabajo se estructura jerárquicamente en siete paquetes de trabajo principales, detallados a nivel de tarea individualizada de acuerdo con las buenas prácticas en ingeniería de software \cite{boehm2000software, ieee1058}.
+
+\subsection{Paquete 1: Gestión del Proyecto y GEP (G)}
+Tareas dedicadas al seguimiento de la asignatura GEP, coordinación institucional y tutorías:
+\begin{itemize}
+    \item \textbf{G1 - Gestión inicial y entregables GEP (35 h):} Redacción y entrega de los documentos formales de la asignatura GEP (Entregable 1: Alcance, Entregable 2: Planificación, Entregable 3: Sostenibilidad y Presupuesto) e integración de retroalimentación recibida.
+    \item \textbf{G2 - Reuniones de seguimiento y dirección (15 h):} Seguimiento continuo con el tutor de GEP (David Pardos) para la revisión y aplicación de correcciones en los entregables de la asignatura, combinado con reuniones de seguimiento con las directoras del TFG (Carme Martín y Maria Hitz), de carácter puntual en la fase inicial y con mayor periodicidad conforme avanza el desarrollo técnico.
+\end{itemize}
+
+\subsection{Paquete 2: Análisis y Definición de Requisitos (A)}
+Comprensión profunda del dominio de datos de las pruebas de diagnóstico de 6º de primaria e identificación de necesidades de decisión \cite{mandinach2012data}:
+\begin{itemize} [itemsep = 7pt]
+    \item \textbf{A1 - Perfilado y auditoría del dataset Open Data (25 h):} Análisis exploratorio de los microdatos anonimizados de la Generalitat de Cataluña (1,1M+ filas, 32 columnas) \cite{transparencia_catalunya_2024}. Identificación de inconsistencias, cambios de esquema histórico y valores nulos.
+    \item \textbf{A2 - Especificación del catálogo de KPIs del CMI (25 h):} Definición formal y funcional del conjunto de indicadores clave de rendimiento (KPIs) articulados sobre las cuatro perspectivas del Cuadro de Mando Integral adaptado a la educación pública \cite{niven2008balanced, kaplan1992balanced}.
+\end{itemize}
+
+\subsection{Paquete 3: Arquitectura ETL y Modelado Dimensional (E)}
+Construcción del modelo de datos de analítica de alto rendimiento basado en la metodología de Kimball \cite{kimball2013data}:
+\begin{itemize} [itemsep = 9pt]
+    \item \textbf{E1 - Diseño del modelo dimensional en estrella (30 h):} Definición del diagrama relacional compitiendo en una tabla de hechos central de evaluaciones y dimensiones asociadas (\textit{Dimensión Centro, Dimensión Alumno, Dimensión Tiempo, Dimensión Competencia}).
+    \item \textbf{E2 - Implementación del flujo ETL en Power Query (45 h):} Desarrollo de consultas en lenguaje M para la extracción, depuración, sustitución de códigos por descriptores, pivotado de materias y carga eficiente en el motor VertiPaq.
+\end{itemize}
+
+\subsection{Paquete 4: Lógica Analítica e Inteligencia de Negocio en DAX (D)}
+Desarrollo del motor de cálculo dinámico para el análisis multidimensional \cite{ferrari2016definitive}:
+\begin{itemize} [itemsep = 9pt]
+    \item \textbf{D1 - Programación de medidas y métricas clave en DAX (50 h):} Implementación de medidas base, promedios ponderados, porcentajes de alumnos por nivel de logro (bajo, medio, alto) y brechas por género y titularidad de centro.
+    \item \textbf{D2 - Lógica de inteligencia temporal y comparativa (35 h):} Desarrollo de cálculos avanzados de variación interanual, rankings territoriales y comparativas respecto a la media de la comarca y de Cataluña.
+\end{itemize}
+
+\subsection{Paquete 5: Visualización de Datos e Interfaz de Usuario (V)}
+Creación de la solución visual e interactiva sobre la plataforma Microsoft Power BI Desktop:
+\begin{itemize} [itemsep = 9pt]
+    \item \textbf{V1 - Prototipado UX/UI y maquetación de informes (25 h):} Diseños preliminares de la interfaz orientados a los perfiles de usuario (\textit{Dirección de Centro, Inspección Educativa, Departamento de Educación}).
+    \item \textbf{V2 - Construcción de dashboards interactivos (45 h):} Implementación visual en Power BI integrando paneles por perspectiva, navegadores de páginas, filtros cruzados, jerarquías de profundización (\textit{drill-down}) y marcadores.
+\end{itemize}
+
+\subsection{Paquete 6: Pruebas, Optimización y Validación (P)}
+Este paquete garantiza la calidad del software, la precisión de los cálculos analíticos y la eficiencia en la navegación interactiva antes del despliegue final:
+\begin{itemize}[itemsep=5pt, topsep=4pt]
+    \item \textbf{P1 - Optimización de rendimiento en el motor VertiPaq (25 h):} Auditoría del tiempo de ejecución de consultas mediante DAX Studio y VertiPaq Analyzer. Se aplicará reducción de la cardinalidad de columnas, optimización de diccionarios de datos y refactorización de medidas DAX (priorizando el motor de almacenamiento \textit{Storage Engine} frente al \textit{Formula Engine}) para asegurar tiempos de respuesta inferiores a 3 segundos ante filtrados dinámicos.
+    \item \textbf{P2 - Validación analítica, integridad y usabilidad (20 h):} Verificación rigurosa de la exactitud de los KPIs contrastándolos con las publicaciones agregadas oficiales del \textit{Consell Superior d'Avaluació de Catalunya}. Asimismo, se llevarán a cabo pruebas de usabilidad (UAT) orientadas a evaluar la fluidez de navegación, la jerarquía visual y la eficacia de los marcadores con perfiles de usuario finales.
+\end{itemize}
+
+\subsection{Paquete 7: Memoria Técnica y Cierre del Proyecto (M)}
+Elaboración de los entregables académicos formales finales exigidos por la FIB, garantizando el rigor formal y metodológico de la ingeniería realizada:
+\begin{itemize}[itemsep=5pt, topsep=4pt]
+    \item \textbf{M1 - Redacción de la memoria técnica en \LaTeX\ (65 h):} Redacción detallada del documento final siguiendo la estructura académica de la FIB (introducción, marco de trabajo, requisitos, modelado dimensional Kimball, arquitectura ETL, catálogo DAX, diseño UX/UI, gestión de riesgos y conclusiones). Incluye el ciclo continuo de revisiones e incorporación de correcciones indicadas por la dirección del TFG.
+    \item \textbf{M2 - Preparación y ensayo de la defensa oral (30 h):} Diseño de la presentación ejecutiva de soporte, síntesis de los hallazgos clave, preparación del guion explicativo y ensayos cronometrados para la exposición pública ante el tribunal evaluador dentro del periodo ordinario de enero de 2027.
+\end{itemize}
+
+\section{Matriz resumen de tareas, duraciones y dependencias}
+Para asegurar una gestión eficiente del tiempo y mitigar desviaciones en el calendario, la estimación del esfuerzo de cada tarea se ha realizado aplicando técnicas de estimación ascendente (\textit{bottom-up}) combinadas con la experiencia de proyectos previos de Business Intelligence.
+
+La Tabla~\ref{tab:resumen_tareas} sintetiza la estructura completa de trabajo, detallando el código unívoco de cada tarea, su nombre descriptivo, la asignación horaria exacta, la relación de precedencias inmediatas que marcan el camino crítico del proyecto y los recursos requeridos. La suma global de esfuerzos se ajusta estrictamente a las 450 horas lectivas equivalentes a los 18 créditos ECTS del TFG.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{0.82}
+\setlength{\tabcolsep}{3.5pt}
+\caption{Matriz resumen de tareas, estimación horaria, precedencias y recursos asignados.}
+\label{tab:resumen_tareas}
+\begin{tabularx}{\textwidth}{@{} c p{4.8cm} >{\centering\arraybackslash}p{1.3cm} >{\centering\arraybackslash}p{1.8cm} X @{}}
+\toprule
+\textbf{Código} & \textbf{Nombre de la tarea} & \textbf{Horas} & \textbf{Preceden-
+cias} & \textbf{Recursos asignados} \\ \midrule
+\textbf{G1} & Gestión inicial y entregables GEP & 35 h & - & Estudiante, Tutor GEP, \LaTeX \\
+\textbf{G2} & Reuniones de seguimiento y dirección & 15 h & - & Estudiante, Directoras TFG, Tutor GEP \\
+\textbf{A1} & Perfilado y auditoría Open Data & 25 h & G1 & Estudiante, Power BI, Dataset \\
+\textbf{A2} & Especificación de KPIs del CMI & 25 h & A1 & Estudiante, Literatura CMI \\
+\textbf{E1} & Diseño del modelo dimensional & 30 h & A2 & Estudiante, Herramientas CASE \\
+\textbf{E2} & Flujo ETL en Power Query & 45 h & E1 & Estudiante, Power Query, PC \\
+\textbf{D1} & Medidas y métricas DAX base & 50 h & E2 & Estudiante, Power BI, DAX \\
+\textbf{D2} & Inteligencia temporal en DAX & 35 h & D1 & Estudiante, Power BI Desktop \\
+\textbf{V1} & Prototipado UX/UI de informes & 25 h & A2 & Estudiante, Figma / Bocetos \\
+\textbf{V2} & Construcción de dashboards Power BI & 45 h & D2, V1 & Estudiante, Power BI Desktop \\
+\textbf{P1} & Optimización VertiPaq / DAX Studio & 25 h & V2 & Estudiante, DAX Studio \\
+\textbf{P2} & Validación analítica y usabilidad & 20 h & P1 & Estudiante, Directoras TFG \\
+\textbf{M1} & Redacción de la memoria en \LaTeX & 65 h & G2, P2 & Estudiante, Overleaf / \LaTeX \\
+\textbf{M2} & Preparación de la defensa oral & 30 h & M1 & Estudiante, Software presentación \\ \midrule
+\textbf{TOTAL} & \textbf{Carga total de trabajo lectivo} & \textbf{450 h} & & \textbf{Correspondiente a 18 ECTS} \\ \bottomrule
+\end{tabularx}
+\end{table}
+
+% ------------------------------------------
+% CAPÍTULO 3: PLANIFICACIÓN TEMPORAL Y DIAGRAMA DE GANTT
+% ------------------------------------------
+
+\chapter{Planificación Temporal y Diagrama de Gantt}
+\section{Estrategia de ejecución y cronograma por semanas}
+La planificación sigue una metodología secuencial-iterativa en la que las tareas de gestión y documentación se solapan con los bloques de desarrollo técnico \cite{schwaber2020scrum}. 
+
+Para visibilizar claramente la carga de trabajo estructurada en 19 semanas lectivas, la distribución se organiza de la siguiente manera:
+
+\begin{itemize} [itemsep=10pt, topsep=6pt]
+    \item \textbf{Semanas 1 a 4 (15 Sept -- 12 Oct):} Prioridad en los entregables de GEP (G1, G2), incluyendo la revisión continua con el tutor de GEP y reuniones de alineación inicial con las directoras. En paralelo se realiza el perfilado del dataset (A1).
+    \item \textbf{Semanas 5 a 8 (13 Oct -- 09 Nov):} Culminación del análisis de datos (A1), definición del catálogo de KPIs (A2), prototipado UX/UI (V1) y diseño del modelo dimensional (E1).
+    \item \textbf{Semanas 9 a 12 (10 Nov -- 07 Dic):} Construcción del flujo ETL en Power Query (E2) e implementación del cuerpo central de medidas DAX (D1).
+    \item \textbf{Semanas 13 a 15 (08 Dic -- 28 Dic):} Programación de inteligencia temporal DAX (D2) y maquetación interactiva de dashboards en Power BI (V2).
+    \item \textbf{Semanas 16 a 19 (29 Dic -- 25 Ene):} Optimización VertiPaq (P1), validación de usabilidad (P2), redacción de la memoria técnica en \LaTeX\ (M1) y acto de defensa oral en el período ordinario (19--25 de enero de 2027) (M2).
+\end{itemize}
+
+\clearpage\section{Diagrama de Gantt}
+La Figura~\ref{fig:gantt_native} presenta el Diagrama de Gantt cronológico del proyecto, adaptado al horizonte temporal de 19 semanas y generado mediante `pgfgantt`.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{ganttchart}[
+    vgrid={*1{dotted}},
+    hgrid,
+    x unit=0.68cm,
+    y unit chart=0.68cm,
+    title/.style={fill=gray!20, draw=black},
+    title label font=\bfseries\footnotesize,
+    bar/.style={fill=blue!40, draw=black},
+    bar height=0.55,
+    group right peep={bd}{0.1cm},
+    group height=0.25,
+    group/.style={fill=black},
+    milestone/.style={fill=red!70, draw=black},
+    bar label font=\tiny\bfseries
+]{1}{19}
+\gantttitle{Planificación Temporal del TFG (19 Semanas)}{19} \\
+\gantttitle{Sep}{2} \gantttitle{Oct}{4} \gantttitle{Nov}{4} \gantttitle{Dic}{4} \gantttitle{Ene}{5} \\
+\gantttitlelist{1,...,19}{1} \\
+
+% FASE 1: GESTION Y GEP
+\ganttgroup{Fase I: Gestión y GEP}{1}{4} \\
+\ganttbar{G1: Entregables GEP}{1}{4} \\
+\ganttbar{G2: Reuniones Dirección}{1}{19} \\
+
+% FASE 2: ANALISIS Y REQUISITOS
+\ganttgroup{Fase II: Análisis y Requisitos}{3}{7} \\
+\ganttbar{A1: Perfilado Open Data}{3}{6} \\
+\ganttbar{A2: Catálogo KPIs CMI}{5}{7} \\
+
+% FASE 3: DESARROLLO TECNICO
+\ganttgroup{Fase III: Desarrollo Técnico}{6}{15} \\
+\ganttbar{E1: Modelo Dimensional}{6}{8} \\
+\ganttbar{E2: ETL en Power Query}{8}{11} \\
+\ganttbar{D1: Medidas Base DAX}{11}{13} \\
+\ganttbar{D2: Intel. Temporal DAX}{13}{15} \\
+\ganttbar{V1: Prototipado UX/UI}{7}{9} \\
+\ganttbar{V2: Dashboards Power BI}{13}{15} \\
+
+% FASE 4: PRUEBAS Y CIERRE
+\ganttgroup{Fase IV: Validación y Cierre}{16}{19} \\
+\ganttbar{P1: Optimización VertiPaq}{16}{17} \\
+\ganttbar{P2: Validación y Usabilidad}{17}{18} \\
+\ganttbar{M1: Memoria Final LaTeX}{16}{19} \\
+\ganttbar{M2: Defensa Oral}{18}{19} \\
+
+% HITOS
+\ganttmilestone{Hito 1: Fin GEP}{4} \\
+\ganttmilestone{Hito 2: Fin ETL / Modelo}{11} \\
+\ganttmilestone{Hito 3: Fin Dashboards}{15} \\
+\ganttmilestone{Hito 4: Defensa TFG (19-25 Ene)}{19}
+
+\end{ganttchart}%
+}
+\caption{Diagrama de Gantt detallado del proyecto ajustado al período ordinario de defensa.}
+\label{fig:gantt_native}
+\end{figure}
+
+% ------------------------------------------
+% CAPÍTULO 4: GESTIÓN DE RIESGOS Y PLANES ALTERNATIVOS
+% ------------------------------------------
+
+\chapter{Gestión de Riesgos y Planes Alternativos}
+\enlargethispage{2.5cm} % Otorga espacio vertical extra exclusivamente a esta página
+
+\section{Análisis de riesgos con impacto en el calendario}
+El desarrollo de soluciones analíticas sobre grandes volúmenes de datos públicos está expuesto a riesgos técnicos y metodológicos que pueden comprometer el cumplimiento del cronograma \cite{pmi2021pmbok}. Se han evaluado los riesgos específicos del proyecto:
+
+\begin{itemize}[noitemsep, topsep=1pt, parsep=0pt]
+    \item \textbf{Riesgo R1 -- Inconsistencias en datos fuente (Probabilidad: Media, Impacto: Alto):} Cambios no documentados en variables o esquemas entre convocatorias de 6º de primaria que incrementen el esfuerzo en la fase ETL (E2).
+    \item \textbf{Riesgo R2 -- Problemas de rendimiento en VertiPaq (Probabilidad: Media, Impacto: Medio):} Consultas DAX complejas o un modelo mal optimizado sobre +1,1M de filas que causen latencias superiores a 3 segundos.
+    \item \textbf{Riesgo R3 -- Subestimación del tiempo de memoria (Probabilidad: Alta, Impacto: Medio):} La redacción rigurosa en \LaTeX\ suele requerir más tiempo del previsto si se posterga en exceso.
+\end{itemize}
+
+\section{Planes alternativos (Plan B) y gestión de holguras}
+Para neutralizar el impacto de estos riesgos sobre la fecha de entrega y defensa del TFG (19--25 de enero de 2027), se definen planes de contención (Plan B) y gestión de holguras. La Tabla~\ref{tab:matriz_planes_b} resume las medidas mitigadoras.
+
+\begin{table}[H] 
+\centering
+\scriptsize
+\renewcommand{\arraystretch}{1.50}
+\setlength{\tabcolsep}{3pt}
+\caption{Matriz de planes alternativos (Plan B) y acciones de mitigación de riesgos.}
+\label{tab:matriz_planes_b}
+\begin{tabularx}{\textwidth}{@{} p{2.7cm} p{4.5cm} p{2.3cm} X @{}}
+\toprule
+\textbf{Riesgo asociado} & \textbf{Plan B / Acción correctora} & \textbf{Impacto temporal} & \textbf{Efecto en el alcance técnico} \\ \midrule
+\textbf{R1: Inconsistencia datos (E2)} & Acotar el alcance a las últimas 5 convocatorias (2018--2024), garantizando la estabilidad antes de integrar datos más antiguos. & Reabsorbible en semanas 10--11 & Nulo en la estructura de KPIs; únicamente acota el histórico en caso extremo. \\ \addlinespace[1pt]
+\textbf{R2: Latencia VertiPaq (P1)} & Precalcular agregaciones a nivel territorial en Power Query en lugar de cómputo dinámico en DAX. & $+10$ h en ETL, $-20$ h en DAX & Mantiene métricas globales, reduciendo únicamente el filtrado a nivel micro. \\ \addlinespace[1pt]
+\textbf{R3: Retraso memoria (M1)} & Hacer uso de la holgura en la semana 16-17 tras finalizar la primera versión de los dashboards. & $0$ días de retraso en defensa & Sin impacto en la calidad del entregable ni en el alcance. \\ \bottomrule
+\end{tabularx}
+\end{table}
+
+% ------------------------------------------
+% BIBLIOGRAFÍA ESTILO IEEE
+% ------------------------------------------
+\clearpage
+\bibliographystyle{IEEEtran}
+\bibliography{bibliografia}
+
+\end{document}
