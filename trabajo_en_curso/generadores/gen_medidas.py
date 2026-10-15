@@ -1,0 +1,583 @@
+import sys
+import unicodedata
+
+OUT = sys.argv[1]
+
+F_BASE = "0. Base"
+F_REND = "1. Rendimiento académico"
+F_EQUI = "2. Equidad e inclusión"
+F_TERR = "3. Territorio y entorno"
+F_PROG = "4. Eficiencia y progreso"
+F_SEMA = "5. Semáforos"
+
+FMT_PUNT = "0.0"
+FMT_PCT = "0.0%"
+FMT_VAR = "+0.0;-0.0;0.0"
+FMT_POS = "0"
+FMT_CNT = "#,0"
+
+NO_EQ = (
+    "ATENCIÓN: las puntuaciones no están equiparadas entre convocatorias (no hay ítems "
+    "de anclaje), así que la diferencia mezcla la dificultad de cada prueba con el "
+    "rendimiento real y solo es orientativa."
+)
+
+AREA_ATTRS = """REMOVEFILTERS (
+    DimContextoCentro[AreaCodigo],
+    DimContextoCentro[AreaOrden],
+    DimContextoCentro[AreaPerimetro2025],
+    DimContextoCentro[AreaSerieComparable],
+    DimContextoCentro[AreaConRupturaSerie],
+    DimContextoCentro[RupturaHabitat2024]
+)"""
+
+
+def indent(text, n):
+    pad = " " * n
+    return "\n".join(pad + line if line else line for line in text.splitlines())
+
+
+INDICE_CONV = """VAR _i =
+    CALCULATE (
+        SELECTEDVALUE ( DimAnio[IndiceConvocatoria] ),
+        KEEPFILTERS ( DimAnio[TieneConvocatoria] = TRUE () )
+    )"""
+
+MEASURES = [
+    dict(
+        name="Alumnos evaluados",
+        guid="ed05da0c-f76b-5001-9d4a-2df0692e5c08",
+        folder=F_BASE,
+        fmt=FMT_CNT,
+        desc=[
+            "Número de alumnos evaluados (filas de FactEvaluacion) en el contexto. "
+            "No le afectan los filtros de competencia, nivel de logro ni calidad del dato, "
+            "porque FactEvaluacion solo se relaciona con DimAnio, DimContextoCentro y DimPerfilAlumno."
+        ],
+        expr="COUNTROWS ( FactEvaluacion )",
+    ),
+    dict(
+        name="Puntuaciones globales",
+        guid="9cf69491-74cc-5094-9354-3c244a02c405",
+        folder=F_BASE,
+        fmt=FMT_CNT,
+        desc=[
+            "Número de puntuaciones globales (filas de FactPuntuacion con DimCompetencia[EsGlobal] = TRUE, "
+            "aplicado con KEEPFILTERS) en el contexto. Es el tamaño muestral del mínimo de 30 que aplica K01."
+        ],
+        expr="""CALCULATE (
+    COUNTROWS ( FactPuntuacion ),
+    KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () )
+)""",
+    ),
+    dict(
+        name="Puntuación media",
+        guid="7b903274-44e9-5ea3-96b4-a68fb2b4cd30",
+        folder=F_BASE,
+        fmt=FMT_PUNT,
+        desc=[
+            "Media de FactPuntuacion[Puntuacion] sin ningún filtro de competencia: si el contexto no separa "
+            "globales y subcompetencias, las mezcla. Uso técnico (conciliación con la ETL de referencia); "
+            "para el análisis usar K01 o K02."
+        ],
+        expr="AVERAGE ( FactPuntuacion[Puntuacion] )",
+    ),
+    dict(
+        name="Puntuación media Cataluña",
+        guid="a1bca28c-b844-5ab6-9e62-e6f860c99ef4",
+        folder=F_BASE,
+        fmt=FMT_PUNT,
+        desc=[
+            "K01 calculada para toda Cataluña: quita todos los filtros de DimContextoCentro (área, naturaleza "
+            "y hábitat) y conserva los de año, competencia y perfil del alumnado. Incluye el área «Desconocida». "
+            "Es la referencia de K07 y de Estado K01. BLANK si hay menos de 30 puntuaciones globales."
+        ],
+        expr="""CALCULATE (
+    [K01 Puntuación media competencia],
+    REMOVEFILTERS ( DimContextoCentro )
+)""",
+    ),
+    dict(
+        name="K01 Puntuación media competencia",
+        guid="379d5304-1db1-5f93-b627-9b4905da58c5",
+        folder=F_REND,
+        fmt=FMT_PUNT,
+        desc=[
+            "K01. Puntuación media de las competencias globales (DimCompetencia[EsGlobal] = TRUE, con KEEPFILTERS). "
+            "BLANK si el contexto tiene menos de 30 puntuaciones globales (mínimo muestral). Sin filtro de materia "
+            "promedia todas las materias evaluadas, francés incluido. Las puntuaciones no están equiparadas entre "
+            "convocatorias: la comparación entre años es orientativa."
+        ],
+        expr="""VAR _n = [Puntuaciones globales]
+RETURN
+    IF (
+        _n >= 30,
+        CALCULATE (
+            AVERAGE ( FactPuntuacion[Puntuacion] ),
+            KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () )
+        )
+    )""",
+    ),
+    dict(
+        name="K02 Puntuación media subcompetencia",
+        guid="db71ee52-6a06-57c1-8758-7bc17e32f117",
+        folder=F_REND,
+        fmt=FMT_PUNT,
+        desc=[
+            "K02. Puntuación media de las subcompetencias (DimCompetencia[EsGlobal] = FALSE), excluyendo las "
+            "puntuaciones no válidas (DimCalidadDato[NoValida] = TRUE: expresión escrita de inglés 2015). "
+            "BLANK si quedan menos de 30 puntuaciones. No excluye las escalas no comparables en serie "
+            "(DimCalidadDato[NoComparableSerie]): para series temporales, filtrar por esa columna."
+        ],
+        expr="""VAR _n =
+    CALCULATE (
+        COUNTROWS ( FactPuntuacion ),
+        KEEPFILTERS ( DimCompetencia[EsGlobal] = FALSE () ),
+        KEEPFILTERS ( DimCalidadDato[NoValida] = FALSE () )
+    )
+VAR _media =
+    CALCULATE (
+        AVERAGE ( FactPuntuacion[Puntuacion] ),
+        KEEPFILTERS ( DimCompetencia[EsGlobal] = FALSE () ),
+        KEEPFILTERS ( DimCalidadDato[NoValida] = FALSE () )
+    )
+RETURN
+    IF ( _n >= 30, _media )""",
+    ),
+    dict(
+        name="K03 % alumnado nivel bajo",
+        guid="9993eeb8-5b42-5423-b618-439d2333524c",
+        folder=F_REND,
+        fmt=FMT_PCT,
+        desc=[
+            "K03. Porcentaje de puntuaciones globales en nivel Bajo (< 55 puntos, DimNivelLogro[NivelKey] = 1) "
+            "sobre el total de puntuaciones globales. Numerador y denominador excluyen las celdas censuradas "
+            "(DimCalidadDato[Censurada]) y las convocatorias con nivel no comparable (DimCalidadDato[NivelNoComparable]). "
+            "Ignora los filtros de DimNivelLogro. BLANK si el denominador tiene menos de 30 puntuaciones. "
+            "Niveles internos del TFG (cortes 55/70/85), no los niveles oficiales."
+        ],
+        expr="""VAR _globales =
+    CALCULATE (
+        COUNTROWS ( FactPuntuacion ),
+        KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () ),
+        KEEPFILTERS ( DimCalidadDato[Censurada] = FALSE () ),
+        KEEPFILTERS ( DimCalidadDato[NivelNoComparable] = FALSE () ),
+        REMOVEFILTERS ( DimNivelLogro )
+    )
+VAR _bajo =
+    CALCULATE (
+        COUNTROWS ( FactPuntuacion ),
+        KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () ),
+        KEEPFILTERS ( DimCalidadDato[Censurada] = FALSE () ),
+        KEEPFILTERS ( DimCalidadDato[NivelNoComparable] = FALSE () ),
+        REMOVEFILTERS ( DimNivelLogro ),
+        DimNivelLogro[NivelKey] = 1
+    )
+RETURN
+    IF ( _globales >= 30, DIVIDE ( COALESCE ( _bajo, 0 ), _globales ) )""",
+    ),
+    dict(
+        name="K04 Brecha de género (Niños - Niñas)",
+        guid="e3158542-17c7-581b-97d9-d1a1d9d360dc",
+        folder=F_EQUI,
+        fmt=FMT_VAR,
+        desc=[
+            "K04. Diferencia de K01 entre niños y niñas (Niño - Niña). Sustituye cualquier filtro de género "
+            "del contexto (DimPerfilAlumno[Genero] y su columna de orden GeneroCodigo). Positivo: los niños "
+            "puntúan más. BLANK si alguno de los dos grupos no llega al mínimo de 30 puntuaciones globales."
+        ],
+        expr="""VAR _ninos =
+    CALCULATE (
+        [K01 Puntuación media competencia],
+        REMOVEFILTERS ( DimPerfilAlumno[Genero], DimPerfilAlumno[GeneroCodigo] ),
+        DimPerfilAlumno[Genero] = "Niño"
+    )
+VAR _ninas =
+    CALCULATE (
+        [K01 Puntuación media competencia],
+        REMOVEFILTERS ( DimPerfilAlumno[Genero], DimPerfilAlumno[GeneroCodigo] ),
+        DimPerfilAlumno[Genero] = "Niña"
+    )
+RETURN
+    IF ( NOT ISBLANK ( _ninos ) && NOT ISBLANK ( _ninas ), _ninos - _ninas )""",
+    ),
+    dict(
+        name="K05 Brecha pública - privada",
+        guid="da753e88-5784-5380-bcc7-b9b652beacfd",
+        folder=F_EQUI,
+        fmt=FMT_VAR,
+        desc=[
+            "K05. Diferencia de K01 entre centros públicos y privados (Pública - Privada; «Privada» incluye "
+            "la concertada). Sustituye el filtro de naturaleza del contexto (Naturaleza y NaturalezaCodigo). "
+            "Positivo: la pública puntúa más. BLANK si alguno de los dos grupos no llega al mínimo de 30."
+        ],
+        expr="""VAR _publica =
+    CALCULATE (
+        [K01 Puntuación media competencia],
+        REMOVEFILTERS ( DimContextoCentro[Naturaleza], DimContextoCentro[NaturalezaCodigo] ),
+        DimContextoCentro[Naturaleza] = "Pública"
+    )
+VAR _privada =
+    CALCULATE (
+        [K01 Puntuación media competencia],
+        REMOVEFILTERS ( DimContextoCentro[Naturaleza], DimContextoCentro[NaturalezaCodigo] ),
+        DimContextoCentro[Naturaleza] = "Privada"
+    )
+RETURN
+    IF ( NOT ISBLANK ( _publica ) && NOT ISBLANK ( _privada ), _publica - _privada )""",
+    ),
+    dict(
+        name="K06 Dispersión de resultados",
+        guid="a82d617a-3ff5-5abd-9908-ebeaac60fd3f",
+        folder=F_EQUI,
+        fmt=FMT_PUNT,
+        desc=[
+            "K06. Desviación típica poblacional (STDEV.P) de las puntuaciones globales, excluyendo las celdas "
+            "censuradas (DimCalidadDato[Censurada]: suelos artificiales de inglés 2015). BLANK si quedan menos "
+            "de 30 puntuaciones. Sin filtro de materia mezcla materias. Interpretar con cautela en catalán 2018, "
+            "inglés 2011 y matemáticas 2015 y 2019 (informe de calidad, sección 6.4)."
+        ],
+        expr="""VAR _n =
+    CALCULATE (
+        COUNTROWS ( FactPuntuacion ),
+        KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () ),
+        KEEPFILTERS ( DimCalidadDato[Censurada] = FALSE () )
+    )
+VAR _desviacion =
+    CALCULATE (
+        STDEV.P ( FactPuntuacion[Puntuacion] ),
+        KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () ),
+        KEEPFILTERS ( DimCalidadDato[Censurada] = FALSE () )
+    )
+RETURN
+    IF ( _n >= 30, _desviacion )""",
+    ),
+    dict(
+        name="K07 Desviación respecto a Cataluña",
+        guid="d3b2b1f1-47d8-5abc-8b42-fedcbf140888",
+        folder=F_TERR,
+        fmt=FMT_VAR,
+        desc=[
+            "K07. K01 del contexto menos la puntuación media de Cataluña (mismo año, competencia y perfil). "
+            "Positivo: el contexto supera la media catalana. Vale 0 si no hay ningún filtro de DimContextoCentro. "
+            "BLANK si alguna de las dos medias está en blanco."
+        ],
+        expr="""VAR _k01 = [K01 Puntuación media competencia]
+VAR _cataluna = [Puntuación media Cataluña]
+RETURN
+    IF ( NOT ISBLANK ( _k01 ) && NOT ISBLANK ( _cataluna ), _k01 - _cataluna )""",
+    ),
+    dict(
+        name="K08 Diferencia urbano - rural",
+        guid="9f8c5b31-3e26-5209-867a-9df01cb558cf",
+        folder=F_TERR,
+        fmt=FMT_VAR,
+        desc=[
+            "K08. K01 en municipios de más de 100.000 habitantes (HabitatCodigo = 3) menos K01 en municipios "
+            "de hasta 10.000 (HabitatCodigo = 1). Sustituye el filtro de hábitat del contexto. El hábitat 0 "
+            "«No fiable» (2010 y parte de Baix Llobregat 2014) nunca entra, así que 2010 queda en blanco. "
+            "Girona y Maresme - Vallès Oriental tienen ruptura de clasificación del hábitat desde 2024."
+        ],
+        expr="""VAR _urbano =
+    CALCULATE (
+        [K01 Puntuación media competencia],
+        REMOVEFILTERS ( DimContextoCentro[Habitat], DimContextoCentro[HabitatCodigo] ),
+        DimContextoCentro[HabitatCodigo] = 3
+    )
+VAR _rural =
+    CALCULATE (
+        [K01 Puntuación media competencia],
+        REMOVEFILTERS ( DimContextoCentro[Habitat], DimContextoCentro[HabitatCodigo] ),
+        DimContextoCentro[HabitatCodigo] = 1
+    )
+RETURN
+    IF ( NOT ISBLANK ( _urbano ) && NOT ISBLANK ( _rural ), _urbano - _rural )""",
+    ),
+    dict(
+        name="K09 Posición del área",
+        guid="bb3fa4d6-4452-526d-91d9-215c8518701e",
+        folder=F_TERR,
+        fmt=FMT_POS,
+        desc=[
+            "K09. Posición del área territorial (1 = mejor) por K01 descendente, con empates densos (DENSE), "
+            "dentro del mismo año, competencia, naturaleza y hábitat. Con DimContextoCentro[AreaTerritorial] en "
+            "el eje del visual compara con las áreas visibles (ALLSELECTED); en una tarjeta con el área elegida "
+            "en un segmentador compara con todas las áreas. «Desconocida» nunca entra en la comparación. "
+            "BLANK si el contexto no tiene exactamente un área, si el área es «Desconocida», si su K01 está en "
+            "blanco o si todas las competencias del contexto son informativas (francés)."
+        ],
+        expr=f"""VAR _area = SELECTEDVALUE ( DimContextoCentro[AreaTerritorial] )
+VAR _hayNoInformativas =
+    NOT ISEMPTY (
+        CALCULATETABLE (
+            VALUES ( DimCompetencia[CompetenciaKey] ),
+            KEEPFILTERS ( DimCompetencia[EsInformativa] = FALSE () )
+        )
+    )
+RETURN
+    IF (
+        NOT ISBLANK ( _area )
+            && _area <> "Desconocida"
+            && _hayNoInformativas,
+        VAR _enEje = ISINSCOPE ( DimContextoCentro[AreaTerritorial] )
+        VAR _seleccionadas = ALLSELECTED ( DimContextoCentro[AreaTerritorial] )
+        VAR _areas =
+            FILTER (
+                ALL ( DimContextoCentro[AreaTerritorial] ),
+                DimContextoCentro[AreaTerritorial] <> "Desconocida"
+                    && ( NOT _enEje || DimContextoCentro[AreaTerritorial] IN _seleccionadas )
+            )
+        VAR _valor =
+            CALCULATE (
+                [K01 Puntuación media competencia],
+{indent(AREA_ATTRS, 16)},
+                DimContextoCentro[AreaTerritorial] = _area
+            )
+        RETURN
+            IF (
+                NOT ISBLANK ( _valor ),
+                RANKX (
+                    _areas,
+                    CALCULATE (
+                        [K01 Puntuación media competencia],
+{indent(AREA_ATTRS, 24)}
+                    ),
+                    _valor,
+                    DESC,
+                    DENSE
+                )
+            )
+    )""",
+    ),
+    dict(
+        name="K10 Variación interanual",
+        guid="c0882646-2c89-5176-87e3-2f8c10da8ec4",
+        folder=F_PROG,
+        fmt=FMT_VAR,
+        desc=[
+            "K10. K01 de la convocatoria del contexto menos K01 de la convocatoria anterior, navegando por "
+            "DimAnio[IndiceConvocatoria] (2021 se compara con 2019; 2020 no tiene prueba). Solo usa las "
+            "competencias globales cuyo periodo de diseño estable empieza como tarde el año de la convocatoria "
+            "anterior (DimCompetencia[PeriodoDisenoInicio]); si no queda ninguna, BLANK. BLANK también si el "
+            "contexto no tiene exactamente un año con convocatoria o si es la primera convocatoria. "
+            "Funciona con DimAnio[Anio] en el eje y con un segmentador de un solo año.",
+            NO_EQ,
+        ],
+        expr=f"""{INDICE_CONV}
+RETURN
+    IF (
+        _i > 1,
+        VAR _anioAnterior =
+            CALCULATE (
+                MAX ( DimAnio[Anio] ),
+                REMOVEFILTERS ( DimAnio ),
+                DimAnio[IndiceConvocatoria] = _i - 1
+            )
+        VAR _actual =
+            CALCULATE (
+                [K01 Puntuación media competencia],
+                KEEPFILTERS ( DimCompetencia[PeriodoDisenoInicio] <= _anioAnterior )
+            )
+        VAR _anterior =
+            CALCULATE (
+                [K01 Puntuación media competencia],
+                REMOVEFILTERS ( DimAnio ),
+                DimAnio[IndiceConvocatoria] = _i - 1,
+                KEEPFILTERS ( DimCompetencia[PeriodoDisenoInicio] <= _anioAnterior )
+            )
+        RETURN
+            IF ( NOT ISBLANK ( _actual ) && NOT ISBLANK ( _anterior ), _actual - _anterior )
+    )""",
+    ),
+    dict(
+        name="K11 Tendencia 5 convocatorias",
+        guid="eb51a593-212c-5850-8f1e-e52200075036",
+        folder=F_PROG,
+        fmt=FMT_VAR,
+        desc=[
+            "K11. Variación media por convocatoria en una ventana de 5 convocatorias: (K01 de la convocatoria i "
+            "- K01 de la convocatoria i-4) / 4, navegando por DimAnio[IndiceConvocatoria]. Solo usa las "
+            "competencias globales con PeriodoDisenoInicio <= año de la convocatoria i-4. BLANK si el contexto "
+            "no tiene exactamente un año con convocatoria, si no hay 4 convocatorias anteriores o si no queda "
+            "ninguna competencia comparable.",
+            NO_EQ,
+        ],
+        expr=f"""{INDICE_CONV}
+RETURN
+    IF (
+        _i > 4,
+        VAR _anioInicio =
+            CALCULATE (
+                MAX ( DimAnio[Anio] ),
+                REMOVEFILTERS ( DimAnio ),
+                DimAnio[IndiceConvocatoria] = _i - 4
+            )
+        VAR _actual =
+            CALCULATE (
+                [K01 Puntuación media competencia],
+                KEEPFILTERS ( DimCompetencia[PeriodoDisenoInicio] <= _anioInicio )
+            )
+        VAR _inicio =
+            CALCULATE (
+                [K01 Puntuación media competencia],
+                REMOVEFILTERS ( DimAnio ),
+                DimAnio[IndiceConvocatoria] = _i - 4,
+                KEEPFILTERS ( DimCompetencia[PeriodoDisenoInicio] <= _anioInicio )
+            )
+        RETURN
+            IF ( NOT ISBLANK ( _actual ) && NOT ISBLANK ( _inicio ), DIVIDE ( _actual - _inicio, 4 ) )
+    )""",
+    ),
+    dict(
+        name="K12 % competencias que mejoran",
+        guid="aef489c9-a46c-50aa-ac6b-7545f6603056",
+        folder=F_PROG,
+        fmt=FMT_PCT,
+        desc=[
+            "K12. Porcentaje de materias globales no informativas (sin francés) que mejoran al menos 1 punto "
+            "respecto a la convocatoria anterior (K10 >= 1), sobre las materias con K10 calculable. Itera por "
+            "DimCompetencia[CodigoMateria] y hereda todas las condiciones de K10 (un solo año con convocatoria, "
+            "periodo de diseño comparable y mínimo muestral). BLANK si ninguna materia tiene K10.",
+            NO_EQ,
+        ],
+        expr="""VAR _materias =
+    CALCULATETABLE (
+        VALUES ( DimCompetencia[CodigoMateria] ),
+        KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () ),
+        KEEPFILTERS ( DimCompetencia[EsInformativa] = FALSE () )
+    )
+VAR _variaciones =
+    ADDCOLUMNS ( _materias, "@Variacion", [K10 Variación interanual] )
+VAR _comparables =
+    FILTER ( _variaciones, NOT ISBLANK ( [@Variacion] ) )
+VAR _mejoran =
+    FILTER ( _comparables, [@Variacion] >= 1 )
+RETURN
+    DIVIDE ( COALESCE ( COUNTROWS ( _mejoran ), 0 ), COUNTROWS ( _comparables ) )""",
+    ),
+    dict(
+        name="Estado K01",
+        guid="d56c3a0e-0cbf-5720-a976-fa9ec60fb86b",
+        folder=F_SEMA,
+        fmt=FMT_POS,
+        desc=[
+            "Semáforo de K01: 1 favorable, 0 neutro, -1 desfavorable. Con algún filtro de DimContextoCentro "
+            "usa K07 (>= 1 -> 1; <= -1 -> -1; resto 0). Sin filtro de contexto de centro usa K10 "
+            "(>= 0,5 -> 1; <= -0,5 -> -1; resto 0), que exige un solo año con convocatoria. BLANK si el "
+            "indicador usado está en blanco. Cuando usa K10, las puntuaciones no están equiparadas entre "
+            "convocatorias y el semáforo es orientativo."
+        ],
+        expr="""VAR _conContexto = ISFILTERED ( DimContextoCentro )
+VAR _valor =
+    IF (
+        _conContexto,
+        [K07 Desviación respecto a Cataluña],
+        [K10 Variación interanual]
+    )
+VAR _umbral = IF ( _conContexto, 1, 0.5 )
+RETURN
+    SWITCH (
+        TRUE (),
+        ISBLANK ( _valor ), BLANK (),
+        _valor >= _umbral, 1,
+        _valor <= -_umbral, -1,
+        0
+    )""",
+    ),
+    dict(
+        name="Estado K03",
+        guid="0339044c-c7d8-5eab-9a87-de7c77a3ec82",
+        folder=F_SEMA,
+        fmt=FMT_POS,
+        desc=[
+            "Semáforo de K03: compara el % en nivel bajo del contexto con el de Cataluña (sin filtros de "
+            "DimContextoCentro). Diferencia <= -2 puntos porcentuales -> 1 (favorable); >= +2 puntos "
+            "porcentuales -> -1 (desfavorable); resto 0. BLANK si alguno de los dos K03 está en blanco."
+        ],
+        expr="""VAR _k03 = [K03 % alumnado nivel bajo]
+VAR _k03Cataluna =
+    CALCULATE (
+        [K03 % alumnado nivel bajo],
+        REMOVEFILTERS ( DimContextoCentro )
+    )
+RETURN
+    IF (
+        NOT ISBLANK ( _k03 ) && NOT ISBLANK ( _k03Cataluna ),
+        VAR _diferencia = _k03 - _k03Cataluna
+        RETURN
+            SWITCH (
+                TRUE (),
+                _diferencia <= -0.02, 1,
+                _diferencia >= 0.02, -1,
+                0
+            )
+    )""",
+    ),
+    dict(
+        name="Estado K10",
+        guid="aa48fe15-95f5-5051-a862-3e6b6d073aa7",
+        folder=F_SEMA,
+        fmt=FMT_POS,
+        desc=[
+            "Semáforo de K10: >= 0,5 puntos -> 1 (favorable); <= -0,5 -> -1 (desfavorable); resto 0. "
+            "BLANK si K10 está en blanco.",
+            NO_EQ,
+        ],
+        expr="""VAR _k10 = [K10 Variación interanual]
+RETURN
+    SWITCH (
+        TRUE (),
+        ISBLANK ( _k10 ), BLANK (),
+        _k10 >= 0.5, 1,
+        _k10 <= -0.5, -1,
+        0
+    )""",
+    ),
+]
+
+
+def tmdl_name(name):
+    if any(c in name for c in " .=:'%()-\t") or not name.isidentifier():
+        return "'" + name.replace("'", "''") + "'"
+    return name
+
+
+lines = []
+lines.append("table _Medidas")
+lines.append("\tlineageTag: 2b4181cc-7c15-597e-9968-0f42fabc57d0")
+lines.append("")
+for m in MEASURES:
+    for d in m["desc"]:
+        lines.append("\t/// " + d)
+    expr = m["expr"].strip("\n")
+    if "\n" in expr:
+        lines.append(f"\tmeasure {tmdl_name(m['name'])} =")
+        for el in expr.split("\n"):
+            lines.append("\t\t\t" + el if el.strip() else "")
+    else:
+        lines.append(f"\tmeasure {tmdl_name(m['name'])} = {expr}")
+    lines.append(f"\t\tformatString: {m['fmt']}")
+    lines.append(f"\t\tdisplayFolder: {m['folder']}")
+    lines.append(f"\t\tlineageTag: {m['guid']}")
+    lines.append("")
+lines.append("\tcolumn Columna")
+lines.append("\t\tdataType: string")
+lines.append("\t\tisHidden")
+lines.append("\t\tlineageTag: e7471d1f-1a61-503f-bad8-3c82b45a710f")
+lines.append("\t\tsummarizeBy: none")
+lines.append("\t\tsourceColumn: Columna")
+lines.append("")
+lines.append("\tpartition _Medidas = m")
+lines.append("\t\tmode: import")
+lines.append("\t\tsource =")
+lines.append("\t\t\t\tlet")
+lines.append("\t\t\t\t    Origen = #table(type table [Columna = text], {})")
+lines.append("\t\t\t\tin")
+lines.append("\t\t\t\t    Origen")
+lines.append("")
+
+text = unicodedata.normalize("NFC", "\n".join(lines))
+assert "\r" not in text
+with open(OUT, "w", encoding="utf-8", newline="\n") as fh:
+    fh.write(text)
+print(f"{len(MEASURES)} medidas escritas en {OUT}")

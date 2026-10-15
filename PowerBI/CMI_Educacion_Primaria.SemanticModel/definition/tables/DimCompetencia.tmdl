@@ -1,0 +1,179 @@
+/// Competencias evaluadas: las 24 columnas de puntuación del origen (contrato §5.2), con su materia y subcompetencia.
+table DimCompetencia
+	lineageTag: 70faeeb5-4eac-5fbf-948f-02a1cc20d3ab
+
+	/// Clave de la competencia (1-24).
+	column CompetenciaKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e1de0217-97a5-5796-8ae5-36c59627ec57
+		summarizeBy: none
+		sourceColumn: CompetenciaKey
+
+		annotation SummarizationSetBy = User
+
+	/// Nombre de la columna de puntuación en Datos.csv (p. ej. PCAT_CL).
+	column CampoOrigen
+		dataType: string
+		lineageTag: 0a74035f-0c59-552a-aeff-ec203d5cf4d6
+		summarizeBy: none
+		sourceColumn: CampoOrigen
+
+		annotation SummarizationSetBy = User
+
+	/// Código de la materia: columna de su puntuación global (PCAT, PCAST, PMAT, PANG, PFRAN, PMED).
+	column CodigoMateria
+		dataType: string
+		lineageTag: 8dbc1bc8-defa-56d4-83ca-2ad3a70c03ab
+		summarizeBy: none
+		sourceColumn: CodigoMateria
+
+		annotation SummarizationSetBy = User
+
+	/// Materia evaluada.
+	column Materia
+		dataType: string
+		lineageTag: baca7e55-f940-52c4-948c-8e9139264f5d
+		summarizeBy: none
+		sourceColumn: Materia
+		sortByColumn: MateriaOrden
+
+		annotation SummarizationSetBy = User
+
+	/// Orden de presentación de las materias.
+	column MateriaOrden
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 1e75cd1e-b82f-52b1-a977-d15a8aa51464
+		summarizeBy: none
+		sourceColumn: MateriaOrden
+
+		annotation SummarizationSetBy = User
+
+	/// Subcompetencia evaluada, o Global para la puntuación global de la materia.
+	column Subcompetencia
+		dataType: string
+		lineageTag: e850f5e1-cf11-53fa-a959-4fcbb28e2ce4
+		summarizeBy: none
+		sourceColumn: Subcompetencia
+		sortByColumn: SubcompetenciaOrden
+
+		annotation SummarizationSetBy = User
+
+	/// Orden de presentación de la subcompetencia, único por texto: 0 Global, 1 Comprensión lectora, 2 Comprensión oral, 3 Expresión escrita, 4-6 matemáticas, 7-9 ciencias.
+	column SubcompetenciaOrden
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d8618c17-9cad-5a3c-8427-3263472a371e
+		summarizeBy: none
+		sourceColumn: SubcompetenciaOrden
+
+		annotation SummarizationSetBy = User
+
+	/// VERDADERO si es la puntuación global de la materia (base de K01, K03, K06 y K10-K12).
+	column EsGlobal
+		dataType: boolean
+		lineageTag: 02db1911-1739-5a3a-8aaf-0a07b9cd905f
+		summarizeBy: none
+		sourceColumn: EsGlobal
+
+		annotation SummarizationSetBy = User
+
+	/// Primer año con datos de la competencia.
+	column AnioInicio
+		dataType: int64
+		formatString: 0
+		lineageTag: da92ccf8-3a2e-5291-85a0-af10d7b1fa7c
+		summarizeBy: none
+		sourceColumn: AnioInicio
+
+		annotation SummarizationSetBy = User
+
+	/// Último año de la competencia; vacío si sigue vigente.
+	column AnioFin
+		dataType: int64
+		formatString: 0
+		lineageTag: 2210d7ef-3bad-546d-b394-28ee45b605a0
+		summarizeBy: none
+		sourceColumn: AnioFin
+
+		annotation SummarizationSetBy = User
+
+	/// Primer año del diseño actual de la prueba: las comparaciones temporales (K10, K11) solo usan años desde este.
+	column PeriodoDisenoInicio
+		dataType: int64
+		formatString: 0
+		lineageTag: 7fd392fc-5e04-5b0f-8616-120e8ce929ad
+		summarizeBy: none
+		sourceColumn: PeriodoDisenoInicio
+
+		annotation SummarizationSetBy = User
+
+	/// VERDADERO para el francés: muestra pequeña, solo informativo (no entra en K09 ni K12).
+	column EsInformativa
+		dataType: boolean
+		lineageTag: f9323440-d41f-5bcb-98e4-630e847cebfe
+		summarizeBy: none
+		sourceColumn: EsInformativa
+
+		annotation SummarizationSetBy = User
+
+	partition DimCompetencia = m
+		mode: import
+		queryGroup: Dimensiones
+		source =
+				let
+				    // Tabla de códigos §5.2: las 24 columnas de puntuación de Datos.csv. CompetenciaKey es la
+				    // misma que asigna FactPuntuacion. AnioFin = null: competencia vigente. EsInformativa: francés
+				    // (muestra pequeña, solo informativo). PeriodoDisenoInicio: primer año del diseño actual de la prueba.
+				    // SubcompetenciaOrden es global por texto (0 Global, 1 CL, 2 CO, 3 EE, 4-6 matemáticas, 7-9 ciencias):
+				    // un único valor por texto de Subcompetencia, para poder usarlo como su sortByColumn.
+				    Resultado = #table(
+				        type table [
+				            CompetenciaKey = Int64.Type,
+				            CampoOrigen = text,
+				            CodigoMateria = text,
+				            Materia = text,
+				            MateriaOrden = Int64.Type,
+				            Subcompetencia = text,
+				            SubcompetenciaOrden = Int64.Type,
+				            EsGlobal = logical,
+				            AnioInicio = Int64.Type,
+				            AnioFin = Int64.Type,
+				            PeriodoDisenoInicio = Int64.Type,
+				            EsInformativa = logical
+				        ],
+				        {
+				            {1, "PCAT", "PCAT", "Lengua catalana", 1, "Global", 0, true, 2009, null, 2018, false},
+				            {2, "PCAT_CL", "PCAT", "Lengua catalana", 1, "Comprensión lectora", 1, false, 2009, null, 2018, false},
+				            {3, "PCAT_EE", "PCAT", "Lengua catalana", 1, "Expresión escrita", 3, false, 2009, null, 2018, false},
+				            {4, "PCAT_CO", "PCAT", "Lengua catalana", 1, "Comprensión oral", 2, false, 2018, null, 2018, false},
+				            {5, "PCAST", "PCAST", "Lengua castellana", 2, "Global", 0, true, 2009, null, 2018, false},
+				            {6, "PCAST_CL", "PCAST", "Lengua castellana", 2, "Comprensión lectora", 1, false, 2009, null, 2018, false},
+				            {7, "PCAST_EE", "PCAST", "Lengua castellana", 2, "Expresión escrita", 3, false, 2009, null, 2018, false},
+				            {8, "PCAST_CO", "PCAST", "Lengua castellana", 2, "Comprensión oral", 2, false, 2018, null, 2018, false},
+				            {9, "PMAT", "PMAT", "Matemáticas", 3, "Global", 0, true, 2009, null, 2017, false},
+				            {10, "PMAT_NC", "PMAT", "Matemáticas", 3, "Numeración y cálculo", 4, false, 2009, null, 2017, false},
+				            {11, "PMAT_EFM", "PMAT", "Matemáticas", 3, "Espacio, medida y datos", 5, false, 2009, null, 2017, false},
+				            {12, "PMAT_CR", "PMAT", "Matemáticas", 3, "Relaciones y cambio", 6, false, 2009, null, 2017, false},
+				            {13, "PANG", "PANG", "Lengua inglesa", 4, "Global", 0, true, 2010, null, 2016, false},
+				            {14, "PANG_CO", "PANG", "Lengua inglesa", 4, "Comprensión oral", 2, false, 2010, null, 2017, false},
+				            {15, "PANG_CE", "PANG", "Lengua inglesa", 4, "Comprensión lectora", 1, false, 2010, null, 2017, false},
+				            {16, "PANG_EE", "PANG", "Lengua inglesa", 4, "Expresión escrita", 3, false, 2013, null, 2017, false},
+				            {17, "PFRAN", "PFRAN", "Lengua francesa", 5, "Global", 0, true, 2010, null, 2016, true},
+				            {18, "PFRAN_CO", "PFRAN", "Lengua francesa", 5, "Comprensión oral", 2, false, 2010, null, 2017, true},
+				            {19, "PFRAN_CE", "PFRAN", "Lengua francesa", 5, "Comprensión lectora", 1, false, 2010, null, 2017, true},
+				            {20, "PFRAN_EE", "PFRAN", "Lengua francesa", 5, "Expresión escrita", 3, false, 2013, null, 2017, true},
+				            {21, "PMED", "PMED", "Ciencias", 6, "Global", 0, true, 2018, null, 2018, false},
+				            {22, "PMED_COMP1", "PMED", "Ciencias", 6, "Explicar fenómenos naturales y tecnológicos", 7, false, 2018, null, 2018, false},
+				            {23, "PMED_COMP2", "PMED", "Ciencias", 6, "Reconocer la investigación científica", 8, false, 2018, null, 2018, false},
+				            {24, "PMED_COMP3", "PMED", "Ciencias", 6, "Interpretar datos y pruebas científicas", 9, false, 2018, null, 2018, false}
+				        }
+				    )
+				in
+				    Resultado
+
+	annotation PBI_ResultType = Table

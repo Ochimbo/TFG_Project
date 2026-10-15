@@ -1,0 +1,310 @@
+/// Ruta completa del fichero Datos.csv (Avaluació de sisè, 32 columnas). Ajustar antes de actualizar.
+expression RutaDatos = "C:\TFG_Project\Datos.csv" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: f4da9f65-ba17-52cd-bb95-b272a5d72d7a
+	queryGroup: Parámetros
+
+	annotation PBI_ResultType = Text
+
+/// ETL compartida (no se carga): lee Datos.csv y aplica las reglas R01-R21 del informe de calidad. Una fila por registro con claves deterministas y las 24 puntuaciones corregidas.
+expression stg_Evaluaciones =
+		let
+		    // ETL compartida del CMI (contrato de diseño §2). No se carga en el modelo: la usan
+		    // FactEvaluacion, FactPuntuacion y DimAnio. Una fila por registro de Datos.csv.
+		    // Columnas del fichero de origen, en su orden (32 columnas)
+		    ColumnasCsv = {
+		        "ANY", "CODI_ALUMNE", "PCAT", "PCAT_CL", "PCAT_EE", "PCAST", "PCAST_CL", "PCAST_EE",
+		        "PMAT", "PMAT_NC", "PMAT_EFM", "PMAT_CR", "PANG", "PANG_CO", "PANG_CE", "PFRAN",
+		        "PFRAN_CO", "PFRAN_CE", "PANG_EE", "PFRAN_EE", "PCAT_CO", "PCAST_CO", "PMED",
+		        "PMED_COMP1", "PMED_COMP2", "PMED_COMP3", "GENERE", "MES_NAIXEMENT", "ANY_NAIXEMENT",
+		        "AREA_TERRITORIAL", "NATURALESA", "HÀBITAT"
+		    },
+		    // Las 24 columnas de puntuación (contrato §5.2)
+		    CamposPuntuacion = {
+		        "PCAT", "PCAT_CL", "PCAT_EE", "PCAT_CO", "PCAST", "PCAST_CL", "PCAST_EE", "PCAST_CO",
+		        "PMAT", "PMAT_NC", "PMAT_EFM", "PMAT_CR", "PANG", "PANG_CO", "PANG_CE", "PANG_EE",
+		        "PFRAN", "PFRAN_CO", "PFRAN_CE", "PFRAN_EE", "PMED", "PMED_COMP1", "PMED_COMP2", "PMED_COMP3"
+		    },
+		    // Texto legible de un valor para los mensajes de error
+		    TextoValor = (valor as nullable text) as text => if valor = null then "(vacío)" else valor,
+		    // Lectura: todas las columnas entran como texto (sin detección automática de tipos)
+		    Origen = Csv.Document(
+		        File.Contents(RutaDatos),
+		        [Delimiter = ",", Columns = 32, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+		    ),
+		    ConEncabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+		    // Si la cabecera del fichero cambia, la actualización se detiene
+		    CabeceraComprobada =
+		        if Table.ColumnNames(ConEncabezados) = ColumnasCsv then ConEncabezados
+		        else error Error.Record(
+		            "Estructura de Datos.csv",
+		            "La cabecera no coincide con las 32 columnas esperadas.",
+		            [Encontradas = Text.Combine(Table.ColumnNames(ConEncabezados), ", ")]
+		        ),
+		    // R01: EvaluacionID = posición del registro en el fichero (1..N), ANTES de cualquier filtro
+		    ConID = Table.AddIndexColumn(CabeceraComprobada, "EvaluacionID", 1, 1, Int64.Type),
+		    // R05: Text.Trim en todas las columnas y cadena vacía -> null
+		    Recortado = Table.TransformColumns(
+		        ConID,
+		        List.Transform(
+		            ColumnasCsv,
+		            (columna) => {
+		                columna,
+		                (valor) => let t = if valor = null then null else Text.Trim(valor) in if t = "" then null else t,
+		                type nullable text
+		            }
+		        )
+		    ),
+		    // R02: cada puntuación se convierte con Number.FromText(texto, "es-ES") sobre el texto
+		    // original (coma decimal; no se reemplaza ningún carácter). Si no se puede convertir o queda
+		    // fuera de [0, 100], la celda toma un Error.Record que después detiene la actualización.
+		    ConvertirPuntuacion = (columna as text, valor as nullable text) as nullable number =>
+		        if valor = null then null
+		        else
+		            let
+		                Numero = try Number.FromText(valor, "es-ES") otherwise null
+		            in
+		                if Numero <> null and Numero >= 0 and Numero <= 100 then Numero
+		                else error Error.Record(
+		                    "R02 Puntuación no válida",
+		                    "La columna " & columna & " contiene «" & valor & "», que no es un número es-ES dentro de [0, 100].",
+		                    [Columna = columna, Valor = valor]
+		                ),
+		    Puntuaciones = Table.TransformColumns(
+		        Recortado,
+		        List.Transform(CamposPuntuacion, (columna) => {columna, (valor) => ConvertirPuntuacion(columna, valor), type nullable number})
+		    ),
+		    // Año de la convocatoria (ANY) como entero; un año vacío o no numérico detiene la actualización
+		    ConAnio = Table.TransformColumns(
+		        Table.RenameColumns(Puntuaciones, {{"ANY", "Anio"}}),
+		        {{
+		            "Anio",
+		            (valor) =>
+		                let
+		                    Numero = if valor = null then null else try Number.FromText(valor, "es-ES") otherwise null
+		                in
+		                    if Numero <> null and Numero = Number.RoundDown(Numero) then Int64.From(Numero)
+		                    else error Error.Record(
+		                        "Año no válido",
+		                        "La columna ANY contiene «" & TextoValor(valor) & "», que no es un año.",
+		                        [Valor = valor]
+		                    ),
+		            Int64.Type
+		        }}
+		    ),
+		    // R03 (castellano 2017) y R04 (francés 2016): en esos años las columnas llegan desordenadas.
+		    // Cada terna es {columna destino, columna origen, año}: en ese año, destino := origen ORIGINAL.
+		    // Las columnas corregidas se calculan todas a partir de las columnas originales y solo después
+		    // sustituyen a estas, así que la asignación es simultánea (nunca se lee un valor ya rotado).
+		    Rotaciones = {
+		        {"PCAST", "PCAST_EE", 2017}, {"PCAST_CL", "PCAST", 2017}, {"PCAST_EE", "PCAST_CL", 2017},
+		        {"PFRAN", "PFRAN_EE", 2016}, {"PFRAN_CO", "PFRAN", 2016}, {"PFRAN_CE", "PFRAN_CO", 2016},
+		        {"PFRAN_EE", "PFRAN_CE", 2016}
+		    },
+		    ConCorregidas = List.Accumulate(
+		        Rotaciones,
+		        ConAnio,
+		        (tabla, rotacion) => Table.AddColumn(
+		            tabla,
+		            rotacion{0} & "_Corregida",
+		            (fila) => if fila[Anio] = rotacion{2} then Record.Field(fila, rotacion{1}) else Record.Field(fila, rotacion{0}),
+		            type nullable number
+		        )
+		    ),
+		    SinDesordenadas = Table.RemoveColumns(ConCorregidas, List.Transform(Rotaciones, (rotacion) => rotacion{0})),
+		    Rotado = Table.RenameColumns(SinDesordenadas, List.Transform(Rotaciones, (rotacion) => {rotacion{0} & "_Corregida", rotacion{0}})),
+		    // R09: género. "H"/"Home" -> 2 (Niño); "D"/"Dona" -> 1 (Niña); otro valor -> error
+		    ConGenero = Table.AddColumn(
+		        Rotado,
+		        "GeneroCodigo",
+		        each
+		            if List.Contains({"H", "Home"}, [GENERE]) then 2
+		            else if List.Contains({"D", "Dona"}, [GENERE]) then 1
+		            else error Error.Record(
+		                "R09 Género no reconocido",
+		                "La columna GENERE contiene «" & TextoValor([GENERE]) & "».",
+		                [Valor = [GENERE]]
+		            ),
+		        Int64.Type
+		    ),
+		    // R10: naturaleza. "Públic"/"Pública" -> 1; "Privat"/"Privada" -> 2 (incluye concertada); otro -> error
+		    ConNaturaleza = Table.AddColumn(
+		        ConGenero,
+		        "NaturalezaCodigo",
+		        each
+		            if List.Contains({"Públic", "Pública"}, [NATURALESA]) then 1
+		            else if List.Contains({"Privat", "Privada"}, [NATURALESA]) then 2
+		            else error Error.Record(
+		                "R10 Naturaleza no reconocida",
+		                "La columna NATURALESA contiene «" & TextoValor([NATURALESA]) & "».",
+		                [Valor = [NATURALESA]]
+		            ),
+		        Int64.Type
+		    ),
+		    // R11: hábitat a 3 categorías por prefijo ("Fins a ..." -> 1; "De 10001 a 100000" -> 2;
+		    // "Més de ..." -> 3); cualquier otro texto -> error
+		    ConHabitat = Table.AddColumn(
+		        ConNaturaleza,
+		        "HabitatMapeado",
+		        each
+		            let
+		                Habitat = [#"HÀBITAT"]
+		            in
+		                if Habitat <> null and Text.StartsWith(Habitat, "Fins a") then 1
+		                else if Habitat = "De 10001 a 100000" then 2
+		                else if Habitat <> null and Text.StartsWith(Habitat, "Més de") then 3
+		                else error Error.Record(
+		                    "R11 Hábitat no reconocido",
+		                    "La columna HÀBITAT contiene «" & TextoValor(Habitat) & "».",
+		                    [Valor = Habitat]
+		                ),
+		        Int64.Type
+		    ),
+		    // §5.1: texto del área -> AreaCodigo ("Barcelona Comarques" depende del año, ver R14)
+		    CodigosArea = [
+		        #"Alt Pirineu i Aran" = 1,
+		        #"Baix Llobregat" = 2,
+		        #"Barcelonès" = 5,
+		        #"Catalunya Central" = 6,
+		        #"Consorci d'Educació de Barcelona" = 7,
+		        #"Girona" = 8,
+		        #"Lleida" = 9,
+		        #"Maresme - Vallès Oriental" = 10,
+		        #"Penedès" = 11,
+		        #"Tarragona" = 12,
+		        #"Terres de l'Ebre" = 13,
+		        #"Vallès Occidental" = 14
+		    ],
+		    // R13: área vacía -> 99 "Desconocida". R14: "Barcelona Comarques" -> 4 en 2024 (perímetro
+		    // nuevo, equivale al Barcelonès) y 3 hasta 2023. Un área no reconocida detiene la actualización.
+		    ConArea = Table.AddColumn(
+		        ConHabitat,
+		        "AreaCodigo",
+		        each
+		            let
+		                Area = [AREA_TERRITORIAL]
+		            in
+		                if Area = null then 99
+		                else if Area = "Barcelona Comarques" and [Anio] = 2024 then 4
+		                else if Area = "Barcelona Comarques" and [Anio] <= 2023 then 3
+		                else if Record.HasFields(CodigosArea, Area) then Record.Field(CodigosArea, Area)
+		                else error Error.Record(
+		                    "Área territorial desconocida",
+		                    "La columna AREA_TERRITORIAL contiene «" & Area & "» en el año " & Text.From([Anio]) & ".",
+		                    [Valor = Area, Anio = [Anio]]
+		                ),
+		        Int64.Type
+		    ),
+		    // Comprobación de R02, R09, R10, R11, área y año. Power BI cargaría una celda con error como
+		    // vacía y solo mostraría un aviso; por eso se busca la primera fila con algún error y su
+		    // Error.Record se eleva a toda la consulta: la actualización FALLA con el mensaje de la regla.
+		    ColumnasValidadas = {"Anio", "GeneroCodigo", "NaturalezaCodigo", "HabitatMapeado", "AreaCodigo"} & CamposPuntuacion,
+		    FilasConError = Table.SelectRowsWithErrors(ConArea, ColumnasValidadas),
+		    Validado =
+		        if Table.IsEmpty(FilasConError) then ConArea
+		        else
+		            let
+		                Fila = Table.First(FilasConError),
+		                Intentos = List.Transform(ColumnasValidadas, (columna) => try Record.Field(Fila, columna)),
+		                PrimerError = List.First(List.Select(Intentos, (intento) => intento[HasError]))[Error]
+		            in
+		                error Error.Record(
+		                    PrimerError[Reason],
+		                    PrimerError[Message] & " (EvaluacionID " & Text.From(Fila[EvaluacionID]) & ")",
+		                    PrimerError[Detail]
+		                ),
+		    // R12: el hábitat de 2010 no es fiable -> 0; también el bloque incoherente de 2014
+		    // (Baix Llobregat con "Més de 100000") -> 0. Se aplica DESPUÉS de mapear (R11).
+		    ConHabitatFinal = Table.AddColumn(
+		        Validado,
+		        "HabitatCodigo",
+		        each
+		            if [Anio] = 2010 then 0
+		            else if [Anio] = 2014 and [AREA_TERRITORIAL] = "Baix Llobregat" and [#"HÀBITAT"] = "Més de 100000" then 0
+		            else [HabitatMapeado],
+		        Int64.Type
+		    ),
+		    // Año y mes de nacimiento como enteros (null si faltan o no son números enteros)
+		    EnteroONulo = (valor as nullable text) as nullable number =>
+		        let
+		            Numero = if valor = null then null else try Number.FromText(valor, "es-ES") otherwise null
+		        in
+		            if Numero <> null and Numero = Number.RoundDown(Numero) then Int64.From(Numero) else null,
+		    ConAnioNacimiento = Table.AddColumn(ConHabitatFinal, "AnioNacimiento", each EnteroONulo([ANY_NAIXEMENT]), Int64.Type),
+		    ConMesLeido = Table.AddColumn(ConAnioNacimiento, "MesLeido", each EnteroONulo([MES_NAIXEMENT]), Int64.Type),
+		    // R19: fecha de nacimiento de relleno (sin CODI_ALUMNE en 2016 y 2018, o 01/2001 en 2016)
+		    ConFechaDudosa = Table.AddColumn(
+		        ConMesLeido,
+		        "FechaNacimientoDudosa",
+		        each
+		            ([CODI_ALUMNE] = null and List.Contains({2016, 2018}, [Anio]))
+		            or ([Anio] = 2016 and [AnioNacimiento] = 2001 and [MesLeido] = 1),
+		        type logical
+		    ),
+		    // R16: edad en el año natural = Anio - ANY_NAIXEMENT (null si falta). R17: fuera de [10, 14]
+		    // -> null. R18: en 2010 -> null. R19: fecha dudosa -> null.
+		    ConEdad = Table.AddColumn(
+		        ConFechaDudosa,
+		        "EdadAnioNatural",
+		        each
+		            let
+		                EdadBruta = if [AnioNacimiento] = null then null else [Anio] - [AnioNacimiento]
+		            in
+		                if [Anio] = 2010 then null
+		                else if [FechaNacimientoDudosa] then null
+		                else if EdadBruta <> null and EdadBruta >= 10 and EdadBruta <= 14 then EdadBruta
+		                else null,
+		        Int64.Type
+		    ),
+		    // Mes de nacimiento 1..12; 0 si falta o está fuera de rango
+		    ConMesNacimiento = Table.AddColumn(
+		        ConEdad,
+		        "MesNacimiento",
+		        each if [MesLeido] <> null and [MesLeido] >= 1 and [MesLeido] <= 12 then [MesLeido] else 0,
+		        Int64.Type
+		    ),
+		    // R21: situación de edad (8 = no fiable 2010; 9 = desconocida; 4 = adelantado;
+		    // 1 = edad teórica; 2 = retraso de 1 año; 3 = retraso de 2 años), en este orden
+		    ConSituacionEdad = Table.AddColumn(
+		        ConMesNacimiento,
+		        "SituacionEdadCodigo",
+		        each
+		            if [Anio] = 2010 then 8
+		            else if [EdadAnioNatural] = null then 9
+		            else if [EdadAnioNatural] < 12 then 4
+		            else if [EdadAnioNatural] = 12 then 1
+		            else if [EdadAnioNatural] = 13 then 2
+		            else 3,
+		        Int64.Type
+		    ),
+		    // Claves deterministas (contrato §2.11): se calculan con aritmética, sin combinar consultas
+		    ConAnioKey = Table.AddColumn(ConSituacionEdad, "AnioKey", each [Anio], Int64.Type),
+		    ConContextoKey = Table.AddColumn(
+		        ConAnioKey,
+		        "ContextoKey",
+		        each [AreaCodigo] * 100 + [NaturalezaCodigo] * 10 + [HabitatCodigo],
+		        Int64.Type
+		    ),
+		    ConPerfilKey = Table.AddColumn(
+		        ConContextoKey,
+		        "PerfilKey",
+		        each
+		            [GeneroCodigo] * 100000 + [SituacionEdadCodigo] * 10000
+		            + (if [EdadAnioNatural] = null then 0 else [EdadAnioNatural]) * 100 + [MesNacimiento],
+		        Int64.Type
+		    ),
+		    // TieneCodigoAlumno; CODI_ALUMNE no pasa al modelo (privacidad y memoria)
+		    ConTieneCodigo = Table.AddColumn(ConPerfilKey, "TieneCodigoAlumno", each [CODI_ALUMNE] <> null, type logical),
+		    Resultado = Table.SelectColumns(
+		        ConTieneCodigo,
+		        {
+		            "EvaluacionID", "Anio", "AnioKey", "ContextoKey", "PerfilKey", "TieneCodigoAlumno",
+		            "GeneroCodigo", "NaturalezaCodigo", "HabitatCodigo", "AreaCodigo", "EdadAnioNatural",
+		            "SituacionEdadCodigo", "MesNacimiento", "FechaNacimientoDudosa"
+		        } & CamposPuntuacion
+		    )
+		in
+		    Resultado
+	lineageTag: fce7e88a-8e6f-5089-962a-58c20ff2b30a
+	queryGroup: Staging
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json",
+  "name": "Tactico_Inspeccion",
+  "displayName": "Táctico - Inspección",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "visualInteractions": [
+    {
+      "source": "p2_seg_anio",
+      "target": "p2_linea_k01_serie",
+      "type": "NoFilter"
+    },
+    {
+      "source": "p2_seg_area",
+      "target": "p2_barras_k07_area",
+      "type": "NoFilter"
+    }
+  ]
+}

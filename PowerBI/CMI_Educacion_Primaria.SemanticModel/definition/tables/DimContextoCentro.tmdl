@@ -1,0 +1,206 @@
+/// Contexto del centro: área territorial x naturaleza x hábitat (15 x 2 x 4 = 120 filas). Clave = AreaCodigo * 100 + NaturalezaCodigo * 10 + HabitatCodigo.
+table DimContextoCentro
+	lineageTag: 477c0f81-0289-59c9-a584-3aed2b4a8e30
+
+	/// Clave determinista: AreaCodigo * 100 + NaturalezaCodigo * 10 + HabitatCodigo.
+	column ContextoKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7b7a5d6c-37fd-5ded-84a4-4428e20d5032
+		summarizeBy: none
+		sourceColumn: ContextoKey
+
+		annotation SummarizationSetBy = User
+
+	/// Código del área (contrato §5.1). 3 = Barcelona Comarques hasta 2023; 4 = Barcelona Comarques en 2024 (perímetro del Barcelonès); 99 = desconocida (R13, R14).
+	column AreaCodigo
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: cc7cbe6f-143d-5697-ade4-9e82e12ca83e
+		summarizeBy: none
+		sourceColumn: AreaCodigo
+
+		annotation SummarizationSetBy = User
+
+	/// Área territorial tal como la publica el Departament (los códigos 3 y 4 comparten el nombre Barcelona Comarques).
+	column AreaTerritorial
+		dataType: string
+		lineageTag: 37b767ea-765c-5a6b-9677-bbc8b3a0b4fc
+		summarizeBy: none
+		sourceColumn: AreaTerritorial
+		sortByColumn: AreaOrden
+
+		annotation SummarizationSetBy = User
+
+	/// Área expresada con el perímetro territorial vigente en 2025 (R14).
+	column AreaPerimetro2025
+		dataType: string
+		lineageTag: c3de7ab9-b4e2-5ef8-a8f0-23d7254dfdaf
+		summarizeBy: none
+		sourceColumn: AreaPerimetro2025
+
+		annotation SummarizationSetBy = User
+
+	/// Agrupación de áreas con serie temporal comparable a pesar de los cambios de perímetro de 2024-2025.
+	column AreaSerieComparable
+		dataType: string
+		lineageTag: 5df98364-12b2-58ff-8bd2-f785120e2b93
+		summarizeBy: none
+		sourceColumn: AreaSerieComparable
+
+		annotation SummarizationSetBy = User
+
+	/// VERDADERO si el área cambió de perímetro y su serie no es comparable sin agrupar.
+	column AreaConRupturaSerie
+		dataType: boolean
+		lineageTag: 03e3f452-8c72-53df-9209-abf6ebb27869
+		summarizeBy: none
+		sourceColumn: AreaConRupturaSerie
+
+		annotation SummarizationSetBy = User
+
+	/// VERDADERO en Girona y Maresme - Vallès Oriental, cuya clasificación de hábitat cambió en 2024.
+	column RupturaHabitat2024
+		dataType: boolean
+		lineageTag: 69618dce-0fa8-503c-9363-31d59a088394
+		summarizeBy: none
+		sourceColumn: RupturaHabitat2024
+
+		annotation SummarizationSetBy = User
+
+	/// Titularidad del centro: Pública o Privada (incluye la concertada) (R10).
+	column Naturaleza
+		dataType: string
+		lineageTag: b2ebe6cf-660b-51a5-81e1-d1c525e39ab4
+		summarizeBy: none
+		sourceColumn: Naturaleza
+		sortByColumn: NaturalezaCodigo
+
+		annotation SummarizationSetBy = User
+
+	/// 1 = Pública, 2 = Privada.
+	column NaturalezaCodigo
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 8279f9bd-78f4-5eb7-8993-3bbd43a8e561
+		summarizeBy: none
+		sourceColumn: NaturalezaCodigo
+
+		annotation SummarizationSetBy = User
+
+	/// Tamaño del municipio del centro (R11). No fiable: 2010 y bloque incoherente de 2014 (R12).
+	column Habitat
+		dataType: string
+		lineageTag: ea5427c1-1d37-5228-8d20-48345d69f893
+		summarizeBy: none
+		sourceColumn: Habitat
+		sortByColumn: HabitatCodigo
+
+		annotation SummarizationSetBy = User
+
+	/// 0 = No fiable, 1 = hasta 10.000 hab., 2 = de 10.001 a 100.000 hab., 3 = más de 100.000 hab.
+	column HabitatCodigo
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 3b770386-585a-50e8-8beb-558a31f0bd6a
+		summarizeBy: none
+		sourceColumn: HabitatCodigo
+
+		annotation SummarizationSetBy = User
+
+	/// Orden de presentación de las áreas (= AreaCodigo, salvo el código 4, que toma el 3 para que Barcelona Comarques tenga un único orden).
+	column AreaOrden
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 81e74529-0720-5768-b73d-7fb9d57b3ff4
+		summarizeBy: none
+		sourceColumn: AreaOrden
+
+		annotation SummarizationSetBy = User
+
+	partition DimContextoCentro = m
+		mode: import
+		queryGroup: Dimensiones
+		source =
+				let
+				    // §5.1 Áreas: {AreaCodigo, AreaTerritorial, AreaPerimetro2025, AreaSerieComparable,
+				    // AreaConRupturaSerie, RupturaHabitat2024}. R13: 99 = área vacía. R14: el código 3 es
+				    // "Barcelona Comarques" hasta 2023 y el 4 el mismo nombre en 2024 (perímetro del Barcelonès).
+				    Areas = {
+				        {1, "Alt Pirineu i Aran", "Alt Pirineu i Aran", "Lleida + Alt Pirineu i Aran", true, false},
+				        {2, "Baix Llobregat", "Baix Llobregat", "Baix Llobregat", false, false},
+				        {3, "Barcelona Comarques", "Barcelona Comarques (perímetro hasta 2023)", "Barcelonès-Penedès y áreas afectadas", true, false},
+				        {4, "Barcelona Comarques", "Barcelonès", "Barcelonès-Penedès y áreas afectadas", true, false},
+				        {5, "Barcelonès", "Barcelonès", "Barcelonès-Penedès y áreas afectadas", true, false},
+				        {6, "Catalunya Central", "Catalunya Central", "Barcelonès-Penedès y áreas afectadas", true, false},
+				        {7, "Consorci d'Educació de Barcelona", "Consorci d'Educació de Barcelona", "Consorci d'Educació de Barcelona", false, false},
+				        {8, "Girona", "Girona", "Girona", false, true},
+				        {9, "Lleida", "Lleida", "Lleida + Alt Pirineu i Aran", true, false},
+				        {10, "Maresme - Vallès Oriental", "Maresme - Vallès Oriental", "Maresme - Vallès Oriental", false, true},
+				        {11, "Penedès", "Penedès", "Barcelonès-Penedès y áreas afectadas", true, false},
+				        {12, "Tarragona", "Tarragona", "Barcelonès-Penedès y áreas afectadas", true, false},
+				        {13, "Terres de l'Ebre", "Terres de l'Ebre", "Terres de l'Ebre", false, false},
+				        {14, "Vallès Occidental", "Vallès Occidental", "Vallès Occidental", false, false},
+				        {99, "Desconocida", "Desconocida", "Desconocida", false, false}
+				    },
+				    // R10: {NaturalezaCodigo, Naturaleza}; "Privada" incluye la concertada
+				    Naturalezas = {{1, "Pública"}, {2, "Privada"}},
+				    // R11 y R12: {HabitatCodigo, Habitat}; 0 = no fiable (2010 y bloque incoherente de 2014)
+				    Habitats = {{0, "No fiable"}, {1, "Hasta 10.000 hab."}, {2, "De 10.001 a 100.000 hab."}, {3, "Más de 100.000 hab."}},
+				    // Producto cartesiano 15 x 2 x 4 = 120 filas. ContextoKey usa la misma fórmula que
+				    // stg_Evaluaciones: AreaCodigo * 100 + NaturalezaCodigo * 10 + HabitatCodigo. AreaOrden = AreaCodigo,
+				    // salvo el código 4, que toma el orden 3: así cada texto de AreaTerritorial tiene un único valor de
+				    // orden y AreaOrden puede ser su sortByColumn.
+				    Filas = List.Combine(
+				        List.Transform(
+				            Areas,
+				            (area) => List.Combine(
+				                List.Transform(
+				                    Naturalezas,
+				                    (naturaleza) => List.Transform(
+				                        Habitats,
+				                        (habitat) => {
+				                            area{0} * 100 + naturaleza{0} * 10 + habitat{0},
+				                            area{0},
+				                            area{1},
+				                            area{2},
+				                            area{3},
+				                            area{4},
+				                            area{5},
+				                            naturaleza{1},
+				                            naturaleza{0},
+				                            habitat{1},
+				                            habitat{0},
+				                            if area{0} = 4 then 3 else area{0}
+				                        }
+				                    )
+				                )
+				            )
+				        )
+				    ),
+				    Resultado = #table(
+				        type table [
+				            ContextoKey = Int64.Type,
+				            AreaCodigo = Int64.Type,
+				            AreaTerritorial = text,
+				            AreaPerimetro2025 = text,
+				            AreaSerieComparable = text,
+				            AreaConRupturaSerie = logical,
+				            RupturaHabitat2024 = logical,
+				            Naturaleza = text,
+				            NaturalezaCodigo = Int64.Type,
+				            Habitat = text,
+				            HabitatCodigo = Int64.Type,
+				            AreaOrden = Int64.Type
+				        ],
+				        Filas
+				    )
+				in
+				    Resultado
+
+	annotation PBI_ResultType = Table

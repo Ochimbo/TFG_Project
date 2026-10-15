@@ -1,0 +1,735 @@
+{
+ "synth": {
+  "report_path": "/home/kiara-rodriguez-uribe/Uni/TFG_Project/Documentation/Docu_final/Docu_Parcial/01_Informe_calidad_datos.md",
+  "cleaning_rules": [
+   {
+    "id": "R01",
+    "column": "Todas (carga)",
+    "rule": "Leer el CSV en UTF-8, separador coma, todas las columnas como texto. Añadir EvaluacionID = número de línea del CSV (2..1.102.325) ANTES de filtrar u ordenar. Comprobar 32 columnas, 1.102.324 filas y EvaluacionID sin repeticiones.",
+    "rows_affected": "1.102.324",
+    "based_on": "OTR-01, COD-01"
+   },
+   {
+    "id": "R02",
+    "column": "Las 24 columnas de puntuación",
+    "rule": "Validar sobre el texto original el patrón ^\\d{1,3},\\d{2}$ y el rango [0,100]; si alguno falla, la carga falla. Convertir con cultura es-ES directamente sobre el texto original (o reemplazar la coma por punto y convertir con en-US, sin mezclar las dos vías). Tipo decimal fijo. Vacío -> null (no presentado), nunca 0.",
+    "rows_affected": "17.728.085 celdas",
+    "based_on": "PUN-01"
+   },
+   {
+    "id": "R03",
+    "column": "PCAST, PCAST_CL, PCAST_EE",
+    "rule": "Si ANY=2017, asignar a la vez y desde las columnas originales: PCAST := PCAST_EE_orig; PCAST_CL := PCAST_orig; PCAST_EE := PCAST_CL_orig. Prueba de regresión: global ≈ 0,6·CL + 0,4·EE en ≥99 % de las filas.",
+    "rows_affected": "71.036",
+    "based_on": "PUN-02"
+   },
+   {
+    "id": "R04",
+    "column": "PFRAN, PFRAN_CO, PFRAN_CE, PFRAN_EE",
+    "rule": "Si ANY=2016, asignar a la vez y desde las columnas originales: PFRAN := PFRAN_EE_orig; PFRAN_CO := PFRAN_orig; PFRAN_CE := PFRAN_CO_orig; PFRAN_EE := PFRAN_CE_orig. Prueba: global = 0,35·CO + 0,50·CE + 0,15·EE en el 100 % de las filas.",
+    "rows_affected": "389",
+    "based_on": "PUN-03"
+   },
+   {
+    "id": "R05",
+    "column": "Columnas de texto (CODI_ALUMNE, GENERE, AREA_TERRITORIAL, NATURALESA, HÀBITAT, ANY, MES/ANY_NAIXEMENT)",
+    "rule": "Text.Trim y cadena vacía -> null antes de cualquier mapeo (salvaguarda; hoy hay 0 espacios y 0 \"\").",
+    "rows_affected": "0",
+    "based_on": "OTR-01"
+   },
+   {
+    "id": "R06",
+    "column": "CODI_ALUMNE",
+    "rule": "Guardar como texto, nunca como número ni como clave; vacío -> null; TieneCodigo = CODI_ALUMNE no nulo. Contar evaluaciones con COUNTROWS(FactEvaluacion), nunca con DISTINCTCOUNT del código.",
+    "rows_affected": "448.816 nulos (2009-2015: 448.758; 2016: 47; 2018: 11)",
+    "based_on": "COD-01, COD-04, PUN-20"
+   },
+   {
+    "id": "R07",
+    "column": "CODI_ALUMNE",
+    "rule": "No deduplicar. FlagCodigoDuplicadoAnio = el código tiene más de una fila en el mismo ANY (solo 2483875190 en 2017). Documentar sin tocar las 11 filas idénticas en las 32 columnas (2009: 3, 2011: 2, 2012: 2, 2014: 4).",
+    "rows_affected": "2 marcadas + 11 documentadas",
+    "based_on": "COD-02, PUN-20, OTR-01"
+   },
+   {
+    "id": "R08",
+    "column": "CODI_ALUMNE, GENERE, MES/ANY_NAIXEMENT",
+    "rule": "Con la convocatoria anterior por IndiceConvocatoria-1 (no ANY-1) y una tabla de convocatoria anterior sin claves duplicadas (drop_duplicates / Table.Distinct por código y año): CodigoEnConvocatoriaAnterior = el código existe en la convocatoria anterior; RepeticionProbable = además coinciden el GeneroCod normalizado y la fecha de nacimiento, tratando como desconocidos el mes 1 de 2016 y la fecha 1/2001. No fusionar filas.",
+    "rows_affected": "914 marcadas; 910 repeticiones probables; 4 posibles colisiones; 1.828 filas implicadas",
+    "based_on": "COD-03"
+   },
+   {
+    "id": "R09",
+    "column": "GENERE",
+    "rule": "'H' o 'Home' -> GeneroCod 'H', Genero 'Niño'; 'D' o 'Dona' -> 'D', 'Niña'; cualquier otro valor -> null, 'Desconocido' (hoy 0).",
+    "rows_affected": "73.674 recodificadas (2021)",
+    "based_on": "GEN-01"
+   },
+   {
+    "id": "R10",
+    "column": "NATURALESA",
+    "rule": "'Públic' o 'Pública' -> 'Pública'; 'Privat' o 'Privada' -> 'Privada' (incluye la concertada); cualquier otro valor -> 'Desconocida' (hoy 0; comprobar en la carga que sigue en 0).",
+    "rows_affected": "139.291 recodificadas (2024-2025)",
+    "based_on": "NAT-01"
+   },
+   {
+    "id": "R11",
+    "column": "HÀBITAT",
+    "rule": "Mapeo por prefijo: 'Fins a %' -> 1 'Hasta 10.000 hab.'; 'De 10001 a 100000' -> 2 'De 10.001 a 100.000 hab.'; 'Més de %' -> 3 'Más de 100.000 hab.'; cualquier otro valor -> null y la carga falla (en pandas, np.select con default nulo, no 0). FlagHabitatTextoAnomalo = el texto es 'Fins a N' con N distinto de 10000.",
+    "rows_affected": "13.357 marcadas (2024); 53.512 'Més de 100001' recodificadas",
+    "based_on": "HAB-01, HAB-02"
+   },
+   {
+    "id": "R12",
+    "column": "HÀBITAT",
+    "rule": "Si ANY=2010 -> HabitatCod 0 'No fiable (2010)' y HabitatFiable=false (desalineado por bloques: al menos 15.186 filas mal asignadas). Si ANY=2014, AREA='Baix Llobregat' y HÀBITAT='Més de 100000' -> FlagHabitatIncoherenteArea=true y HabitatFiable=false. En el resto, HabitatFiable=true.",
+    "rows_affected": "59.358 (59.329 de 2010 + 29 de 2014)",
+    "based_on": "HAB-03 (y su verificación)"
+   },
+   {
+    "id": "R13",
+    "column": "AREA_TERRITORIAL",
+    "rule": "Null -> 'Desconocida', aplicado antes de R14. La fila cuenta en el total de Cataluña y se excluye de los KPIs por área.",
+    "rows_affected": "1 (línea 82.995, 2024)",
+    "based_on": "ARE-01"
+   },
+   {
+    "id": "R14",
+    "column": "AREA_TERRITORIAL",
+    "rule": "Derivar AreaPerimetro2025: 'Barcelona Comarques' con ANY=2024 -> 'Barcelonès'; 'Barcelona Comarques' con ANY<=2023 -> 'Barcelona Comarques (perímetro hasta 2023)'; resto sin cambio. AreaSerieComparable: 'Lleida' o 'Alt Pirineu i Aran' -> 'Lleida + Alt Pirineu i Aran'; 'Barcelona Comarques', 'Barcelonès', 'Penedès', 'Tarragona' o 'Catalunya Central' -> 'Barcelona Comarques/Barcelonès + Penedès + Tarragona + Catalunya Central'; resto sin cambio. AreaConRupturaSerie = el área está en alguno de los dos grupos. Los KPIs temporales por área usan AreaSerieComparable; los de un solo año, AreaTerritorial.",
+    "rows_affected": "358.593 (las 7 áreas implicadas, todos los años)",
+    "based_on": "ARE-02"
+   },
+   {
+    "id": "R15",
+    "column": "HÀBITAT x AREA_TERRITORIAL",
+    "rule": "No corregir los valores. RupturaHabitat2024 = el área es 'Girona' o 'Maresme - Vallès Oriental' (atributo del área; la ruptura empieza en 2024). Los visuales área x hábitat a lo largo del tiempo usan AreaSerieComparable y llevan una nota en esas dos áreas.",
+    "rows_affected": "31.234 (2024-2025 de esas dos áreas)",
+    "based_on": "HAB-04"
+   },
+   {
+    "id": "R16",
+    "column": "ANY_NAIXEMENT, MES_NAIXEMENT",
+    "rule": "EdadAnioNatural = ANY - ANY_NAIXEMENT; si falta el año -> null. MesNacimiento = null si falta o está fuera de 1-12.",
+    "rows_affected": "1.835 sin año; 1.335 sin mes",
+    "based_on": "FEC-01"
+   },
+   {
+    "id": "R17",
+    "column": "Edad derivada",
+    "rule": "Si EdadAnioNatural no está entre 10 y 14 -> EdadAnioNatural = null y FlagEdadFueraRango = true.",
+    "rows_affected": "95",
+    "based_on": "FEC-02"
+   },
+   {
+    "id": "R18",
+    "column": "ANY_NAIXEMENT (2010)",
+    "rule": "Si ANY=2010 -> EdadAnioNatural = null y SituacionEdad = 'No fiable (2010)'. El año de nacimiento de 2010 no se expone en DimPerfilAlumno; MES_NAIXEMENT de 2010 sí se puede usar.",
+    "rows_affected": "59.329",
+    "based_on": "FEC-03"
+   },
+   {
+    "id": "R19",
+    "column": "Fecha de nacimiento",
+    "rule": "FechaNacimientoDudosa = (CODI_ALUMNE nulo y ANY en {2016, 2018}) o (ANY=2016 y nacimiento 1/2001). Si es true -> EdadAnioNatural = null y SituacionEdad = 'Desconocida'.",
+    "rows_affected": "83 (58 sin código + 25 con código y fecha 1/2001)",
+    "based_on": "COD-01 y FEC-02 (verificación)"
+   },
+   {
+    "id": "R20",
+    "column": "MES_NAIXEMENT",
+    "rule": "Indicador informativo MesNacimientoDudoso = MES_NAIXEMENT=1 y ANY en {2009, 2012, 2013, 2014, 2015}. El mes no se usa para analizar la edad relativa en esos años, o se muestra con nota.",
+    "rows_affected": "30.812 marcadas (exceso estimado: 3.331)",
+    "based_on": "FEC-04"
+   },
+   {
+    "id": "R21",
+    "column": "SituacionEdad (derivada)",
+    "rule": "En este orden: ANY=2010 -> 'No fiable (2010)'; EdadAnioNatural nula -> 'Desconocida'; <12 -> 'Adelantado'; 12 -> 'Edad teórica'; 13 -> 'Retraso de 1 año'; 14 -> 'Retraso de 2 años'.",
+    "rows_affected": "1.102.324 (987.151 / 59.329 / 52.240 / 1.573 / 1.560 / 471)",
+    "based_on": "FEC-02, FEC-03"
+   },
+   {
+    "id": "R22",
+    "column": "ANY",
+    "rule": "DimAnio de 2009 a 2025 con TieneConvocatoria (2020=false, motivo 'COVID-19') e IndiceConvocatoria 1..16 solo en los años con datos. Las comparaciones temporales usan el índice, nunca ANY-1. En DAX: CALCULATE(..., REMOVEFILTERS(DimAnio), DimAnio[IndiceConvocatoria] = i-1).",
+    "rows_affected": "73.674 (2021 se compara con 2019)",
+    "based_on": "ANY-01"
+   },
+   {
+    "id": "R23",
+    "column": "Globales (PCAT, PCAST, PMAT, PANG, PFRAN, PMED)",
+    "rule": "No recalcular nunca la global. FlagGlobalIncoherente = |global - Σ peso·sub| > 0,115, con los pesos por materia y año del informe (sección 4.3; PMED = media simple), solo en 2011-2025. En 2009-2010 queda null (no evaluable).",
+    "rows_affected": "49.740 de 4.359.515 globales evaluables",
+    "based_on": "PUN-04, PUN-05, PUN-07, PUN-13, PUN-23"
+   },
+   {
+    "id": "R24",
+    "column": "PMAT (2016)",
+    "rule": "FlagGlobalRecortada = ANY=2016, PMAT=59,20 y FlagGlobalIncoherente=true. Se mantiene el valor publicado.",
+    "rows_affected": "248",
+    "based_on": "PUN-23 (verificación)"
+   },
+   {
+    "id": "R25",
+    "column": "PANG_EE (2015)",
+    "rule": "Cargar con FlagValida=0. Las medidas de subcompetencia filtran FlagValida=1. Se mantiene la global de inglés 2015 (ver R26).",
+    "rows_affected": "68.342 celdas",
+    "based_on": "PUN-06"
+   },
+   {
+    "id": "R26",
+    "column": "PCAT_EE 2018; PANG, PANG_CO y PANG_CE 2015",
+    "rule": "FlagCensurada=1 en esas celdas, por los suelos artificiales en 49,40 (PCAT_EE 2018), 48,79 (PANG 2015), 53,19 (PANG_CO 2015) y 45,00 (PANG_CE 2015). Ni imputar ni recortar. Las medidas de % en nivel bajo y de dispersión las excluyen o las anotan.",
+    "rows_affected": "277.490 celdas (72.464 + 3 x 68.342)",
+    "based_on": "PUN-08; PUN-06 y PUN-18 (verificación)"
+   },
+   {
+    "id": "R27",
+    "column": "Subcompetencias",
+    "rule": "FlagComparableSerie=0 en: PANG_CO y PCAT_CL de 2011 (techo 99,73); PANG_EE de 2013-2016; PANG_CO y PANG_CE de 2015-2016; PMAT_NC, PMAT_EFM y PMAT_CR de 2015. Las tendencias de subcompetencias filtran FlagComparableSerie=1.",
+    "rows_affected": "Se calcula en la ETL (por ejemplo, PANG_EE 2013-2016 = 268.554 celdas)",
+    "based_on": "PUN-10, PUN-11, PUN-21 y PUN-09 (verificación)"
+   },
+   {
+    "id": "R28",
+    "column": "Globales",
+    "rule": "NivelComparable=false en PANG 2015, PMAT 2015, PMAT 2019, PCAT 2018, PANG 2016 y PFRAN 2022. Esas convocatorias salen de la serie del % en nivel bajo, o se muestran con nota.",
+    "rows_affected": "6 combinaciones materia-año",
+    "based_on": "PUN-09, PUN-18, PUN-19 (verificación)"
+   },
+   {
+    "id": "R29",
+    "column": "Globales -> IdNivelLogro",
+    "rule": "Puntuación global < 55 -> 1 'Bajo'; [55, 70) -> 2 'Medio-bajo'; [70, 85) -> 3 'Medio-alto'; >= 85 -> 4 'Alto'. En las filas de subcompetencia -> 0 'No aplica'.",
+    "rows_affected": "4.769.851 globales",
+    "based_on": "PUN-18 y complemento sección B"
+   },
+   {
+    "id": "R30",
+    "column": "PFRAN y subcompetencias",
+    "rule": "EsInformativa=true en DimCompetencia. Ocultar o atenuar el valor si el segmento tiene menos de 30 alumnos. Excluir el francés de las posiciones relativas de área y del % de competencias que mejoran.",
+    "rows_affected": "5.130 filas; 19.256 celdas",
+    "based_on": "PUN-19, PUN-07"
+   },
+   {
+    "id": "R31",
+    "column": "Todas las globales (participación)",
+    "rule": "Nota de calidad: la tasa de participación de 2017 y 2024 no se compara con la de otros años (población aparentemente filtrada en origen).",
+    "rows_affected": "142.416 (72.036 + 70.380)",
+    "based_on": "PUN-16"
+   },
+   {
+    "id": "R32",
+    "column": "DimCompetencia / KPIs temporales",
+    "rule": "PeriodoDiseno por competencia: PCAT y PCAST 2018-2025; PMAT 2017-2025; PANG y PFRAN global 2016-2025 (2016 con nota), subcompetencias 2017-2025; PMED 2018-2025. La variación interanual solo se calcula entre convocatorias del mismo periodo; en los demás casos, 'ruptura de serie'. Hace falta |Δ| >= 1 punto para contar una mejora.",
+    "rows_affected": "Afecta a los KPIs temporales (sin cambio de filas)",
+    "based_on": "PUN-11, PUN-12"
+   },
+   {
+    "id": "R33",
+    "column": "24 puntuaciones -> FactPuntuacion",
+    "rule": "Despivotar y conservar solo los valores no nulos; los 33 nulos parciales de PUN-14 desaparecen sin imputar. Conservar todas las celdas con indicadores, en lugar de borrarlas.",
+    "rows_affected": "17.728.085 celdas",
+    "based_on": "PUN-14, PUN-17"
+   },
+   {
+    "id": "R34",
+    "column": "Todas (comprobaciones)",
+    "rule": "La carga falla si: no hay 1.102.324 filas; hay algún género, naturaleza o hábitat sin mapear; se repite algún EvaluacionID; alguna puntuación incumple el patrón; o la prueba de regresión de R03 o R04 no se cumple.",
+    "rows_affected": "-",
+    "based_on": "OTR-01"
+   }
+  ],
+  "field_names_es": [
+   {
+    "field": "PCAT",
+    "materia": "Lengua catalana",
+    "subcompetencia": "Puntuación global",
+    "es_global": true,
+    "anios": "2009-2025 (sin 2020)"
+   },
+   {
+    "field": "PCAT_CL",
+    "materia": "Lengua catalana",
+    "subcompetencia": "Comprensión lectora",
+    "es_global": false,
+    "anios": "2009-2025 (sin 2020)"
+   },
+   {
+    "field": "PCAT_EE",
+    "materia": "Lengua catalana",
+    "subcompetencia": "Expresión escrita",
+    "es_global": false,
+    "anios": "2009-2025 (sin 2020)"
+   },
+   {
+    "field": "PCAT_CO",
+    "materia": "Lengua catalana",
+    "subcompetencia": "Comprensión oral",
+    "es_global": false,
+    "anios": "2018-2025 (sin 2020)"
+   },
+   {
+    "field": "PCAST",
+    "materia": "Lengua castellana",
+    "subcompetencia": "Puntuación global",
+    "es_global": true,
+    "anios": "2009-2025 (sin 2020)"
+   },
+   {
+    "field": "PCAST_CL",
+    "materia": "Lengua castellana",
+    "subcompetencia": "Comprensión lectora",
+    "es_global": false,
+    "anios": "2009-2025 (sin 2020)"
+   },
+   {
+    "field": "PCAST_EE",
+    "materia": "Lengua castellana",
+    "subcompetencia": "Expresión escrita",
+    "es_global": false,
+    "anios": "2009-2025 (sin 2020)"
+   },
+   {
+    "field": "PCAST_CO",
+    "materia": "Lengua castellana",
+    "subcompetencia": "Comprensión oral",
+    "es_global": false,
+    "anios": "2018-2025 (sin 2020)"
+   },
+   {
+    "field": "PMAT",
+    "materia": "Matemáticas",
+    "subcompetencia": "Puntuación global",
+    "es_global": true,
+    "anios": "2009-2025 (sin 2020)"
+   },
+   {
+    "field": "PMAT_NC",
+    "materia": "Matemáticas",
+    "subcompetencia": "Numeración y cálculo",
+    "es_global": false,
+    "anios": "2009-2025 (sin 2020)"
+   },
+   {
+    "field": "PMAT_EFM",
+    "materia": "Matemáticas",
+    "subcompetencia": "Espacio, medida y representación gráfica de datos ('Espacio, forma y medida' hasta 2012)",
+    "es_global": false,
+    "anios": "2009-2025 (sin 2020)"
+   },
+   {
+    "field": "PMAT_CR",
+    "materia": "Matemáticas",
+    "subcompetencia": "Relaciones y cambio",
+    "es_global": false,
+    "anios": "2009-2025 (sin 2020)"
+   },
+   {
+    "field": "PANG",
+    "materia": "Lengua inglesa",
+    "subcompetencia": "Puntuación global",
+    "es_global": true,
+    "anios": "2010-2025 (sin 2020)"
+   },
+   {
+    "field": "PANG_CO",
+    "materia": "Lengua inglesa",
+    "subcompetencia": "Comprensión oral",
+    "es_global": false,
+    "anios": "2010-2025 (sin 2020)"
+   },
+   {
+    "field": "PANG_CE",
+    "materia": "Lengua inglesa",
+    "subcompetencia": "Comprensión lectora (escrita)",
+    "es_global": false,
+    "anios": "2010-2025 (sin 2020)"
+   },
+   {
+    "field": "PANG_EE",
+    "materia": "Lengua inglesa",
+    "subcompetencia": "Expresión escrita",
+    "es_global": false,
+    "anios": "2013-2025 (sin 2020)"
+   },
+   {
+    "field": "PFRAN",
+    "materia": "Lengua francesa",
+    "subcompetencia": "Puntuación global",
+    "es_global": true,
+    "anios": "2010-2025 (sin 2020)"
+   },
+   {
+    "field": "PFRAN_CO",
+    "materia": "Lengua francesa",
+    "subcompetencia": "Comprensión oral",
+    "es_global": false,
+    "anios": "2010-2025 (sin 2020)"
+   },
+   {
+    "field": "PFRAN_CE",
+    "materia": "Lengua francesa",
+    "subcompetencia": "Comprensión lectora (escrita)",
+    "es_global": false,
+    "anios": "2010-2025 (sin 2020)"
+   },
+   {
+    "field": "PFRAN_EE",
+    "materia": "Lengua francesa",
+    "subcompetencia": "Expresión escrita",
+    "es_global": false,
+    "anios": "2013-2025 (sin 2020)"
+   },
+   {
+    "field": "PMED",
+    "materia": "Ciencias (medio natural; 'Ciencia, tecnología e ingeniería' desde 2024)",
+    "subcompetencia": "Puntuación global",
+    "es_global": true,
+    "anios": "2018-2025 (sin 2020)"
+   },
+   {
+    "field": "PMED_COMP1",
+    "materia": "Ciencias",
+    "subcompetencia": "Explicar fenómenos naturales y aplicaciones tecnológicas",
+    "es_global": false,
+    "anios": "2018-2025 (sin 2020)"
+   },
+   {
+    "field": "PMED_COMP2",
+    "materia": "Ciencias",
+    "subcompetencia": "Reconocer los aspectos principales de la investigación científica",
+    "es_global": false,
+    "anios": "2018-2025 (sin 2020)"
+   },
+   {
+    "field": "PMED_COMP3",
+    "materia": "Ciencias",
+    "subcompetencia": "Interpretar información científico-tecnológica (datos y pruebas)",
+    "es_global": false,
+    "anios": "2018-2025 (sin 2020)"
+   }
+  ],
+  "proposed_levels": "Propuesta: cortes fijos 55 / 70 / 85, comunes a todas las materias y años y aplicados solo a la puntuación global: Bajo < 55; Medio-bajo [55, 70); Medio-alto [70, 85); Alto >= 85. En las subcompetencias, IdNivelLogro = 0 'No aplica'.\n\nJustificación:\n(1) Cada corte cae en la horquilla oficial (Quadern 68, p. 9): el nivel mínimo está entre 50 y 60 (55 es el centro), el 'llindar òptim' es 70, y el nivel alto está entre 80 y 90 (85 es el centro).\n(2) Se ha contrastado con los % oficiales por nivel de 35 combinaciones materia-año de 2018-2025 (complemento_informe_calidad.py, sección B). Error absoluto medio en el % Bajo: 55/70/85 = 2,70 pp con sesgo -0,14; 50/70/85 = 4,39 pp con sesgo -4,39 (infravalora el nivel bajo); 60/70/85 = 5,57 pp con sesgo +5,22. En el % Alto, el corte en 85 da un error de 4,75 pp (sesgo +4,09), frente a 8,91 pp (sesgo -8,85) con 90. Los cortes que reproducen exactamente los % oficiales tienen una mediana de 55,98 / 70,70 / 85,69 (rangos 50,08-63,59 / 67,86-75,55 / 83,93-90,50).\n(3) Un corte común es más simple y estable: el % en nivel bajo varía más entre años que entre materias, así que un umbral por materia no lo corregiría.\n\n% por nivel en 2009-2025 (Bajo / Medio-bajo / Medio-alto / Alto), con las rotaciones corregidas: catalán 11,4 / 20,6 / 38,6 / 29,4; castellano 11,6 / 21,0 / 40,4 / 27,1; matemáticas 11,6 / 18,0 / 31,6 / 38,9; inglés 15,8 / 18,1 / 26,5 / 39,5; ciencias (2018-2025) 18,6 / 22,8 / 33,2 / 25,3; francés 14,7 / 26,5 / 35,0 / 23,9; total 13,2 / 19,8 / 34,3 / 32,8 (4.769.851 globales).\n\nAdvertencias: son niveles internos del TFG, no los oficiales, que se recalculan cada año con la media y la dispersión. Las mayores desviaciones en el % Bajo frente al oficial son PMAT 2019 (-8,6 pp), PCAST 2018 (-7,3), PMED 2019 (+6,2), PCAT 2018 (-5,7) y PMAT 2025 (+5,2). NivelComparable = false en PANG 2015 (8.801 de sus 14.733 alumnos en nivel bajo están en el suelo artificial de 48,79), PMAT 2015, PMAT 2019, PCAT 2018, PANG 2016 y PFRAN 2022.\n\nAlternativas para validar: 50/70/85 (propuesta inicial del perfilado; total Bajo 9,1 %) o cortes calibrados por materia y año con los % oficiales (marcados como 'estimados'). Complemento opcional: nivel relativo por cuartil dentro de cada materia y año.",
+  "fact_rows_estimate": "FactPuntuacion: 17.728.085 filas (despivotado de las 24 columnas sin nulos: 4.769.851 globales y 12.958.234 de subcompetencias). Por convocatoria va de 589.644 (2009) a 1.466.352 (2019), con 16,08 puntuaciones por alumno de media (9,98 en 2009 y 19,38-19,70 en 2018-2025). Se recomienda conservar todas las celdas con indicadores (FlagValida, FlagCensurada, FlagComparableSerie, FlagGlobalIncoherente, FlagGlobalRecortada). Si se borrara físicamente PANG_EE 2015 (68.342 celdas), quedarían 17.659.743. FactEvaluacion: 1.102.324 filas (una por registro del CSV, clave EvaluacionID = número de línea). Dimensiones: DimAnio 17 filas (2009-2025, con 2020 sin datos), DimCompetencia 24, DimNivelLogro 5 (0-4), DimContextoCentro 86 combinaciones observadas, DimPerfilAlumno 169 combinaciones observadas.",
+  "modeling_decisions": [
+   "Grano de FactEvaluacion = un registro del CSV (alumno x convocatoria), con clave sustituta EvaluacionID = número de línea (2..1.102.325), asignada antes de cualquier filtro. CODI_ALUMNE es solo un atributo degenerado de texto, porque falta en el 40,72 % de las filas y se repite una vez en 2017.",
+   "Grano de FactPuntuacion = evaluación x competencia o subcompetencia con valor no nulo (17.728.085 filas). Lleva directamente las claves de DimAnio, DimContextoCentro y DimPerfilAlumno, para no relacionar los hechos entre sí, más IdCompetencia, IdNivelLogro (0 en las subcompetencias), Puntuacion como decimal fijo y los indicadores de calidad. No se borra ninguna celda: se filtra en las medidas.",
+   "La global nunca se recalcula: se carga el valor publicado. Los pesos cambian por convocatoria, y la media simple daría errores de hasta 19 puntos. Ninguna medida mezcla EsGlobal=1 y EsGlobal=0. Hay una tabla documental PesoCompetenciaAnio, con los pesos de 2009-2012 marcados como 'estimados'. En PMED los datos siguen una media simple, no los pesos 42/25/33 publicados.",
+   "DimAnio cubre 2009-2025 (17 filas), con TieneConvocatoria (2020=false, COVID-19), IndiceConvocatoria 1..16 y Curso '(ANY-1)-ANY'. Las medidas interanuales y de tendencia usan el índice con REMOVEFILTERS(DimAnio): 2021 se compara con 2019. La tendencia de 5 convocatorias usa los índices i-4..i (2021-2025).",
+   "Ruptura territorial: DimContextoCentro (dimensión de combinaciones, 86 filas) guarda AreaTerritorial original (con 'Desconocida'), AreaPerimetro2025 (BC 2024 = Barcelonès), AreaSerieComparable ('Lleida + Alt Pirineu i Aran' y 'Barcelona Comarques/Barcelonès + Penedès + Tarragona + Catalunya Central') y AreaConRupturaSerie. Los KPIs de un solo año (desviación respecto a Cataluña, posición relativa) usan AreaTerritorial; los temporales por área, AreaSerieComparable.",
+   "Hábitat en 3 categorías por prefijo (corrige los 13.357 textos de 2024 y 'Més de 100001'). En 2010, HabitatCod pasa a 'No fiable (2010)' en todo el año, por el desalineamiento por bloques (al menos 15.186 filas mal asignadas). HabitatFiable=false también en las 29 filas incoherentes de 2014. RupturaHabitat2024 marca Girona y Maresme - Vallès Oriental.",
+   "Edad: el campo se llama EdadAnioNatural (ANY - ANY_NAIXEMENT), porque no es la edad el día de la prueba (abril o mayo). Rango válido 10-14. SituacionEdad por cohorte: 12 = edad teórica, 13 = 1 año de retraso, 14 = 2, <12 = adelantado. 2010 = 'No fiable (2010)'. Las fechas de relleno (83 filas) y las edades fuera de rango pasan a 'Desconocida'. El año de nacimiento no se expone en DimPerfilAlumno (169 combinaciones).",
+   "Normalizaciones de miembros: Genero H/D ('Niño'/'Niña') y Naturaleza 'Pública'/'Privada' ('Privada' incluye la concertada). Sin estas reglas, la brecha de género no tendría datos en 2021 ni la brecha pública-privada en 2024-2025.",
+   "Rotaciones corregidas en la ETL: PCAST 2017 y PFRAN 2016, con asignación simultánea desde las columnas originales y una prueba de regresión. Con la corrección, la media de castellano 2017 pasa de 74,30 a 73,51 (oficial 73,4).",
+   "Indicadores de calidad en FactPuntuacion: FlagValida (PANG_EE 2015), FlagCensurada (suelos de PCAT_EE 2018 y de PANG, PANG_CO y PANG_CE 2015), FlagComparableSerie (escalas distintas: PANG_CO y PCAT_CL 2011, PANG_EE 2013-2016, PANG_CO y PANG_CE 2015-2016, subcompetencias de PMAT 2015), FlagGlobalIncoherente (tolerancia única 0,115 en 2011-2025: 49.740 filas) y FlagGlobalRecortada (PMAT 2016 = 59,20: 248). NivelComparable=false en PANG 2015, PMAT 2015, PMAT 2019, PCAT 2018, PANG 2016 y PFRAN 2022.",
+   "DimNivelLogro con cortes fijos 55/70/85 aplicados solo a las globales y advertencia de que son niveles internos, no oficiales.",
+   "DimCompetencia (24 filas) con Materia, Subcompetencia, NombreLegible, EsGlobal, AnioInicio, AnioFin, PeriodoDisenoInicio (PCAT/PCAST 2018; PMAT 2017; PANG/PFRAN global 2016 con nota y subcompetencias 2017; PMED 2018) y EsInformativa (francés). La variación interanual solo se calcula dentro del mismo periodo de diseño, y una competencia cuenta como mejora con |Δ| >= 1.",
+   "Francés solo informativo: n mínimo de 30 por segmento y excluido de rankings y del % de competencias que mejoran.",
+   "KPIs temporales etiquetados como 'puntuación no equiparada entre convocatorias' (Quadern 68). Se propone ofrecer, como complemento, brechas y posiciones estandarizadas por la desviación típica del año.",
+   "Power Query: la conversión numérica se hace con la cultura es-ES sobre el texto original (no sustituir la coma por punto y luego usar es-ES). Las validaciones de la carga hacen fallar la actualización (1.102.324 filas, 0 valores sin mapear, EvaluacionID único, patrón numérico, pruebas de las rotaciones). Modo Import con claves enteras."
+  ],
+  "open_questions": [
+   "Umbrales de nivel de logro: ¿se aceptan los cortes fijos 55/70/85 (mejor ajuste a los % oficiales: error medio de 2,70 pp en el % Bajo), se vuelve a 50/70/85 (propuesta inicial, infravalora el nivel bajo en 4,4 pp), o se usan cortes calibrados por materia y año (marcados como 'estimados', solo para los años con informe)?",
+   "Inglés 2015 (PANG_EE con escala anómala y suelos en PANG, PANG_CO y PANG_CE) y catalán 2018 (suelo en PCAT_EE 49,40): ¿basta con marcarlos (FlagValida, FlagCensurada, NivelComparable), o se excluyen esas convocatorias del CMI?",
+   "2010: ¿se acepta dejar sin hábitat (HabitatCod 'No fiable') y sin edad todo el año, con nota, en lugar de usar valores que se sabe que están desalineados?",
+   "Series territoriales: el grupo 'Barcelona Comarques/Barcelonès + Penedès + Tarragona + Catalunya Central' reúne cerca del 27 % de Cataluña. ¿Se usa para los KPIs temporales por área, o se limitan esos KPIs a las áreas estables y a la comparación 2024-2025? ¿Se incluye Girona en el grupo de Lleida por la Cerdanya (la documentación dice que parte venía de Girona; en los datos faltan 426 alumnos en Lleida frente a los 514 de Alt Pirineu), o se deja con una nota?",
+   "KPIs de evolución sin equiparación de puntuaciones: ¿se mantienen la variación interanual, la tendencia y el % de competencias que mejoran con la etiqueta 'no equiparada', el umbral |Δ| >= 1 y las rupturas por periodo de diseño? ¿Se añade una puntuación estandarizada z por año?",
+   "Comparación 2021 frente a 2019 (sin 2020): ¿se presenta como variación interanual con nota de la COVID-19, o se corta la serie, como hace el Quadern 68 en su gráfico 3?",
+   "Francés (243-505 alumnos al año, global 2022 incoherente en el 45,5 % de las filas): ¿se mantiene como competencia informativa con n mínimo de 30, o se excluye del CMI?",
+   "Pesos de ciencias: los datos siguen una media simple (100 % de ajuste), pero el Quadern 68 publica 42/25/33 (solo ajusta en el 4,7-8,7 % de las filas). ¿Cómo se documenta? ¿Se comunica al titular del dataset, junto con las rotaciones PCAST 2017 y PFRAN 2016 y el error de HÀBITAT 2024?",
+   "FactPuntuacion: ¿se confirma conservar las 17.728.085 celdas con indicadores, en lugar de borrar las inválidas (17.659.743 sin PANG_EE 2015)?",
+   "Edad: ¿se acepta sustituir la 'edad en la prueba' del diseño inicial por EdadAnioNatural y una situación de edad por cohorte de nacimiento?",
+   "Diferencias de población frente a los informes oficiales (2017 y 2024: hasta unos 1.000 alumnos menos en el CSV; inglés 2023 con el mismo n y la media 0,16 puntos más alta): ¿basta con documentarlas como limitación?",
+   "Práctico: el informe se ha guardado en Documentation/Docu_final/Docu_Parcial/ como pedía la tarea, pero ya existía una carpeta vacía Documentation/Docu_Final (con mayúscula). Conviene unificarlas, porque en Linux son carpetas distintas.",
+   "Los artefactos de limpieza ya escritos (limpiar_categoricas() en perfil_categoricas.py y limpieza_categoricas.pq) reflejan la propuesta del perfilado. En T12 hay que actualizarlos a las reglas finales: R12 (2010 'No fiable'), R19 (FechaNacimientoDudosa), R16 (EdadAnioNatural) y R08 (comparación relajada con IndiceConvocatoria). El código M todavía no se ha ejecutado en Power BI."
+  ]
+ },
+ "research": {
+  "columns": [
+   {
+    "field": "ANY",
+    "name_es": "Año de la prueba",
+    "official_description": "'Any en que va tenir lloc l'avaluació' (tipo number). Es el año natural en que se aplicó la prueba y coincide con el segundo año del curso escolar (2025 = curso 2024-2025). Hay 16 valores: 2009-2019 y 2021-2025, sin 2020.",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json"
+   },
+   {
+    "field": "CODI_ALUMNE",
+    "name_es": "Código de alumno (anonimizado)",
+    "official_description": "'Codi que identifica unívocament els alumnes que van participar en l'avaluació (anonimitzat)'. Según la descripción del dataset, permite cruzar con la evaluación de 4º de ESO y 'només està disponible a partir de l'any 2016'. La API Socrata cuenta 0 códigos en 2009-2015, 71.197 de 71.244 filas en 2016 y 74.196 de 74.207 en 2018; el resto de años tienen código en el 100 % de las filas.",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json ; recuento: https://analisi.transparenciacatalunya.cat/resource/rk5x-gny6.json?$select=any,count(codi_alumne)&$group=any"
+   },
+   {
+    "field": "PCAT",
+    "name_es": "Lengua catalana – puntuación global",
+    "official_description": "'Puntuació global ponderada de la competència lingüística en llengua catalana'. Escala 0-100. Es la media ponderada de las dimensiones. Pesos desde 2018/2019: comprensión oral 15 %, comprensión lectora 50 %, expresión escrita 35 %. En 2013 eran comprensión lectora 60 % y expresión escrita 40 %.",
+    "source": "API rk5x-gny6 ; pesos: Quadern 44 (2019) Taula 1, https://hdl.handle.net/20.500.12694/444 ; Quadern 26 (2013) Taula 1, https://hdl.handle.net/20.500.12694/406"
+   },
+   {
+    "field": "PCAT_CL",
+    "name_es": "Lengua catalana – Comprensión lectora",
+    "official_description": "'Puntuació global de comprensió lectora en llengua catalana'. CL = comprensió lectora.",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json"
+   },
+   {
+    "field": "PCAT_EE",
+    "name_es": "Lengua catalana – Expresión escrita",
+    "official_description": "'Puntuació global d'expressió escrita en llengua catalana'. EE = expressió escrita.",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json"
+   },
+   {
+    "field": "PCAT_CO",
+    "name_es": "Lengua catalana – Comprensión oral",
+    "official_description": "'Puntuació global de comprensió oral en llengua catalana'. CO = comprensió oral. En el CSV solo tiene valores desde 2018.",
+    "source": "API rk5x-gny6 ; cobertura: script check_coverage.py"
+   },
+   {
+    "field": "PCAST",
+    "name_es": "Lengua castellana – puntuación global",
+    "official_description": "'Puntuació global ponderada de la competència lingüística en llengua castellana'. Mismos pesos que el catalán.",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json"
+   },
+   {
+    "field": "PCAST_CL",
+    "name_es": "Lengua castellana – Comprensión lectora",
+    "official_description": "'Puntuació global de comprensió lectora en llengua castellana'.",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json"
+   },
+   {
+    "field": "PCAST_EE",
+    "name_es": "Lengua castellana – Expresión escrita",
+    "official_description": "'Puntuació global d'expressió escrita en llengua castellana'.",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json"
+   },
+   {
+    "field": "PCAST_CO",
+    "name_es": "Lengua castellana – Comprensión oral",
+    "official_description": "'Puntuació global de comprensió oral en llengua castellana'. Valores desde 2018.",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json"
+   },
+   {
+    "field": "PMAT",
+    "name_es": "Matemáticas – puntuación global",
+    "official_description": "'Puntuació global ponderada de competència matemàtica'. Pesos desde 2019: numeración y cálculo 30 %, espacio, medida y representación gráfica de datos 35 %, relaciones y cambio 35 %. En 2013 eran 35 %, 35 % y 30 %.",
+    "source": "API rk5x-gny6 ; Quadern 44 Taula 1 ; Quadern 26 Taula 1"
+   },
+   {
+    "field": "PMAT_NC",
+    "name_es": "Matemáticas – Numeración y cálculo",
+    "official_description": "'Puntuació global de numeració i càlcul en competència matemàtica'. NC = numeració i càlcul.",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json"
+   },
+   {
+    "field": "PMAT_EFM",
+    "name_es": "Matemáticas – Espacio, forma y medida",
+    "official_description": "'Puntuació global d'espai, forma i mesura en competència matemàtica'. EFM = espai, forma i mesura. En los informes de 2009-2012 se llama 'Espai, forma, mesura' y desde 2013 'Espai, mesura i representació gràfica de dades'. Etiqueta propuesta para Power BI: 'Espacio, medida y representación gráfica'.",
+    "source": "API rk5x-gny6 ; Quadern 23 (2012) Gràfic 8, https://hdl.handle.net/20.500.12694/402 ; Quadern 68 Taula 3"
+   },
+   {
+    "field": "PMAT_CR",
+    "name_es": "Matemáticas – Relaciones y cambio",
+    "official_description": "'Puntuació global de relacions i canvi en competència matemàtica'. CR = (canvi i) relacions.",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json"
+   },
+   {
+    "field": "PANG",
+    "name_es": "Lengua inglesa – puntuación global",
+    "official_description": "'Puntuació global ponderada de la competència lingüística en llengua anglesa'. Se evalúa desde 2010 ('es va avaluar per primer cop l'any 2010'). Pesos: comprensión oral 35 %, comprensión lectora 50 %, expresión escrita 15 %.",
+    "source": "API rk5x-gny6 ; Quadern 23 (2012) ; Quadern 44 Taula 1"
+   },
+   {
+    "field": "PANG_CO",
+    "name_es": "Lengua inglesa – Comprensión oral",
+    "official_description": "'Puntuació global de comprensió oral en llengua anglesa'.",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json"
+   },
+   {
+    "field": "PANG_CE",
+    "name_es": "Lengua inglesa – Comprensión escrita (lectora)",
+    "official_description": "'Puntuació global de comprensió escrita en llengua anglesa'. CE = comprensió escrita, que los informes llaman 'comprensió lectora'.",
+    "source": "API rk5x-gny6 ; Quadern 68 Gràfic 12"
+   },
+   {
+    "field": "PANG_EE",
+    "name_es": "Lengua inglesa – Expresión escrita",
+    "official_description": "'Puntuació global d'expressió escrita en llengua anglesa'. Valores desde 2013: el Quadern 26 indica que en 2013 se introduce 'l'expressió escrita en llengües estrangeres'.",
+    "source": "API rk5x-gny6 ; https://hdl.handle.net/20.500.12694/406"
+   },
+   {
+    "field": "PFRAN",
+    "name_es": "Lengua francesa – puntuación global",
+    "official_description": "'Puntuació global ponderada de la competència lingüística en llengua francesa'. Población muy pequeña (243 alumnos en 2025, 272 en 2024). Los informes advierten de que no es comparable y excluyen el francés de las series.",
+    "source": "API rk5x-gny6 ; Quadern 68 nota 2"
+   },
+   {
+    "field": "PFRAN_CO",
+    "name_es": "Lengua francesa – Comprensión oral",
+    "official_description": "'Puntuació global de comprensió oral en llengua francesa'.",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json"
+   },
+   {
+    "field": "PFRAN_CE",
+    "name_es": "Lengua francesa – Comprensión escrita (lectora)",
+    "official_description": "'Puntuació global de comprensió escrita en llengua francesa'.",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json"
+   },
+   {
+    "field": "PFRAN_EE",
+    "name_es": "Lengua francesa – Expresión escrita",
+    "official_description": "'Puntuació global d'expressió escrita en llengua francesa'. Valores desde 2013.",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json"
+   },
+   {
+    "field": "PCAT_CO / PCAST_CO (nota de orden)",
+    "name_es": "(ver PCAT_CO y PCAST_CO)",
+    "official_description": "En la tabla Socrata estas columnas ocupan las posiciones 21-22, detrás de las de francés, porque se añadieron más tarde, en 2018.",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json"
+   },
+   {
+    "field": "PMED",
+    "name_es": "Ciencias – puntuación global (Medio natural; desde 2024 'Ciencia, tecnología e ingeniería')",
+    "official_description": "'Puntuació global de la competència associada a l'àrea de coneixement del medi natural'. Se evalúa desde 2018. Los Quaderns 62 (2024) y 68 (2025) la llaman 'Ciència, tecnologia i enginyeria' y la tratan como continuación ('es va començar a fer el 2018'). Pesos: 42 % / 25 % / 33 %.",
+    "source": "API rk5x-gny6 ; Quadern 62, https://hdl.handle.net/20.500.12694/7364 ; Quadern 68 Taula 3"
+   },
+   {
+    "field": "PMED_COMP1",
+    "name_es": "Ciencias – Explicar fenómenos naturales y aplicaciones tecnológicas",
+    "official_description": "'Puntuació global de la competència d'explicar fenòmens naturals i aplicacions tecnològiques utilitzant coneixements científic i tecnològics associada a l'àrea de coneixement del medi natural'. Peso 42 %.",
+    "source": "API rk5x-gny6 ; Quadern 44 Figura 3 y Taula 1"
+   },
+   {
+    "field": "PMED_COMP2",
+    "name_es": "Ciencias – Reconocer los aspectos principales de la investigación científica",
+    "official_description": "'Puntuació global de la competència de reconeixement dels aspectes principals de la investigació científica associada a l'àrea de coneixement del medi natural'. Peso 25 %.",
+    "source": "API rk5x-gny6 ; Quadern 44 Taula 1"
+   },
+   {
+    "field": "PMED_COMP3",
+    "name_es": "Ciencias – Interpretar información científico-tecnológica (datos y pruebas)",
+    "official_description": "'Puntuació global de la interpretació d'informació de caràcter cientificotecnològic proporcionada en forma de dades i proves associada a l'àrea de coneixement del medi natural'. Peso 33 %.",
+    "source": "API rk5x-gny6 ; Quadern 44 Taula 1"
+   },
+   {
+    "field": "GENERE",
+    "name_es": "Género del alumno",
+    "official_description": "'Gènere de l'alumne/a que es presenta a l'avaluació'. La API Socrata devuelve H/D en 2009-2020 y 2022-2025, y Home/Dona solo en 2021.",
+    "source": "API rk5x-gny6 ; https://analisi.transparenciacatalunya.cat/resource/rk5x-gny6.json?$select=naturalesa,genere,min(any),max(any),count(*)&$group=naturalesa,genere"
+   },
+   {
+    "field": "MES_NAIXEMENT",
+    "name_es": "Mes de nacimiento",
+    "official_description": "'Mes de naixement de l'alumne/a que es presenta a l'avaluació' (number).",
+    "source": "https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json"
+   },
+   {
+    "field": "ANY_NAIXEMENT",
+    "name_es": "Año de nacimiento",
+    "official_description": "'Any de naixement de l'alumne/a que es presenta a l'avaluació'. En los datos, ANY − ANY_NAIXEMENT es 12 en el 92,0-97,3 % de las filas de cada año (cohorte regular) y 13 en el resto. Algunas filas no tienen año: 449 en 2009, 396 en 2010 y 986 en 2011.",
+    "source": "API rk5x-gny6 ; script check_birth.py"
+   },
+   {
+    "field": "AREA_TERRITORIAL",
+    "name_es": "Área territorial (Servicio Territorial de Educación / Consorci d'Educació de Barcelona)",
+    "official_description": "'Regió on es troba el centre de l'alumne/a que es presenta a l'avaluació'. Corresponde a los servicios territoriales del Departament y al Consorci d'Educació de Barcelona, que es como los informes organizan los 'Resultats globals per territori'.",
+    "source": "API rk5x-gny6 ; Quadern 68 p. 51"
+   },
+   {
+    "field": "NATURALESA",
+    "name_es": "Titularidad del centro (Público / Privado)",
+    "official_description": "'Determina si el centre de l'alumne/a és públic, privat o concertat'. Sin embargo, la API solo tiene 2 categorías: Públic/Privat (2009-2023) y Pública/Privada (2024-2025). Los informes aclaran que 'privats' incluye los concertados y los privados no concertados.",
+    "source": "API rk5x-gny6 ; Quadern 68 nota 1"
+   },
+   {
+    "field": "HÀBITAT",
+    "name_es": "Tamaño del municipio (tramo de población)",
+    "official_description": "'Municipis per trams de població'. El fieldName en Socrata es 'h_bitat'. La API devuelve 'Fins a 10000', 'De 10001 a 100000', 'Més de 100000' (2009-2023) y 'Més de 100001' (2024-2025), además de valores aislados de 2024 como 'Fins a 10003' … 'Fins a 10006'.",
+    "source": "API rk5x-gny6 ; https://analisi.transparenciacatalunya.cat/resource/rk5x-gny6.json?$select=h_bitat,min(any),max(any),count(*)&$group=h_bitat"
+   }
+  ],
+  "any_meaning": "ANY es el año natural en que se aplicó la prueba, que coincide con el año en que termina el curso escolar. Por ejemplo, ANY=2025 corresponde al curso 2024-2025.\n\nFuentes:\n- Descripción oficial de la columna: 'Any en que va tenir lloc l'avaluació' (https://analisi.transparenciacatalunya.cat/api/views/rk5x-gny6.json).\n- Quadern 68 (2025): 'Durant el curs 2024-2025 ... Les proves es van aplicar els dies 7, 8 i 9 d'abril' (https://hdl.handle.net/20.500.12694/7383).\n- Quadern 44 (2019): 'resultats de les proves del curs 2018-2019', aplicada 'els dies 7, 8 i 9 de maig de l'any 2019' (https://hdl.handle.net/20.500.12694/444).\n\nLa prueba no siempre se hace en mayo. Fechas que dan los informes:\n- 2009: 6 de mayo (13 de mayo en algunos centros).\n- 2011: 4 y 5 de mayo.\n- 2012 y 2013: 7 y 8 de mayo.\n- 2014 y 2015: 6 y 7 de mayo.\n- 2016 y 2017: 4 y 5 de mayo.\n- 2018: 8 a 10 de mayo.\n- 2019: 7 a 9 de mayo.\n- 2021: 4 a 6 de mayo.\n- 2022: 26 a 28 de abril.\n- 2023: 8 a 10 de mayo.\n- 2024: 16 a 18 de abril. La presentación del Quadern 62 dice 'aplicada el mes de maig de 2024', lo que contradice su propia introducción.\n- 2025: 7 a 9 de abril.\n- 2010: no extraje la fecha.\n\nComprobación en el CSV (script check_birth.py): ANY − ANY_NAIXEMENT = 12 en el 92,0-97,3 % de las filas de cada año, y 13 en el resto (alumnado repetidor). Esto es coherente con que ANY sea el año de aplicación y la cohorte regular haya nacido en ANY−12.\n\nRecomendación para DimAnio: guardar Anio = ANY y Curso = '(ANY−1)-ANY'. Para 'edad en la prueba' conviene usar abril/mayo de ANY como fecha de referencia. Es una aproximación, porque el día exacto varía.",
+  "territorial_changes": [
+   {
+    "change": "Creación del Servei Territorial d'Educació al Penedès, con sede en El Vendrell. Comprende Alt Penedès, Baix Penedès, Garraf y Anoia, excepto los municipios de Anoia que siguen adscritos a Catalunya Central. El Decret 59/2022, de 29 de marzo, crea el servicio. El Decret 120/2023, de 27 de junio (DOGC 29/06/2023), consolida su estructura, que 'entrarà en funcionament a partir del dia 1 d'octubre de 2023'; hasta entonces lo apoyan los ST del Barcelonès. En el dataset aparece desde ANY=2024: 4.739 filas en 2024 y 4.641 en 2025, según la API.",
+    "previous_area": "Alt Penedès y Garraf venían de Barcelona Comarques. Baix Penedès venía de Tarragona. Anoia venía de Catalunya Central, salvo un pequeño resto: 4 centros con primaria que siguen en Catalunya Central. Fuente: Directori de centres docents (kvmv-ahh4), campo nom_delegaci por curso. Hasta 2023/2024 figura el área antigua y desde 2024/2025 figura Penedès.",
+    "year_effective": "Operativo el 1 de octubre de 2023 (curso 2023-2024). En el dataset, desde ANY=2024.",
+    "source_url": "https://laadministracionaldia.inap.es/noticia.asp?id=1234838 (resumen del Decret 120/2023: art. 5 k, disp. transitoria y entrada en vigor) ; https://govern.cat/govern/docs/2023/06/27/15/19/4262d160-a91a-4708-a7ea-87c8868f25c0.pdf (Acords de Govern 27/06/2023) ; https://analisi.transparenciacatalunya.cat/resource/kvmv-ahh4.json?$select=curs,nom_delegaci,nom_comarca,count(*)&$where=epri IS NOT NULL&$group=curs,nom_delegaci,nom_comarca",
+    "confidence": "alta"
+   },
+   {
+    "change": "Creación del Servei Territorial d'Educació a l'Alt Pirineu i Aran. Comprende Alt Urgell, Alta Ribagorça, Pallars Jussà, Pallars Sobirà, Aran y Cerdanya. Se crea legalmente por el Decret 59/2022 (marzo de 2022): 'creació dels Serveis Territorials d'Educació a l'Alt Pirineu i Aran, el passat mes de març per via del Decret 59/2022', 'unificant les antigues direccions de Lleida i Girona'. El Decret 120/2023 consolida su estructura, operativa desde el 1 de octubre de 2023, con el apoyo de los ST de Lleida hasta esa fecha. En el dataset aparece desde ANY=2024: 514 filas en 2024 y 556 en 2025.",
+    "previous_area": "Alt Urgell, Alta Ribagorça, Pallars Jussà, Pallars Sobirà y Aran venían de Lleida. Cerdanya estaba repartida: 7 centros con primaria en Girona y 6 en Lleida hasta 2023/2024, y 13 en Alt Pirineu i Aran desde 2024/2025, según el Directori de centres. El Acord de Govern la llama 'Cerdanya gironina'.",
+    "year_effective": "Creado legalmente en marzo de 2022 y operativo el 1 de octubre de 2023. En el dataset, desde ANY=2024.",
+    "source_url": "https://govern.cat/govern/docs/2022/09/05/17/53/4c60bfbd-fbb8-4ed9-922a-9da09d8c57da.pdf ; https://govern.cat/govern/docs/2023/06/27/15/19/4262d160-a91a-4708-a7ea-87c8868f25c0.pdf ; https://laadministracionaldia.inap.es/noticia.asp?id=1234838 ; https://analisi.transparenciacatalunya.cat/resource/kvmv-ahh4.json",
+    "confidence": "alta"
+   },
+   {
+    "change": "Cambio de nombre de 'Serveis Territorials a Barcelona Comarques' a 'Serveis Territorials al Barcelonès' (Decret 120/2023, disposición adicional segunda: 'Los Servicios Territoriales en Barcelona Comarques pasan a denominarse Servicios Territoriales en El Barcelonès'). Tras la segregación del Penedès, el área queda reducida al Barcelonès sin la ciudad de Barcelona: Badalona, L'Hospitalet, Santa Coloma de Gramenet y Sant Adrià de Besòs. En el dataset la etiqueta va con retraso: ANY=2024 sigue diciendo 'Barcelona Comarques' (5.386 filas), pero el Quadern 62 (2024) ya la publica como 'Barcelonès (BCN)', con n=5.386 en castellano, la misma cifra. ANY=2025 dice 'Barcelonès' (5.408 filas). Conclusión: 'Barcelona Comarques' de 2024 es la misma entidad que 'Barcelonès'. En cambio, 'Barcelona Comarques' de 2009-2023 incluye además Alt Penedès y Garraf, así que no es comparable.",
+    "previous_area": "Barcelona Comarques",
+    "year_effective": "El nombre legal cambia con el Decret 120/2023 (DOGC 29/06/2023; entra en vigor al día siguiente). El ámbito cambia en el curso 2023-2024. La etiqueta 'Barcelonès' aparece en el dataset en ANY=2025 y en el informe oficial ya en 2024.",
+    "source_url": "https://laadministracionaldia.inap.es/noticia.asp?id=1234838 ; Quadern 62 tabla territorial: https://repositori.educacio.gencat.cat/rest/bitstreams/000f8270-ba3d-4104-af3e-c0fd95db627a/retrieve ; https://analisi.transparenciacatalunya.cat/resource/kvmv-ahh4.json",
+    "confidence": "alta"
+   },
+   {
+    "change": "Efecto en las áreas que pierden comarcas en 2024. Las series de Barcelona Comarques/Barcelonès, Catalunya Central, Tarragona, Lleida y Girona no son homogéneas antes y después de 2024. Recuento de filas 2023→2024 en la API Socrata: Barcelona Comarques 8.211→5.386, Catalunya Central 5.565→4.106, Tarragona 6.485→5.164, Lleida 4.066→3.466, Girona 7.758→7.283. Además, en 2024 hay 1 fila con AREA_TERRITORIAL vacía.",
+    "previous_area": "Ámbitos anteriores a la reforma",
+    "year_effective": "ANY=2024",
+    "source_url": "https://analisi.transparenciacatalunya.cat/resource/rk5x-gny6.json?$select=any,area_territorial,count(*)&$group=any,area_territorial&$limit=500",
+    "confidence": "alta"
+   },
+   {
+    "change": "Antecedente del nombre 'Barcelona Comarques': un decreto de reestructuración renombró los 'Serveis Territorials a Barcelona II (comarques)' como 'Barcelona Comarques' tras suprimirse Barcelona I (ciutat) por el Decret 247/2008. La ciudad de Barcelona la gestiona el Consorci d'Educació de Barcelona desde el 1 de enero de 2009. Solo lo vi en el fragmento de un resultado de búsqueda (vLex); no abrí el texto ni lo verifiqué en el DOGC.",
+    "previous_area": "Barcelona II (comarques) / Barcelona I (ciutat)",
+    "year_effective": "2008-2009 (sin verificar)",
+    "source_url": "https://vlex.es/vid/reestructuracio-tal-donar-subdireccio-60348738",
+    "confidence": "baja"
+   }
+  ],
+  "achievement_levels": "Desde 2013 (y hasta 2025) se usan 4 niveles de 'assoliment de la competència':\n- Nivell alt: 'molt bon domini de la competència'.\n- Nivell mitjà-alt: 'bon domini'.\n- Nivell mitjà-baix: 'domini suficient'.\n- Nivell baix: 'no assoliment de la competència'.\nFuente: Quadern 68 (2025), p. 9, https://hdl.handle.net/20.500.12694/7383. El mismo texto está en el Quadern 62 (2024), Quadern 59 (2023), Quadern 44 (2019) y Quadern 26 (2013).\n\n**No se publican puntos de corte fijos.** Solo se publican horquillas:\n- 'El llindar del nivell alt, entre els 80 i els 90 punts, i el llindar del nivell mínim, entre els 50 i els 60 punts.'\n- 'Per obtenir els punts de tall dels quatre trams es prenen, com a referència, la puntuació mitjana i les estadístiques de dispersió.'\n- El Quadern 26 (2013) dice 'la puntuació mitjana i la desviació típica'.\n- El Quadern 68 (2025) añade: 'El llindar òptim d'assoliment de la competència es fixa en els 70 punts.'\nPor tanto, los cortes cambian según la competencia y el año, y el CSV no trae el nivel de cada alumno.\n\nAntes de 2013 había 3 niveles (baix, mitjà, alt), y el cambio se explica en el Quadern 26 (2013): 'es passa dels tres nivells de domini als quatre':\n- 2009: cortes fijos. Bajo <70 puntos, medio 70-90, alto 90-100 (informe 2009, https://hdl.handle.net/20.500.12694/390).\n- 2010 y 2011: cortes relativos. Bajo por debajo de μ −10 %, medio entre μ −10 % y μ +15 %, alto por encima de μ +15 % (https://hdl.handle.net/20.500.12694/397 y /399).\n- 2012: bajo por debajo de μ −15 %, medio entre μ −15 % y μ +12 %, alto entre μ +12 % y 100 (Quadern 23, https://hdl.handle.net/20.500.12694/402). No queda claro si el % es sobre la media o en puntos.\n\nReferencia normativa del 15 %: 'el percentatge màxim d'alumnat ... situat en el nivell baix no hauria de superar el 15%' (Quadern 68, nota 3, citando a la OCDE). El Quadern 44 (2019) lo atribuye al 'Pla per a la reducció del fracàs escolar a Catalunya 2012-2018'. El Quadern 59 (2023) añade un objetivo de nivel alto igual o superior al 15 %.\n\n**Cortes inferidos de forma empírica (no son oficiales).** Busqué en el CSV la puntuación en la que la proporción de alumnos por debajo coincide con el % oficial acumulado (script check_cuts.py). Encaja casi exactamente:\n\n| Competencia y año | Bajo / medio-bajo | Medio-bajo / medio-alto | Medio-alto / alto |\n|---|---|---|---|\n| Catalán 2025 | 56,1 | 70,8 | 85,5 |\n| Castellano 2025 | 56,1 | 70,8 | 85,6 |\n| Inglés 2025 | 53,33 | 68,75 | 88,75 |\n| Matemáticas 2025 | 50,31 | 69,98 | 89,91 |\n| Ciencias (CTE) 2025 | 52,02 | 68,49 | 85,2 |\n| Catalán 2023 | 56,7 | 70,7 | 85,0 |\n| Matemáticas 2023 | 50,8 | 70,0 | 90,1 |\n\nCada valor es la primera puntuación observada en el corte. El corte real está entre esa puntuación y la anterior.\n\nPara DimNivelLogro hay dos opciones:\n- (a) Una tabla de cortes por año y competencia, calibrada con los % oficiales y marcada como 'estimada'.\n- (b) Cortes fijos simplificados basados en el texto oficial (por ejemplo 60/70/85), declarando que no reproducen los % oficiales.",
+  "official_reference_values": "Fuente principal: los Quaderns d'avaluació anuales en el repositori del Departament.\n\nLos handles de cada año son:\n\n| Año | Handle | Quadern |\n|---|---|---|\n| 2009 | https://hdl.handle.net/20.500.12694/390 | |\n| 2010 | https://hdl.handle.net/20.500.12694/397 | |\n| 2011 | https://hdl.handle.net/20.500.12694/399 | |\n| 2012 | https://hdl.handle.net/20.500.12694/402 | Q23 |\n| 2013 | https://hdl.handle.net/20.500.12694/406 | Q26 |\n| 2014 | https://hdl.handle.net/20.500.12694/414 | |\n| 2015 | https://hdl.handle.net/20.500.12694/420 | |\n| 2016 | https://hdl.handle.net/20.500.12694/435 | |\n| 2017 | https://hdl.handle.net/20.500.12694/438 | |\n| 2018 | https://hdl.handle.net/20.500.12694/441 | |\n| 2019 | https://hdl.handle.net/20.500.12694/444 | Q44 |\n| 2021 | https://hdl.handle.net/20.500.12694/2098 | Q50 |\n| 2022 | https://hdl.handle.net/20.500.12694/3555 | Q54 |\n| 2023 | https://hdl.handle.net/20.500.12694/4245 | Q59 |\n| 2024 | https://hdl.handle.net/20.500.12694/7364 | Q62 |\n| 2025 | https://hdl.handle.net/20.500.12694/7383 | Q68 |\n\nLas páginas del handle tienen protección anti-bot. Los PDF se descargan con la API REST: https://repositori.educacio.gencat.cat/rest/items/<uuid>?expand=bitstreams. Por ejemplo, el de 2025 está en https://repositori.educacio.gencat.cat/rest/bitstreams/178216ab-8e4b-46f8-93ed-6dd0bb58f58e/retrieve.\n\n**A) Media global de Cataluña.** Formato: valor oficial (n oficial). Después de '|' va la media del CSV calculada con check_all_years.py.\n\n- 2009: CAT 76,9 (58.955) | 76,84; CAST 74,7 (58.969) | 74,65 (los informes de 2010-2012 citan 75,1 para 2009); MAT 78 (58.968) | 78,02. El n coincide exactamente.\n- 2010: CAT 73,7 | 73,65; CAST 71,2 | 71,19; ING 71,4 | 71,38; MAT 78,2 | 78,23.\n- 2011: CAT 77,2 | 77,20; CAST 73,6 | 73,58; ING 80,6 | 80,59; MAT 80,9 | 80,90.\n- 2012: CAT 79,6 (64.207) | 79,67; CAST 76,6 (64.613) | 76,62; MAT 80,2 (64.612) | 80,27; ING 74,3 (64.286) | 74,30. El n coincide.\n- 2013: CAT 71,1 (64.467; desviación típica 15,0) | 71,09; CAST 73,0 (64.640) | 73,03; MAT 76,3 (64.860) | 76,27; ING 73,0 (64.444) | 72,99.\n- 2014: CAT 75,5 (65.790) | 75,56; CAST 75,4 (66.062) | 75,42; MAT 81,0 (66.135) | 81,04; ING 75,1 (65.782) | 75,19.\n- 2015: CAT 74,5 (68.387) | 74,48; CAST 75,7 (68.609) | 75,59; ING 74,5 (68.342) | 74,42; MAT 80,0 (68.724) | 80,00.\n- 2016: CAT 74,5 (69.928) | 74,55 (n CSV 70.008); CAST 74,1 (70.165) | 74,06; ING 73,7 (69.972) | 73,94; MAT 77,9 (70.392) | 77,87.\n- 2017: CAT 75,8 (71.806) | 75,87; **CAST 73,4 (71.792) | 74,30 (n CSV 71.036)**; ING 79,9 (71.420) | 79,97 (n CSV 70.629); MAT 77,6 (72.034) | 77,63.\n- 2018: CAT 73,6 (72.464) | 73,56; CAST 77,0 (72.956) | 76,99; ING 76,3 (72.612) | 76,27; MAT 79,2 (72.939) | 79,23; MED 70,2 (72.649) | 70,20.\n- 2019: CAT 75,5 (73.070) | 75,46 (n CSV 72.936); CAST 74,4 (73.542) | 74,44; ING 78,2 (73.253) | 78,19; MAT 78,2 (73.339) | 78,18; MED 68,1 (73.238) | 68,17.\n- 2021: CAT 76,7 (71.655) | 76,67; CAST 73,5 (72.199) | 73,56; ING 73,2 (71.847) | 73,16; MAT 76,0 (72.136) | 76,02; MED 75,6 (71.762) | 75,55.\n- 2022: CAT 72,5 (72.584) | 72,46; CAST 74,0 (73.024) | 73,95; ING 76,9 (72.913) | 76,93; MAT 71,1 (73.075) | 71,12; MED 72,8 (72.482) | 72,76.\n- 2023: CAT 72,7 (70.801) | 72,70; CAST 72,1 (71.117) | 72,14; **ING 77,8 (71.323) | 77,96**; MAT 73,6 (71.497) | 73,55; MED 71,6 (71.221) | 71,59.\n- 2024: **CAT 74,7 (69.753) | 74,85 (n CSV 68.729)**; CAST 73,9 (70.380) | 73,89; ING 73,2 (69.923) | 73,27 (n CSV 68.392); MAT 74,3 (70.231) | 74,37 (n CSV 69.836); CTE 74,3 (70.180) | 74,48 (n CSV 69.002); FRA 62,5 (272) | 62,80 (n CSV 266).\n- 2025: CAT 73,5 (66.151; desviación típica 16,6) | 73,53 (n y desviación idénticos); CAST 76,5 (67.212; 15,2) | 76,47; ING 75,7 (66.813; 18,2) | 75,74; FRA 66,1 (243) | 66,09; MAT 70,4 (66.954; 19,7) | 70,42 (n CSV 66.995); CTE 66,3 (66.509; 18,0) | 66,32.\n\n**B) % por nivel (baix / mitjà-baix / mitjà-alt / alt)**\n\n- 2018: CAT 15,3 / 21,8 / 40,2 / 22,7; CAST 13,9 / 23,2 / 38,6 / 24,3; ING 15,9 / 19,7 / 31,5 / 32,9; MAT 10,9 / 21,7 / 33,2 / 34,2; MED 15,0 / 24,7 / 35,6 / 24,7.\n- 2019: CAT 12,8 / 19,0 / 35,3 / 32,9; CAST 14,8 / 22,0 / 35,2 / 28,0; ING 15,4 / 19,1 / 27,5 / 38,0; MAT 13,0 / 24,3 / 40,4 / 22,3; MED 15,7 / 29,3 / 36,3 / 18,7.\n- 2021: CAT 12,3 / 16,1 / 36,6 / 35,0; CAST 15,0 / 23,8 / 36,2 / 25,0; ING 18,7 / 21,1 / 28,4 / 31,8; MAT 14,9 / 20,1 / 39,3 / 25,8; MED 11,5 / 23,6 / 35,3 / 29,6.\n- 2022: CAT 16,6 / 22,5 / 36,3 / 24,6; CAST 15,0 / 22,4 / 36,2 / 26,4; ING 15,2 / 20,9 / 26,5 / 37,3; MAT 16,5 / 22,1 / 40,2 / 21,2; MED 13,2 / 25,6 / 33,5 / 27,7.\n- 2023: CAT 17,5 / 20,1 / 35,5 / 26,9; CAST 17,2 / 22,6 / 37,0 / 23,2; ING 13,8 / 16,1 / 38,5 / 31,6; MAT 12,5 / 24,1 / 43,8 / 19,6; MED 15,5 / 25,7 / 30,9 / 27,9.\n- 2024: CAT 14,2 / 19,3 / 36,2 / 30,4; CAST 14,2 / 20,3 / 39,1 / 26,4; ING 15,4 / 22,0 / 39,2 / 23,4; MAT 12,2 / 23,3 / 43,1 / 21,4; CTE 14,0 / 20,4 / 35,9 / 29,7.\n- 2025: CAT 15,3 / 20,6 / 37,3 / 26,8; CAST 10,5 / 16,9 / 40,6 / 32,0; ING 13,6 / 19,6 / 34,8 / 32,0; MAT 17,5 / 26,5 / 38,0 / 18,0; CTE 22,6 / 28,5 / 32,8 / 16,1.\n\n**C) Subcompetencias 2025 (Q68, Gráficos 8-16)**\n\n- Catalán: comprensión lectora 78,1; expresión escrita 67,0; comprensión oral 73,8.\n- Castellano: comprensión lectora 79,0; expresión escrita 70,8; comprensión oral 81,2.\n- Inglés: comprensión lectora 73,8; expresión escrita 77,3; comprensión oral 77,9.\n- Matemáticas: numeración y cálculo 74,1; espacio, medida y representación gráfica 71,5; relaciones y cambio 66,1.\n- CTE: explicar fenómenos 66,7; investigación científica 64,7; interpretar información 67,5.\n\nPara 2024 (Q62): catalán CL 79,3, EE 66,1, CO 79,3; castellano CL 79,3, EE 63,7, CO 79,6; inglés CL 74,0, EE 77,8, CO 70,1; NC 81,8, espacio 75,6, relaciones y cambio 66,6.\n\n**D) Brechas oficiales (Q68, Gráficos 23-27)**\n\nBrecha de género (nenas − nenos), 2021 → 2025:\n\n| Competencia | 2021 | 2022 | 2023 | 2024 | 2025 |\n|---|---|---|---|---|---|\n| CAT | 3,6 | 4,4 | 4,2 | 3,3 | 3,9 |\n| CAST | 2,6 | 3,2 | 3,1 | 2,4 | 4,4 |\n| ING | 5,2 | 4,8 | 3,7 | 3,1 | 3,4 |\n| MAT | −1,2 | −0,8 | −3,7 | −3,0 | −4,6 |\n| CTE | 0,9 | −0,2 | −0,5 | −0,6 | −0,6 |\n\nBrecha de titularidad (privados − públicos), 2022 → 2025; para 2021 no hay datos:\n\n| Competencia | 2022 | 2023 | 2024 | 2025 |\n|---|---|---|---|---|\n| CAT | 5,3 | 6,2 | 5,8 | 5,1 |\n| CAST | 5,3 | 6,0 | 5,6 | 4,4 |\n| ING | 10,8 | 8,5 | 8,6 | 8,7 |\n| MAT | 5,2 | 4,6 | 4,9 | 4,3 |\n| CTE | 4,4 | 5,7 | 4,3 | 4,0 |\n\nMedias 2025 por grupo:\n- CAT: nenos 71,6, nenas 75,5, privados 76,9, públicos 71,8.\n- CAST: 74,3 / 78,7 / 79,4 / 75,0.\n- ING: 74,1 / 77,4 / 81,5 / 72,8.\n- MAT: 72,7 / 68,1 / 73,3 / 69,0.\n- CTE: 66,6 / 66,0 / 69,0 / 65,0.\n\n**E) Territorios**\n\nQ68, Tablas 4-8, 2025. Formato: media de catalán (n) / media de matemáticas.\n\n| Territorio | Catalán (n) | Matemáticas |\n|---|---|---|\n| Alt Pirineu i Aran | 73,3 (535) | 69,4 |\n| Baix Llobregat | 73,8 (7.157) | 70,8 |\n| Barcelonès | 70,1 (5.082) | 66,8 |\n| Catalunya Central | 73,5 (3.838) | 69,9 |\n| Consorci d'Educació de Barcelona | 75,0 (11.559) | 71,7 |\n| Girona | 73,6 (6.889) | 70,5 |\n| Lleida | 74,7 (3.265) | 71,1 |\n| Maresme-Vallès Oriental | 74,6 (8.016) | 70,8 |\n| Penedès | 72,3 (4.456) | 69,3 |\n| Tarragona | 73,4 (4.871) | 71,3 |\n| Terres de l'Ebre | 73,1 (1.457) | 72,5 |\n| Vallès Occidental | 72,8 (9.026) | 69,9 |\n\nEl CSV reproduce exactamente el n, la media y la desviación del catalán por área en 2025 (check_2025.py).\n\nCatalán 2024 por territorio (Q62):\n\n| Territorio | Media (n) |\n|---|---|\n| Alt Pirineu i Aran | 77,2 (517) |\n| Baix Llobregat | 75,1 (7.598) |\n| Barcelonès | 70,8 (5.313) |\n| Catalunya Central | 74,4 (4.088) |\n| Consorci d'Educació de Barcelona | 76,5 (12.128) |\n| Girona | 74,5 (7.250) |\n| Lleida | 76,0 (3.450) |\n| Maresme-Vallès Oriental | 75,5 (8.527) |\n| Penedès | 73,7 (4.687) |\n| Tarragona | 74,4 (5.109) |\n| Terres de l'Ebre | 75,0 (1.538) |\n| Vallès Occidental | 73,9 (9.548) |\n\n**F) Dispersión: variabilidad entre centros**\n\n- 2025: CAT 13,3 %, CAST 15,3 %, ING 11,7 %, MAT 15,0 %, CTE 13,8 %.\n- 2024: 15,9 %, 14,3 %, 17,6 %, 13,4 %, 14,3 %.",
+  "covid_2020": "No hay datos de 2020 porque la prueba no se hizo por la COVID-19.\n\n- **Quadern 50 (2021), presentación** (https://hdl.handle.net/20.500.12694/2098): 'a causa del confinament i de la interrupció de l'activitat lectiva presencial als centres educatius de Catalunya durant l'últim trimestre del curs 2019-2020, provocades per la crisi pandèmica de la Covid-19, no es va poder dur a terme l'avaluació de sisè de primària programada per al mes de maig del 2020'.\n- **Quadern 50, introducción**: 'aquesta prova no es va poder dur a terme el curs passat, a causa del tancament dels centres per la Covid-19'.\n- **Quadern 62 (2024), nota 2**: 'El 2020 no es van realitzar proves de finals d'etapa a sisè de primària a causa de la COVID-19'.\n- **Quadern 68 (2025), p. 14**: 'no es van aplicar les proves a causa de la COVID-19'.\n\nLa API Socrata lo confirma: devuelve 16 años (2009-2019 y 2021-2025) y ninguna fila de 2020. Sus totales por año suman 1.102.324 filas, la misma cifra que el CSV local.\n\nImplicación para los KPI: la variación interanual 2021 vs 2019 salta una convocatoria. Los informes la tratan como 'primera onada' tras el confinamiento. Además, el Quadern 68 compone su Gráfico 3 como dos series separadas, antes y después de 2020.",
+  "notes": "1) **Cuidado con la comparabilidad entre años.** Los propios informes la limitan:\n- Quadern 68: 'el model vigent de disseny de les proves no disposa d'ítems d'ancoratge ... Qualsevol comparació longitudinal que es realitzi s'ha d'interpretar com orientativa'.\n- Quadern 62: 'no estan dissenyades amb mètodes d'equiparació d'ítems'.\n- También cambian los marcos: 3 niveles hasta 2012 y 4 desde 2013, pesos distintos en 2013, comprensión oral desde 2018, 'Medi natural' rebautizado como 'Ciència, tecnologia i enginyeria' en 2024-2025, y 'proves de final d'etapa' en lugar de 'competències bàsiques'.\n\nConviene documentar esto en los KPI de variación interanual, tendencia de 5 convocatorias y % de competencias que mejoran.\n\n2) **Quién elabora los informes.** Hasta 2024 los firma el Consell Superior d'Avaluació del Sistema Educatiu (CSASE). El de 2025 lo firma la Agència d'Avaluació i Prospectiva de l'Educació (APE); el CSASE diseñó las pruebas.\n\n3) **El CSV frente a los informes.** El n y la media coinciden casi siempre: el n es idéntico en 2009, 2012, 2018, 2021 y 2025 en la mayoría de competencias. Hay discrepancias que conviene anotar como limitación:\n- 2017, castellano: 74,30 en el CSV con n 71.036, frente a 73,4 con n 71.792 oficial.\n- 2023, inglés: 77,96 frente a 77,8.\n- 2024: el CSV tiene unos 1.000 valores menos en catalán, inglés, matemáticas y ciencias, con medias 0,05-0,18 puntos más altas.\n- 2025, matemáticas: n 66.995 frente a 66.954.\n- Hay pequeñas diferencias de n en 2013-2016 y 2019.\n\n4) **Filas del CSV y alumnado de la prueba.** Las filas por año corresponden a los alumnos con corrección externa en al menos una competencia:\n- 2009: 59.063, igual al informe.\n- 2024: 70.380, igual a la cifra oficial de alumnos que 'han realitzat la prova amb correcció externa'.\n- 2025: 68.911 filas, frente a 70.064 convocados.\n\nNo están incluidos los exentos ni el alumnado con corrección interna, unos 6.700-7.900 alumnos al año.\n\n5) **Cobertura por columna en el CSV** (filas con valor, check_coverage.py):\n\n| Columnas | Años con datos |\n|---|---|\n| PCAT/PCAST/PMAT y sus CL, EE, NC, EFM, CR | 2009-2025 |\n| PCAT_CO, PCAST_CO | desde 2018 |\n| PANG, PANG_CO, PANG_CE y PFRAN* (salvo EE) | desde 2010 |\n| PANG_EE, PFRAN_EE | desde 2013 |\n| PMED y COMP1-3 | desde 2018 |\n\nHay ligeras incoherencias: en 2013 PANG_CE tiene 64.440 valores y PANG 64.418; en 2014 PMAT_EFM tiene 66.124 y PMAT 66.135.\n\n6) **Hipótesis útil sin verificar.** Si se usan los pesos oficiales, la puntuación global (PCAT, etc.) debería ser la media ponderada de sus subcompetencias, por ejemplo 0,15·CO + 0,50·CL + 0,35·EE desde 2018. Se puede contrastar como regla de calidad.\n\n7) **NATURALESA.** Aunque su descripción dice 'públic, privat o concertat', solo hay dos categorías, y 'Privat/Privada' incluye los concertados. El informe de 2009 distinguía 'Privada', 'Privada concertada' y 'Pública'.\n\n8) **Otras variables de los informes.** Los informes también analizan repetición y complejidad del centro, que no están en el dataset. El aranés se excluye de los informes por su n bajo y no tiene columna en el dataset.\n\n9) **Lo que no encontré.**\n- El texto oficial completo del DOGC del Decret 59/2022 ni del Decret 120/2023. Usé un resumen del INAP y documentos del Govern. El Portal Jurídic se carga con JavaScript y no se pudo leer.\n- La fecha de la prueba de 2010.\n- Un documento oficial con los puntos de corte exactos de los 4 niveles; los cortes de la sección de niveles son inferidos.\n- La página 'about_data' de Socrata no se consultó aparte. Las descripciones proceden del JSON de la API de la misma vista.\n\n10) **Ficheros de trabajo** (scratchpad):\n- Scripts de comprobación: /tmp/claude-1000/-home-kiara-rodriguez-uribe-Uni-TFG-Project/e4d67534-2cda-46c9-9607-3737fe5b6260/scratchpad/scripts/ (check_2025.py, check_2024.py, check_all_years.py, check_birth.py, check_coverage.py, check_cuts.py, dl_reports.sh, extract.py).\n- PDF y texto de los informes 2009-2025: /tmp/claude-1000/-home-kiara-rodriguez-uribe-Uni-TFG-Project/e4d67534-2cda-46c9-9607-3737fe5b6260/scratchpad/dl/ (sise_AAAA.pdf/.txt, q68.pdf/.txt).\n- Metadatos Socrata: /tmp/claude-1000/-home-kiara-rodriguez-uribe-Uni-TFG-Project/e4d67534-2cda-46c9-9607-3737fe5b6260/scratchpad/meta/rk5x.json.\n\nLos scripts usan /home/kiara-rodriguez-uribe/Uni/TFG_Project/.venv/bin/python con duckdb y leen Datos.csv en modo lectura, sin modificarlo."
+ },
+ "profiles": [
+  {
+   "key": "categoricas",
+   "n_findings": 18,
+   "unconfirmed": [],
+   "missed": [
+    "HAB-03 subestima el alcance: en 2010 HÀBITAT está desalineado por bloques respecto al resto de columnas. Hay al menos 15.186 filas mal asignadas (25,6% de 2010, cota por distancia de variación total frente a 2009/2011), no 7.252 (12,22%). Siguiendo el orden del fichero cambia de valor 198 veces, frente a 448 y 490 en 2009 y 2011 (el área cambia 531, 534 y 546). Por deciles de línea hay tramos con un 100% de combinaciones imposibles. El cruce naturaleza×hábitat también está roto (Privada en 'Fins a': 35,2% frente a 9,9-13,2%). AREA, NATURALESA, GENERE y MES de 2010 son coherentes (% privada por área estable; correlación de la PMAT media por área entre 2009 y 2010 = 0,945). Recomendación: dejar HabitatCod en null o 'No fiable' en 2010, no solo un flag.",
+    "ANY_NAIXEMENT de 2010 muestra el mismo mecanismo que HÀBITAT: 10.068 cambios de valor siguiendo el orden del fichero, frente a 8.061 y 7.593 en 2009 y 2011, y un efecto de la edad casi nulo en los 10 deciles de línea (de -1,10 a 1,68). En 2010 hay dos columnas corruptas, HÀBITAT y ANY_NAIXEMENT, y conviene tratarlas juntas y no exponer AnioNacimiento de 2010.",
+    "Las 58 filas sin código de 2016 (47) y 2018 (11) tienen fecha de nacimiento de relleno: siempre enero. En 2016, 16 son 1/2001, 6 son 1/2003, 23 son 1/2004 y 2 son 1/2005; en 2018, 1 es 1/2005, 9 son 1/2006 y 1 es 1/2011, que es el único caso de edad 7 desde 2017. Con la regla actual, las que caen entre 10 y 14 años reciben una SituacionEdad basada en un valor inventado.",
+    "COD-03: 4 de las 8 'posibles colisiones' (955832388, 5978183322, 6194719699 y 8000354298) son filas de 2016 con mes=1, que es el relleno de enero de 2016. Lo más probable es que sean repeticiones reales. Si no se exige el mes en 2016, RepeticionProbable pasa de 906 a unas 909-910. Además, el merge de Python necesita drop_duplicates: prev tiene 2 claves duplicadas, las de 2483875190 llevadas a 2018.",
+    "La 'edad en la prueba' es en realidad la edad que se cumple en el año natural: edad=12 se reparte igual entre los meses de nacimiento (2023: entre 5.654 y 6.238 por mes). Hay que nombrarla o documentarla así en DimPerfilAlumno.",
+    "HAB-04 se queda corto: en 2024 también cambia el reparto de hábitat de Tarragona ('De 10001' 34,2→26,3%, 'Més de' 39,0→47,7%), Lleida ('Fins a' 47,6→41,7%) y Barcelona Comarques ('Fins a' 8,0→0,0%, 'De 10001' 27,5→5,0%) por la reorganización de ARE-02. Los visuales área×hábitat a lo largo del tiempo tienen que usar AreaSerieComparable o marcar también estas áreas.",
+    "La medida DAX de ANY-01 no funciona tal como está escrita: falta REMOVEFILTERS(DimAnio), o ALL(DimAnio), dentro del CALCULATE. Con DimAnio[Anio] en el eje devuelve blanco, así que la variación interanual y la tendencia saldrían vacías.",
+    "Errores menores de la evidencia: en COD-02 difieren 14 puntuaciones y no 13, y PMAT de la línea 525396 es 82,68 y no 82,70. En HAB-01, las 2.216 bajadas incluyen la fila 'Fins a 10000'; con las 13.357 filas son 2.215. En FEC-03, el efecto del mes (2,64; 2,31-4,00) solo sale filtrando edad=12, sin filtro sale 2,66 y 2,77-4,34. En FEC-04, el flag propuesto marca 30.812 filas, no 3.331.",
+    "Hay 11 grupos de filas idénticas en las 32 columnas (2009: 3, 2011: 2, 2012: 2, 2014: 4), todas sin código, con 11 filas sobrantes. Por su perfil (notas en el techo o todo 0,00, mismo centro) pueden ser coincidencias reales. No hay que deduplicarlas, pero sí documentarlas. El grupo de 2009 con todo a 0,00 lo debe revisar el perfil de puntuaciones, por si es un 'no presentado'.",
+    "En 2010, la brecha de género en PCAT es 0,41, frente a 2,36-4,35 en el resto de años, mientras que PCAST (3,30) y PMAT (4,08) son normales. GENERE no está desalineado, pero PCAT de 2010 merece una revisión en el perfil de puntuaciones.",
+    "Script: /home/kiara-rodriguez-uribe/Uni/TFG_Project/validacion/perfilado/verificacion_categoricas.py (carga independiente con pyarrow y número de línea real; tarda unos 15 s). Salida completa con las 101 consultas: /home/kiara-rodriguez-uribe/Uni/TFG_Project/validacion/perfilado/salidas_verificacion/verificacion_categoricas.log. No se ha modificado Datos.csv ni Datos.zip."
+   ]
+  },
+  {
+   "key": "puntuaciones",
+   "n_findings": 23,
+   "unconfirmed": [
+    "PUN-13",
+    "PUN-21",
+    "PUN-23"
+   ],
+   "missed": [
+    "PANG 2015 tiene un suelo artificial en la global y en CO y CE que el perfilado no detectó. 8.801 globales (12,9 % de 68.342) valen exactamente 48,79, el 87 % de las 10.106 que están por debajo de 50. 8.655 PANG_CO valen 53,19 y 7.554 PANG_CE valen 45,00, sin ningún valor positivo por debajo; CO tiene 34 valores distintos y CE 1.363. Por eso el 14,8 % de nivel bajo de PANG 2015 es casi todo artefacto, y el p10 global de PANG (48,79) en PUN-18 es justo ese valor. Consulta: SELECT count(*) FILTER (WHERE PANG=4879), count(*) FILTER (WHERE PANG<5000), count(*) FILTER (WHERE PANG_CO=5319), count(*) FILTER (WHERE PANG_CE=4500) FROM tc WHERE anio=2015 (sección pun18).",
+    "Inglés 2016 tiene una escala comprimida en CO y CE, no solo en EE. PANG_CO 2016 tiene 12.355 filas (17,7 % de 69.985) con valores entre 51,7 y 55,8, y un hueco entre 21,5 y 51,7. PANG_CE 2016 tiene 9.672 filas en 4 valores fuera de la rejilla de paso 4,17 (53,0; 53,67; 54,5; 54,8). Los máximos son 96,33 en CO, 93,67 en CE y 95,55 en la global. El periodo estable de las subcompetencias de PANG debería empezar en 2017. Consulta: SELECT PANG_CO/100.0, count(*) FROM tc WHERE anio=2016 GROUP BY 1 (secciones pun11 y pun18).",
+    "En PMAT 2015 las subcompetencias usan otra escala, no una «prueba más fácil». NC, EFM y CR tienen 515, 259 y 167 valores distintos (15-40 en otros años) y ningún valor positivo por debajo de 38,39, 38,99 y 40,37 (p01 entre 45 y 48), frente a mínimos positivos de 5 a 11 en el resto de años. El % de nivel bajo de 0,66 % es un efecto de la escala (sección pun09).",
+    "PMAT 2019 es una distribución comprimida por los dos extremos, no más fácil. La media es 78,18, por debajo de 2018 (79,23); el % ≥ 95 baja a 8,08 % (15,10 % en 2018) y la sd a 12,56 (16,46 en 2018). La cola baja es fina pero continua: 7 alumnos en NC 14,29, 44 en EFM 27,27 y 24 en CR 22,22 (sección pun09).",
+    "PMAT 2016 tiene un pico artificial en 59,20: 251 filas, frente a entre 6 y 19 en los valores vecinos de 59,18 a 59,22. Las 248 filas que no cuadran con 0,35/0,35/0,30 tienen todas esa global, con una ponderada entre 49,38 y 59,20; parece un recorte hacia arriba (sección pun23).",
+    "En PFRAN 2022 los descuadres siguen un patrón de desalineación entre alumnos. En las filas que no cuadran, corr(global, ponderada) = 0,33, pero 143 de las 145 globales erróneas coinciden con la ponderada de otra fila errónea. La media anual apenas cambia (82,32 frente a 82,21 recalculada), y el mínimo es 52,90, sin ningún valor por debajo de 50 (sección pun07).",
+    "En PANG 2022 y PCAST 2022, el 100 % de los descuadres se explica exactamente por un ítem de diferencia: CE −1/+1 en 10.291 y 2.937 filas, y EE −1/+1 en 6.477 y 5.523. En PANG 2022 el sesgo es neto: la global queda de media 0,206 puntos por debajo de la ponderada, lo que contradice que el impacto sea simétrico (sección pun05).",
+    "Las tolerancias de los flags propuestos son incoherentes. PUN-05 usa 0,115, mientras que PUN-13 usa 0,065 en los años con 2 decimales. Con 0,065 se marcarían 45.157 filas de PANG 2011 (desfase de +0,07) y 671 de PCAST 2010 (residuo máximo 0,114), y en 2009 se marcarían filas cuyo descuadre viene de varias versiones de prueba: 21 y 15 combinaciones (CL, EE) con más de una global en PCAT y PCAST 2009. Recomendación: una tolerancia única de 0,115, aplicada solo en 2011-2025 (secciones pun10, pun13 y pun23).",
+    "La población de 2017 y 2024 parece filtrada, no imputada. Además de PMAT 2017 y PCAST 2024 al 100 %, PCAT 2017 tiene un 99,49 % de cobertura (97,5-98,4 % en 2010-2016) y PMAT 2024 un 99,23 % (97,2-98,9 % en el resto, sin contar 2009 y 2017). Así, la participación de todas las materias en esos años no es comparable (sección pun16).",
+    "Hay techos por debajo de 100 en años del periodo «estable» que afectan al % Alto y al % en [95,100]. PCAT_CL y PCAST_CL tienen máximo 95,45 en 2018 (PCAST_CL también en 2021), con 22 valores de 23 posibles; PANG_CO tiene 92,86 en 2018; y PCAT y PCAST tienen como máximo 97,73 en 2018 (PCAST también en 2021). Consulta: SELECT anio, max(PCAT_CL), max(PCAST_CL), max(PANG_CO) FROM tc GROUP BY 1 (sección pun11).",
+    "Riesgos de implementación en Power Query. (1) Text.Replace(',', '.') seguido de un cambio de tipo con la configuración regional es-ES convierte '87.70' en 8770. (2) Las rotaciones de PUN-02 y PUN-03 deben calcularse a la vez a partir de las columnas originales; si se hacen reemplazos secuenciales, se sobrescribe un valor antes de usarlo."
+   ]
+  }
+ ]
+}

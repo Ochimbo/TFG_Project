@@ -1,0 +1,91 @@
+/// Una fila por registro de Datos.csv (alumno evaluado en una convocatoria). Base de la medida Alumnos evaluados.
+table FactEvaluacion
+	lineageTag: 3a7d7ee4-5251-518f-bb98-f3b4610376b0
+
+	/// Posición del registro en Datos.csv (1..N), asignada antes de cualquier filtro (R01).
+	column EvaluacionID
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f3354a28-da8c-5c4d-908b-c72fe7417bb0
+		summarizeBy: none
+		sourceColumn: EvaluacionID
+
+		annotation SummarizationSetBy = User
+
+	/// Año de la convocatoria (relación con DimAnio).
+	column AnioKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: df0855fb-aedc-5d69-b107-e9cd3576d583
+		summarizeBy: none
+		sourceColumn: AnioKey
+
+		annotation SummarizationSetBy = User
+
+	/// Contexto del centro (relación con DimContextoCentro).
+	column ContextoKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 134c0349-7a12-5345-bdc5-b77de35607ad
+		summarizeBy: none
+		sourceColumn: ContextoKey
+
+		annotation SummarizationSetBy = User
+
+	/// Perfil del alumno (relación con DimPerfilAlumno).
+	column PerfilKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d3ce534b-31b3-5f5f-bdf6-19e9c4f2b0ca
+		summarizeBy: none
+		sourceColumn: PerfilKey
+
+		annotation SummarizationSetBy = User
+
+	/// VERDADERO si el registro tiene CODI_ALUMNE (el código no se carga por privacidad).
+	column TieneCodigoAlumno
+		dataType: boolean
+		isHidden
+		lineageTag: 6829899d-1f10-5043-8a53-67efbb0e8755
+		summarizeBy: none
+		sourceColumn: TieneCodigoAlumno
+
+		annotation SummarizationSetBy = User
+
+	/// Número de puntuaciones globales informadas en el registro.
+	column CompetenciasEvaluadas
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5174c2ac-1ff0-563c-b543-b670c592ea02
+		summarizeBy: none
+		sourceColumn: CompetenciasEvaluadas
+
+		annotation SummarizationSetBy = User
+
+	partition FactEvaluacion = m
+		mode: import
+		queryGroup: Hechos
+		source =
+				let
+				    Origen = stg_Evaluaciones,
+				    // Número de competencias globales con puntuación en el registro
+				    ConCompetencias = Table.AddColumn(
+				        Origen,
+				        "CompetenciasEvaluadas",
+				        each List.Count(List.RemoveNulls({[PCAT], [PCAST], [PMAT], [PANG], [PFRAN], [PMED]})),
+				        Int64.Type
+				    ),
+				    // Una fila por registro (R01). CODI_ALUMNE no se carga: solo TieneCodigoAlumno.
+				    Resultado = Table.SelectColumns(
+				        ConCompetencias,
+				        {"EvaluacionID", "AnioKey", "ContextoKey", "PerfilKey", "TieneCodigoAlumno", "CompetenciasEvaluadas"}
+				    )
+				in
+				    Resultado
+
+	annotation PBI_ResultType = Table

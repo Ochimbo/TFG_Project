@@ -1,0 +1,121 @@
+/// Convocatorias de la prueba de sexto de primaria, de 2009 al último año con datos. 2020 se incluye sin datos (sin prueba por la COVID-19).
+table DimAnio
+	lineageTag: f56d3ab4-78e6-5349-93c3-a399f7425cc5
+
+	/// Clave del año (igual a Anio).
+	column AnioKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 3f937886-44cb-545a-b83e-742bdc10de2b
+		summarizeBy: none
+		sourceColumn: AnioKey
+
+		annotation SummarizationSetBy = User
+
+	/// Año natural de la convocatoria (columna ANY del origen).
+	column Anio
+		dataType: int64
+		formatString: 0
+		lineageTag: b233862b-de02-5075-9f3b-d07aeef095dd
+		summarizeBy: none
+		sourceColumn: Anio
+
+		annotation SummarizationSetBy = User
+
+	/// Curso escolar de la convocatoria, p. ej. 2016-2017.
+	column Curso
+		dataType: string
+		lineageTag: b9f1db9a-5118-51d2-9cb4-86a162b54ecc
+		summarizeBy: none
+		sourceColumn: Curso
+		sortByColumn: Anio
+
+		annotation SummarizationSetBy = User
+
+	/// VERDADERO si ese año hubo prueba y hay datos (FALSO en 2020).
+	column TieneConvocatoria
+		dataType: boolean
+		lineageTag: 3d1611a5-c5f5-55e6-83bb-4e7686d8f267
+		summarizeBy: none
+		sourceColumn: TieneConvocatoria
+
+		annotation SummarizationSetBy = User
+
+	/// Número de orden 1..N de las convocatorias con datos (vacío en 2020). Las comparaciones temporales usan este índice, no Anio - 1.
+	column IndiceConvocatoria
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a2584b2e-9244-53d1-a458-4f817337adf5
+		summarizeBy: none
+		sourceColumn: IndiceConvocatoria
+
+		annotation SummarizationSetBy = User
+
+	/// VERDADERO en el último año con datos.
+	column EsUltimaConvocatoria
+		dataType: boolean
+		lineageTag: 501bd655-f2ba-58fe-a35a-7475e6d19c72
+		summarizeBy: none
+		sourceColumn: EsUltimaConvocatoria
+
+		annotation SummarizationSetBy = User
+
+	/// Advertencia sobre la convocatoria (2020 sin prueba; 2021 se compara con 2019).
+	column NotaConvocatoria
+		dataType: string
+		lineageTag: f4f00890-5278-5203-885e-c6de77dee4dd
+		summarizeBy: none
+		sourceColumn: NotaConvocatoria
+
+		annotation SummarizationSetBy = User
+
+	partition DimAnio = m
+		mode: import
+		queryGroup: Dimensiones
+		source =
+				let
+				    // Años con datos, tal como quedan en stg_Evaluaciones (Anio = entero de ANY)
+				    AniosConDatos = List.Sort(List.Distinct(Table.Column(stg_Evaluaciones, "Anio"))),
+				    UltimoAnio = List.Max(AniosConDatos),
+				    // Notas de las convocatorias especiales (2020 no tuvo prueba por la COVID-19)
+				    Notas = [
+				        #"2020" = "Sin prueba por la COVID-19",
+				        #"2021" = "Primera convocatoria tras la COVID-19 (se compara con 2019)"
+				    ],
+				    // Una fila por año de 2009 al último con datos, 2020 incluido. IndiceConvocatoria numera
+				    // 1..N solo los años con prueba: las comparaciones temporales usan este índice, no Anio - 1.
+				    Filas = List.Transform(
+				        {2009..UltimoAnio},
+				        (anio) =>
+				            let
+				                Posicion = List.PositionOf(AniosConDatos, anio),
+				                TieneDatos = Posicion >= 0
+				            in
+				                {
+				                    anio,
+				                    anio,
+				                    Text.From(anio - 1) & "-" & Text.From(anio),
+				                    TieneDatos,
+				                    if TieneDatos then Posicion + 1 else null,
+				                    anio = UltimoAnio,
+				                    Record.FieldOrDefault(Notas, Text.From(anio), "")
+				                }
+				    ),
+				    Resultado = #table(
+				        type table [
+				            AnioKey = Int64.Type,
+				            Anio = Int64.Type,
+				            Curso = text,
+				            TieneConvocatoria = logical,
+				            IndiceConvocatoria = Int64.Type,
+				            EsUltimaConvocatoria = logical,
+				            NotaConvocatoria = text
+				        ],
+				        Filas
+				    )
+				in
+				    Resultado
+
+	annotation PBI_ResultType = Table

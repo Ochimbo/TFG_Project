@@ -1,0 +1,35 @@
+relationship 44523929-6636-5a0f-8728-ef4af65094e4
+	fromColumn: FactPuntuacion.AnioKey
+	toColumn: DimAnio.AnioKey
+
+relationship e3926c95-548c-5648-9794-e5d4b45cafb6
+	fromColumn: FactPuntuacion.ContextoKey
+	toColumn: DimContextoCentro.ContextoKey
+
+relationship b7f939bf-9cff-53ac-8000-dac8520747a5
+	fromColumn: FactPuntuacion.PerfilKey
+	toColumn: DimPerfilAlumno.PerfilKey
+
+relationship 76f70ba6-5ade-5c6b-ba14-fc3a6a8ef40c
+	fromColumn: FactPuntuacion.CompetenciaKey
+	toColumn: DimCompetencia.CompetenciaKey
+
+relationship e0745f6c-16fd-5d1a-8015-174421c0c557
+	fromColumn: FactPuntuacion.NivelKey
+	toColumn: DimNivelLogro.NivelKey
+
+relationship d2dc4c39-ad6f-5b2d-baef-2b736ea52c0f
+	fromColumn: FactPuntuacion.CalidadKey
+	toColumn: DimCalidadDato.CalidadKey
+
+relationship c647f2dd-f228-5f54-8185-9e5c041725e5
+	fromColumn: FactEvaluacion.AnioKey
+	toColumn: DimAnio.AnioKey
+
+relationship 5507a116-7373-5246-bc5b-621799dd7fd0
+	fromColumn: FactEvaluacion.ContextoKey
+	toColumn: DimContextoCentro.ContextoKey
+
+relationship a9524a17-0cd9-5e11-a6af-1bd60e3df530
+	fromColumn: FactEvaluacion.PerfilKey
+	toColumn: DimPerfilAlumno.PerfilKey

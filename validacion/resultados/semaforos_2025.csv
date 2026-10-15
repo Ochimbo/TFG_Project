@@ -1,0 +1,70 @@
+AreaTerritorial,Materia,K01,K07,K10,K03,K03 Cataluña,Estado K01,Estado K03,Estado K10
+(Cataluña),Lengua catalana,73.53,,-1.32,14.24,14.24,-1,0,-1
+(Cataluña),Lengua castellana,76.47,,2.58,9.82,9.82,1,0,1
+(Cataluña),Matemáticas,70.42,,-3.94,22.66,22.66,-1,0,-1
+(Cataluña),Lengua inglesa,75.74,,2.47,15.36,15.36,1,0,1
+(Cataluña),Lengua francesa,66.09,,3.29,21.81,21.81,1,0,1
+(Cataluña),Ciencias,66.32,,-8.16,26.93,26.93,-1,0,-1
+Alt Pirineu i Aran,Lengua catalana,73.27,-0.26,-3.99,14.39,14.24,0,0,-1
+Alt Pirineu i Aran,Lengua castellana,76.13,-0.34,-0.33,10.95,9.82,0,0,0
+Alt Pirineu i Aran,Matemáticas,69.44,-0.98,-7.18,24.26,22.66,0,0,-1
+Alt Pirineu i Aran,Lengua inglesa,72.51,-3.22,0.77,18.28,15.36,-1,-1,1
+Alt Pirineu i Aran,Lengua francesa,72.20,6.11,7.26,6.35,21.81,1,1,1
+Alt Pirineu i Aran,Ciencias,68.35,2.03,-8.98,24.54,26.93,1,1,-1
+Baix Llobregat,Lengua catalana,73.77,0.24,-1.40,13.61,14.24,0,0,-1
+Baix Llobregat,Lengua castellana,77.62,1.15,2.57,8.18,9.82,1,0,1
+Baix Llobregat,Matemáticas,70.74,0.32,-4.23,21.57,22.66,0,0,-1
+Baix Llobregat,Lengua inglesa,76.14,0.40,2.32,14.36,15.36,0,0,1
+Baix Llobregat,Ciencias,67.01,0.69,-8.07,25.62,26.93,0,0,-1
+Barcelonès,Lengua catalana,70.07,-3.46,,19.87,14.24,-1,-1,
+Barcelonès,Lengua castellana,73.61,-2.86,,14.65,9.82,-1,-1,
+Barcelonès,Matemáticas,66.78,-3.64,,28.17,22.66,-1,-1,
+Barcelonès,Lengua inglesa,72.58,-3.15,,19.67,15.36,-1,-1,
+Barcelonès,Ciencias,62.44,-3.88,,35.07,26.93,-1,-1,
+Catalunya Central,Lengua catalana,73.47,-0.06,-1.04,14.62,14.24,0,0,-1
+Catalunya Central,Lengua castellana,74.79,-1.68,3.09,12.27,9.82,-1,-1,1
+Catalunya Central,Matemáticas,69.91,-0.51,-4.11,24.22,22.66,0,0,-1
+Catalunya Central,Lengua inglesa,74.31,-1.43,3.07,16.89,15.36,-1,0,1
+Catalunya Central,Ciencias,65.90,-0.43,-8.17,27.54,26.93,0,0,-1
+Consorci d'Educació de Barcelona,Lengua catalana,75.01,1.48,-1.59,13.00,14.24,1,0,-1
+Consorci d'Educació de Barcelona,Lengua castellana,77.72,1.25,2.25,8.46,9.82,1,0,1
+Consorci d'Educació de Barcelona,Matemáticas,71.72,1.30,-3.84,20.72,22.66,1,0,-1
+Consorci d'Educació de Barcelona,Lengua inglesa,79.08,3.34,2.51,12.08,15.36,1,1,1
+Consorci d'Educació de Barcelona,Ciencias,67.38,1.06,-8.26,24.95,26.93,1,0,-1
+Girona,Lengua catalana,73.59,0.06,-1.08,14.09,14.24,0,0,-1
+Girona,Lengua castellana,75.63,-0.84,2.78,11.14,9.82,0,0,1
+Girona,Matemáticas,70.49,0.06,-3.95,22.90,22.66,0,0,-1
+Girona,Lengua inglesa,75.09,-0.65,2.44,15.69,15.36,0,0,1
+Girona,Lengua francesa,62.09,-4.00,1.50,30.63,21.81,-1,-1,1
+Girona,Ciencias,66.14,-0.18,-8.35,27.25,26.93,0,0,-1
+Lleida,Lengua catalana,74.72,1.19,-1.42,11.39,14.24,1,1,-1
+Lleida,Lengua castellana,77.21,0.74,2.85,9.06,9.82,0,0,1
+Lleida,Matemáticas,71.08,0.66,-3.74,21.15,22.66,0,0,-1
+Lleida,Lengua inglesa,75.94,0.20,1.92,14.28,15.36,0,0,1
+Lleida,Ciencias,68.30,1.98,-7.11,24.15,26.93,1,1,-1
+Maresme - Vallès Oriental,Lengua catalana,74.56,1.03,-1.07,11.69,14.24,1,1,-1
+Maresme - Vallès Oriental,Lengua castellana,77.41,0.94,2.66,7.70,9.82,0,1,1
+Maresme - Vallès Oriental,Matemáticas,70.84,0.42,-4.09,20.90,22.66,0,0,-1
+Maresme - Vallès Oriental,Lengua inglesa,76.18,0.44,2.54,14.33,15.36,0,0,1
+Maresme - Vallès Oriental,Ciencias,66.43,0.11,-8.54,25.74,26.93,0,0,-1
+Penedès,Lengua catalana,72.32,-1.21,-1.49,15.62,14.24,-1,0,-1
+Penedès,Lengua castellana,75.59,-0.88,2.68,10.73,9.82,0,0,1
+Penedès,Matemáticas,69.29,-1.13,-4.18,25.03,22.66,-1,-1,-1
+Penedès,Lengua inglesa,73.17,-2.56,2.00,18.39,15.36,-1,-1,1
+Penedès,Ciencias,65.83,-0.49,-7.59,27.44,26.93,0,0,-1
+Tarragona,Lengua catalana,73.42,-0.11,-1.16,14.49,14.24,0,0,-1
+Tarragona,Lengua castellana,76.81,0.34,3.03,9.25,9.82,0,0,1
+Tarragona,Matemáticas,71.32,0.90,-3.16,21.26,22.66,0,0,-1
+Tarragona,Lengua inglesa,75.66,-0.08,3.22,15.24,15.36,0,0,1
+Tarragona,Ciencias,66.52,0.20,-7.82,27.03,26.93,0,0,-1
+Terres de l'Ebre,Lengua catalana,73.06,-0.47,-2.00,14.76,14.24,0,0,-1
+Terres de l'Ebre,Lengua castellana,76.04,-0.43,2.06,10.47,9.82,0,0,1
+Terres de l'Ebre,Matemáticas,72.45,2.03,-2.96,19.01,22.66,1,1,-1
+Terres de l'Ebre,Lengua inglesa,74.72,-1.02,2.74,14.92,15.36,-1,0,1
+Terres de l'Ebre,Ciencias,67.16,0.84,-8.60,25.15,26.93,0,0,-1
+Vallès Occidental,Lengua catalana,72.77,-0.76,-1.28,15.50,14.24,0,0,-1
+Vallès Occidental,Lengua castellana,76.17,-0.30,2.69,9.88,9.82,0,0,1
+Vallès Occidental,Matemáticas,69.92,-0.51,-3.92,24.23,22.66,0,0,-1
+Vallès Occidental,Lengua inglesa,75.17,-0.56,2.72,16.84,15.36,0,0,1
+Vallès Occidental,Lengua francesa,,,,,21.81,,,
+Vallès Occidental,Ciencias,65.98,-0.34,-8.25,27.63,26.93,0,0,-1

@@ -1,0 +1,134 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "p2_matriz_area_naturaleza",
+  "position": {
+    "x": 434,
+    "y": 188,
+    "z": 10000,
+    "height": 520,
+    "width": 410,
+    "tabOrder": 10000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimContextoCentro"
+                    }
+                  },
+                  "Property": "AreaTerritorial"
+                }
+              },
+              "queryRef": "DimContextoCentro.AreaTerritorial",
+              "nativeQueryRef": "Área territorial",
+              "displayName": "Área territorial",
+              "active": true
+            }
+          ]
+        },
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimContextoCentro"
+                    }
+                  },
+                  "Property": "Naturaleza"
+                }
+              },
+              "queryRef": "DimContextoCentro.Naturaleza",
+              "nativeQueryRef": "Naturaleza",
+              "displayName": "Naturaleza",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "K01 Puntuación media competencia"
+                }
+              },
+              "queryRef": "_Medidas.K01 Puntuación media competencia",
+              "nativeQueryRef": "Puntuación media (K01)",
+              "displayName": "Puntuación media (K01)"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Puntuación media (K01) por área y naturaleza'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Centros públicos y privados'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Matriz con la puntuación media por área territorial y naturaleza del centro'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

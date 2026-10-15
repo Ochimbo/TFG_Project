@@ -1,0 +1,83 @@
+/// Niveles de logro de las puntuaciones globales (R29). Umbrales 55 / 70 / 85 provisionales e internos del TFG: NO son los niveles oficiales.
+table DimNivelLogro
+	lineageTag: 0fb6c9ff-c72b-577e-be8f-a774614ba816
+
+	/// Clave del nivel: 0 = no aplica (subcompetencias), 1 = bajo ... 4 = alto.
+	column NivelKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 45218949-be43-5a6b-9f49-5cca8d1916ff
+		summarizeBy: none
+		sourceColumn: NivelKey
+
+		annotation SummarizationSetBy = User
+
+	/// Nivel de logro (solo puntuaciones globales).
+	column Nivel
+		dataType: string
+		lineageTag: 2231bfa2-e7e5-5c53-ab5b-4b575b368198
+		summarizeBy: none
+		sourceColumn: Nivel
+		sortByColumn: NivelOrden
+
+		annotation SummarizationSetBy = User
+
+	/// Límite inferior del nivel (incluido).
+	column LimiteInferior
+		dataType: double
+		formatString: 0.00
+		lineageTag: 1bf20fdb-cdf1-5e5c-acf8-86459619103f
+		summarizeBy: none
+		sourceColumn: LimiteInferior
+
+		annotation SummarizationSetBy = User
+
+	/// Límite superior del nivel (excluido, salvo 100 en el nivel Alto).
+	column LimiteSuperior
+		dataType: double
+		formatString: 0.00
+		lineageTag: 4d6fa38f-b4c9-57a9-a248-4ce697e0421f
+		summarizeBy: none
+		sourceColumn: LimiteSuperior
+
+		annotation SummarizationSetBy = User
+
+	/// Orden de presentación de los niveles.
+	column NivelOrden
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ab8e8b27-97dc-5048-b12e-ddc18b32893a
+		summarizeBy: none
+		sourceColumn: NivelOrden
+
+		annotation SummarizationSetBy = User
+
+	partition DimNivelLogro = m
+		mode: import
+		queryGroup: Dimensiones
+		source =
+				let
+				    // R29: niveles de logro de las puntuaciones globales. Umbrales 55 / 70 / 85 PROVISIONALES,
+				    // internos del TFG (no son los niveles oficiales). Las subcompetencias van al nivel 0.
+				    Resultado = #table(
+				        type table [
+				            NivelKey = Int64.Type,
+				            Nivel = text,
+				            LimiteInferior = number,
+				            LimiteSuperior = number,
+				            NivelOrden = Int64.Type
+				        ],
+				        {
+				            {0, "No aplica (subcompetencia)", null, null, 0},
+				            {1, "Bajo", 0, 55, 1},
+				            {2, "Medio-bajo", 55, 70, 2},
+				            {3, "Medio-alto", 70, 85, 3},
+				            {4, "Alto", 85, 100, 4}
+				        }
+				    )
+				in
+				    Resultado
+
+	annotation PBI_ResultType = Table

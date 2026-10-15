@@ -1,0 +1,132 @@
+[
+  {
+    "Entity": "DimAnio",
+    "Property": "Anio",
+    "tipo": "Column"
+  },
+  {
+    "Entity": "DimCalidadDato",
+    "Property": "Censurada",
+    "tipo": "Column"
+  },
+  {
+    "Entity": "DimCalidadDato",
+    "Property": "NivelNoComparable",
+    "tipo": "Column"
+  },
+  {
+    "Entity": "DimCompetencia",
+    "Property": "Materia",
+    "tipo": "Column"
+  },
+  {
+    "Entity": "DimCompetencia",
+    "Property": "Subcompetencia",
+    "tipo": "Column"
+  },
+  {
+    "Entity": "DimContextoCentro",
+    "Property": "AreaSerieComparable",
+    "tipo": "Column"
+  },
+  {
+    "Entity": "DimContextoCentro",
+    "Property": "AreaTerritorial",
+    "tipo": "Column"
+  },
+  {
+    "Entity": "DimContextoCentro",
+    "Property": "Habitat",
+    "tipo": "Column"
+  },
+  {
+    "Entity": "DimContextoCentro",
+    "Property": "Naturaleza",
+    "tipo": "Column"
+  },
+  {
+    "Entity": "DimNivelLogro",
+    "Property": "Nivel",
+    "tipo": "Column"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "Alumnos evaluados",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "Estado K01",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "K01 Puntuación media competencia",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "K02 Puntuación media subcompetencia",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "K03 % alumnado nivel bajo",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "K04 Brecha de género (Niños - Niñas)",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "K05 Brecha pública - privada",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "K06 Dispersión de resultados",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "K07 Desviación respecto a Cataluña",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "K08 Diferencia urbano - rural",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "K09 Posición del área",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "K10 Variación interanual",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "K11 Tendencia 5 convocatorias",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "K12 % competencias que mejoran",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "Puntuaciones globales",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "Puntuación media Cataluña",
+    "tipo": "Measure"
+  }
+]

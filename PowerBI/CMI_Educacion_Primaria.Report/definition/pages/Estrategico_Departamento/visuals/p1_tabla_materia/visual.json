@@ -1,0 +1,171 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "p1_tabla_materia",
+  "position": {
+    "x": 748,
+    "y": 188,
+    "z": 11000,
+    "height": 462,
+    "width": 516,
+    "tabOrder": 11000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCompetencia"
+                    }
+                  },
+                  "Property": "Materia"
+                }
+              },
+              "queryRef": "DimCompetencia.Materia",
+              "nativeQueryRef": "Materia",
+              "displayName": "Materia"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "K01 Puntuación media competencia"
+                }
+              },
+              "queryRef": "_Medidas.K01 Puntuación media competencia",
+              "nativeQueryRef": "K01 Puntuación media",
+              "displayName": "K01 Puntuación media"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "K10 Variación interanual"
+                }
+              },
+              "queryRef": "_Medidas.K10 Variación interanual",
+              "nativeQueryRef": "K10 Variación interanual",
+              "displayName": "K10 Variación interanual"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "K11 Tendencia 5 convocatorias"
+                }
+              },
+              "queryRef": "_Medidas.K11 Tendencia 5 convocatorias",
+              "nativeQueryRef": "K11 Tendencia (5 conv.)",
+              "displayName": "K11 Tendencia (5 conv.)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "K03 % alumnado nivel bajo"
+                }
+              },
+              "queryRef": "_Medidas.K03 % alumnado nivel bajo",
+              "nativeQueryRef": "K03 % nivel bajo",
+              "displayName": "K03 % nivel bajo"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "DimCompetencia"
+                  }
+                },
+                "Property": "Materia"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Resumen por materia'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Convocatoria seleccionada'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Tabla por materia con puntuación media, variación interanual, tendencia y porcentaje en nivel bajo'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

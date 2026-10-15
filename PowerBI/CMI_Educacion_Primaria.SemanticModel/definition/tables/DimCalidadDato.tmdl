@@ -1,0 +1,99 @@
+/// Calidad de cada puntuación según su columna y año (R25-R28), codificada como máscara de 4 bits (16 filas).
+table DimCalidadDato
+	lineageTag: 74c27587-9ea5-539b-b81d-7ee0384e33ef
+
+	/// Máscara: 1 NoValida + 2 Censurada + 4 NoComparableSerie + 8 NivelNoComparable (0 = válido).
+	column CalidadKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 67650968-6627-52a1-b584-aec991e62637
+		summarizeBy: none
+		sourceColumn: CalidadKey
+
+		annotation SummarizationSetBy = User
+
+	/// R25: puntuación no válida (expresión escrita de inglés 2015). K02 la excluye.
+	column NoValida
+		dataType: boolean
+		lineageTag: 90b6c252-aba0-5fc0-b5eb-63133e749cd6
+		summarizeBy: none
+		sourceColumn: NoValida
+
+		annotation SummarizationSetBy = User
+
+	/// R26: distribución censurada por un suelo artificial (catalán EE 2018; inglés global, CO y CE 2015). K03 y K06 la excluyen.
+	column Censurada
+		dataType: boolean
+		lineageTag: ff82af59-f6e2-5bd0-a91c-278fe8850bde
+		summarizeBy: none
+		sourceColumn: Censurada
+
+		annotation SummarizationSetBy = User
+
+	/// R27: escala no comparable con el resto de la serie temporal.
+	column NoComparableSerie
+		dataType: boolean
+		lineageTag: ad9289ff-993b-5636-bc51-7a0675ba3b2b
+		summarizeBy: none
+		sourceColumn: NoComparableSerie
+
+		annotation SummarizationSetBy = User
+
+	/// R28: el porcentaje por nivel de logro no es comparable (solo globales). K03 la excluye.
+	column NivelNoComparable
+		dataType: boolean
+		lineageTag: 4034d5e6-6622-5068-87f8-fbc54f185553
+		summarizeBy: none
+		sourceColumn: NivelNoComparable
+
+		annotation SummarizationSetBy = User
+
+	/// Válido o lista de problemas de calidad de la puntuación.
+	column DescripcionCalidad
+		dataType: string
+		lineageTag: c9ecbb5a-39a1-5866-9492-9ab71256d7a5
+		summarizeBy: none
+		sourceColumn: DescripcionCalidad
+		sortByColumn: CalidadKey
+
+		annotation SummarizationSetBy = User
+
+	partition DimCalidadDato = m
+		mode: import
+		queryGroup: Dimensiones
+		source =
+				let
+				    // R25-R28: máscara de 4 bits {bit, descripción}. CalidadKey 0..15 = suma de los bits activos.
+				    // 1 NoValida (R25), 2 Censurada (R26), 4 NoComparableSerie (R27), 8 NivelNoComparable (R28).
+				    Bits = {{1, "No válida"}, {2, "Censurada"}, {4, "No comparable en la serie"}, {8, "Nivel no comparable"}},
+				    Filas = List.Transform(
+				        {0..15},
+				        (clave) => {
+				            clave,
+				            Number.BitwiseAnd(clave, 1) <> 0,
+				            Number.BitwiseAnd(clave, 2) <> 0,
+				            Number.BitwiseAnd(clave, 4) <> 0,
+				            Number.BitwiseAnd(clave, 8) <> 0,
+				            if clave = 0 then "Válido"
+				            else Text.Combine(
+				                List.Transform(List.Select(Bits, (bit) => Number.BitwiseAnd(clave, bit{0}) <> 0), (bit) => bit{1}),
+				                "; "
+				            )
+				        }
+				    ),
+				    Resultado = #table(
+				        type table [
+				            CalidadKey = Int64.Type,
+				            NoValida = logical,
+				            Censurada = logical,
+				            NoComparableSerie = logical,
+				            NivelNoComparable = logical,
+				            DescripcionCalidad = text
+				        ],
+				        Filas
+				    )
+				in
+				    Resultado
+
+	annotation PBI_ResultType = Table

@@ -1,1 +1,8 @@
 Datos.csv
+.venv/
+__pycache__/
+validacion/salida/
+node_modules/
+trabajo_en_curso/herramientas/*/out/
+trabajo_en_curso/herramientas/*/bin/
+trabajo_en_curso/herramientas/*/obj/

@@ -1,0 +1,1646 @@
+Filas cargadas con pyarrow: 1102324
+
+==============================================================================================================
+OTR-01 / estructura en bruto del fichero (lectura línea a línea, sin DuckDB)
+==============================================================================================================
+bytes: 240120178 | BOM UTF-8: False | saltos \n: 1102325 | \r: 0 | termina en \n: True
+líneas (incluida cabecera): 1102325
+líneas con nº de campos != 32: 0
+líneas que contienen "" (comillas vacías o escapadas): 0
+campos no vacíos sin comillas: 0
+campos vacíos sin comillas: 9179678
+
+-- SQL:
+SELECT count(*) AS filas FROM read_csv('/home/kiara-rodriguez-uribe/Uni/TFG_Project/Datos.csv', all_varchar=true, header=true)
+     filas
+0  1102324
+
+
+-- SQL:
+SELECT "ANY", min(linea) AS primera, max(linea) AS ultima, count(*) AS filas,
+           max(linea)-min(linea)+1 = count(*) AS contiguo
+    FROM d GROUP BY 1 ORDER BY primera
+     ANY  primera   ultima  filas  contiguo
+0   2025        2    68912  68911      True
+1   2024    68913   139292  70380      True
+2   2023   139293   212723  73431      True
+3   2022   212724   287614  74891      True
+4   2021   287615   361288  73674      True
+5   2019   361289   436080  74792      True
+6   2018   436081   510287  74207      True
+7   2017   510288   582323  72036      True
+8   2016   582324   653567  71244      True
+9   2015   653568   723093  69526      True
+10  2014   723094   790001  66908      True
+11  2013   790002   855599  65598      True
+12  2012   855600   921337  65738      True
+13  2011   921338   983933  62596      True
+14  2010   983934  1043262  59329      True
+15  2009  1043263  1102325  59063      True
+
+
+-- SQL:
+SELECT count(*) FILTER (WHERE "ANY" <> trim("ANY") OR "ANY" LIKE '%  %'
+             OR regexp_matches("ANY", '[\x00-\x1F\x7F\x{80}-\x{A0}\x{FEFF}\x{200B}]')) + count(*) FILTER (WHERE "CODI_ALUMNE" <> trim("CODI_ALUMNE") OR "CODI_ALUMNE" LIKE '%  %'
+             OR regexp_matches("CODI_ALUMNE", '[\x00-\x1F\x7F\x{80}-\x{A0}\x{FEFF}\x{200B}]')) + count(*) FILTER (WHERE "GENERE" <> trim("GENERE") OR "GENERE" LIKE '%  %'
+             OR regexp_matches("GENERE", '[\x00-\x1F\x7F\x{80}-\x{A0}\x{FEFF}\x{200B}]')) + count(*) FILTER (WHERE "MES_NAIXEMENT" <> trim("MES_NAIXEMENT") OR "MES_NAIXEMENT" LIKE '%  %'
+             OR regexp_matches("MES_NAIXEMENT", '[\x00-\x1F\x7F\x{80}-\x{A0}\x{FEFF}\x{200B}]')) + count(*) FILTER (WHERE "ANY_NAIXEMENT" <> trim("ANY_NAIXEMENT") OR "ANY_NAIXEMENT" LIKE '%  %'
+             OR regexp_matches("ANY_NAIXEMENT", '[\x00-\x1F\x7F\x{80}-\x{A0}\x{FEFF}\x{200B}]')) + count(*) FILTER (WHERE "AREA_TERRITORIAL" <> trim("AREA_TERRITORIAL") OR "AREA_TERRITORIAL" LIKE '%  %'
+             OR regexp_matches("AREA_TERRITORIAL", '[\x00-\x1F\x7F\x{80}-\x{A0}\x{FEFF}\x{200B}]')) + count(*) FILTER (WHERE "NATURALESA" <> trim("NATURALESA") OR "NATURALESA" LIKE '%  %'
+             OR regexp_matches("NATURALESA", '[\x00-\x1F\x7F\x{80}-\x{A0}\x{FEFF}\x{200B}]')) + count(*) FILTER (WHERE "HABITAT" <> trim("HABITAT") OR "HABITAT" LIKE '%  %'
+             OR regexp_matches("HABITAT", '[\x00-\x1F\x7F\x{80}-\x{A0}\x{FEFF}\x{200B}]')) AS valores_con_espacios_o_no_imprimibles FROM d
+   valores_con_espacios_o_no_imprimibles
+0                                      0
+
+
+-- SQL:
+SELECT count(*) AS filas_sin_ninguna_puntuacion FROM d WHERE PCAT IS NULL AND PCAT_CL IS NULL AND PCAT_EE IS NULL AND PCAST IS NULL AND PCAST_CL IS NULL AND PCAST_EE IS NULL AND PMAT IS NULL AND PMAT_NC IS NULL AND PMAT_EFM IS NULL AND PMAT_CR IS NULL AND PANG IS NULL AND PANG_CO IS NULL AND PANG_CE IS NULL AND PFRAN IS NULL AND PFRAN_CO IS NULL AND PFRAN_CE IS NULL AND PANG_EE IS NULL AND PFRAN_EE IS NULL AND PCAT_CO IS NULL AND PCAST_CO IS NULL AND PMED IS NULL AND PMED_COMP1 IS NULL AND PMED_COMP2 IS NULL AND PMED_COMP3 IS NULL
+   filas_sin_ninguna_puntuacion
+0                             0
+
+
+-- SQL:
+SELECT count(*) AS valores_puntuacion_no_numericos FROM v WHERE
+       (PCAT IS NOT NULL AND n_PCAT IS NULL) OR (PCAT_CL IS NOT NULL AND n_PCAT_CL IS NULL) OR (PCAT_EE IS NOT NULL AND n_PCAT_EE IS NULL) OR (PCAST IS NOT NULL AND n_PCAST IS NULL) OR (PCAST_CL IS NOT NULL AND n_PCAST_CL IS NULL) OR (PCAST_EE IS NOT NULL AND n_PCAST_EE IS NULL) OR (PMAT IS NOT NULL AND n_PMAT IS NULL) OR (PMAT_NC IS NOT NULL AND n_PMAT_NC IS NULL) OR (PMAT_EFM IS NOT NULL AND n_PMAT_EFM IS NULL) OR (PMAT_CR IS NOT NULL AND n_PMAT_CR IS NULL) OR (PANG IS NOT NULL AND n_PANG IS NULL) OR (PANG_CO IS NOT NULL AND n_PANG_CO IS NULL) OR (PANG_CE IS NOT NULL AND n_PANG_CE IS NULL) OR (PFRAN IS NOT NULL AND n_PFRAN IS NULL) OR (PFRAN_CO IS NOT NULL AND n_PFRAN_CO IS NULL) OR (PFRAN_CE IS NOT NULL AND n_PFRAN_CE IS NULL) OR (PANG_EE IS NOT NULL AND n_PANG_EE IS NULL) OR (PFRAN_EE IS NOT NULL AND n_PFRAN_EE IS NULL) OR (PCAT_CO IS NOT NULL AND n_PCAT_CO IS NULL) OR (PCAST_CO IS NOT NULL AND n_PCAST_CO IS NULL) OR (PMED IS NOT NULL AND n_PMED IS NULL) OR (PMED_COMP1 IS NOT NULL AND n_PMED_COMP1 IS NULL) OR (PMED_COMP2 IS NOT NULL AND n_PMED_COMP2 IS NULL) OR (PMED_COMP3 IS NOT NULL AND n_PMED_COMP3 IS NULL)
+   valores_puntuacion_no_numericos
+0                                0
+
+
+==============================================================================================================
+ANY-01 años
+==============================================================================================================
+
+-- SQL:
+SELECT "ANY", count(*) AS filas FROM d GROUP BY 1 ORDER BY 1
+     ANY  filas
+0   2009  59063
+1   2010  59329
+2   2011  62596
+3   2012  65738
+4   2013  65598
+5   2014  66908
+6   2015  69526
+7   2016  71244
+8   2017  72036
+9   2018  74207
+10  2019  74792
+11  2021  73674
+12  2022  74891
+13  2023  73431
+14  2024  70380
+15  2025  68911
+
+
+-- SQL:
+SELECT count(*) FILTER (WHERE "ANY" IS NULL) AS nulos,
+               count(*) FILTER (WHERE NOT regexp_matches("ANY", '^[0-9]{4}$')) AS no_4_digitos,
+               count(DISTINCT "ANY") AS anios
+        FROM d
+   nulos  no_4_digitos  anios
+0      0             0     16
+
+
+-- SQL:
+SELECT y AS anio_sin_datos FROM range(2009, 2026) r(y)
+        WHERE y NOT IN (SELECT DISTINCT anio FROM v)
+   anio_sin_datos
+0            2020
+
+
+-- SQL:
+WITH c AS (SELECT DISTINCT CODI_ALUMNE, anio FROM v WHERE CODI_ALUMNE IS NOT NULL)
+    SELECT a.anio AS anio1, b.anio AS anio2, count(*) AS codigos
+    FROM c a JOIN c b ON a.CODI_ALUMNE = b.CODI_ALUMNE AND a.anio < b.anio
+    GROUP BY ALL ORDER BY ALL
+   anio1  anio2  codigos
+0   2016   2017      280
+1   2017   2018      215
+2   2018   2019      189
+3   2021   2022      103
+4   2022   2023       53
+5   2023   2024       29
+6   2024   2025       45
+
+
+==============================================================================================================
+COD-01 CODI_ALUMNE vacío
+==============================================================================================================
+
+-- SQL:
+SELECT "ANY", count(*) AS filas, count(*) FILTER (WHERE CODI_ALUMNE IS NULL) AS nulos,
+           count(*) FILTER (WHERE CODI_ALUMNE = '') AS cadena_vacia,
+           round(100.0*count(*) FILTER (WHERE CODI_ALUMNE IS NULL)/count(*), 2) AS pct
+    FROM d GROUP BY 1 ORDER BY 1
+     ANY  filas  nulos  cadena_vacia     pct
+0   2009  59063  59063             0  100.00
+1   2010  59329  59329             0  100.00
+2   2011  62596  62596             0  100.00
+3   2012  65738  65738             0  100.00
+4   2013  65598  65598             0  100.00
+5   2014  66908  66908             0  100.00
+6   2015  69526  69526             0  100.00
+7   2016  71244     47             0    0.07
+8   2017  72036      0             0    0.00
+9   2018  74207     11             0    0.01
+10  2019  74792      0             0    0.00
+11  2021  73674      0             0    0.00
+12  2022  74891      0             0    0.00
+13  2023  73431      0             0    0.00
+14  2024  70380      0             0    0.00
+15  2025  68911      0             0    0.00
+
+
+-- SQL:
+SELECT count(*) FILTER (WHERE CODI_ALUMNE IS NULL) AS nulos_total,
+               round(100.0*count(*) FILTER (WHERE CODI_ALUMNE IS NULL)/count(*), 2) AS pct,
+               count(*) FILTER (WHERE CODI_ALUMNE IS NULL AND anio BETWEEN 2009 AND 2015) AS nulos_09_15
+        FROM v
+   nulos_total    pct  nulos_09_15
+0       448816  40.72       448758
+
+
+-- SQL:
+SELECT count(*) - count(CODI_ALUMNE) AS nulos_segun_duckdb_read_csv
+        FROM read_csv('/home/kiara-rodriguez-uribe/Uni/TFG_Project/Datos.csv', all_varchar=true, header=true)
+   nulos_segun_duckdb_read_csv
+0                       448816
+
+
+-- SQL:
+SELECT "ANY", MES_NAIXEMENT, ANY_NAIXEMENT, GENERE, count(*) AS filas
+        FROM d WHERE CODI_ALUMNE IS NULL AND "ANY" IN ('2016','2017','2018','2019')
+        GROUP BY ALL ORDER BY ALL
+     ANY MES_NAIXEMENT ANY_NAIXEMENT GENERE  filas
+0   2016             1          2001      D     11
+1   2016             1          2001      H      5
+2   2016             1          2003      D      5
+3   2016             1          2003      H      1
+4   2016             1          2004      D     12
+5   2016             1          2004      H     11
+6   2016             1          2005      D      1
+7   2016             1          2005      H      1
+8   2018             1          2005      H      1
+9   2018             1          2006      D      2
+10  2018             1          2006      H      7
+11  2018             1          2011      H      1
+
+
+-- SQL:
+SELECT count(DISTINCT linea) = count(*) AS linea_unica FROM d
+   linea_unica
+0         True
+
+
+==============================================================================================================
+COD-02 duplicados de código dentro de un año
+==============================================================================================================
+
+-- SQL:
+SELECT "ANY", coalesce(CODI_ALUMNE, '') AS cod, count(*) AS filas
+        FROM v WHERE anio >= 2016 GROUP BY ALL HAVING count(*) > 1 ORDER BY ALL
+    ANY         cod  filas
+0  2016                 47
+1  2017  2483875190      2
+2  2018                 11
+
+
+-- SQL:
+SELECT "ANY", count(CODI_ALUMNE) AS con_codigo, count(DISTINCT CODI_ALUMNE) AS distintos
+        FROM d WHERE CODI_ALUMNE IS NOT NULL GROUP BY 1 ORDER BY 1
+    ANY  con_codigo  distintos
+0  2016       71197      71197
+1  2017       72036      72035
+2  2018       74196      74196
+3  2019       74792      74792
+4  2021       73674      73674
+5  2022       74891      74891
+6  2023       73431      73431
+7  2024       70380      70380
+8  2025       68911      68911
+
+
+-- SQL:
+SELECT * EXCLUDE (anio, anio_nac, mes, edad, gen, nat, hab)
+             FROM v WHERE CODI_ALUMNE = '2483875190' ORDER BY linea
+    ANY CODI_ALUMNE   PCAT PCAT_CL PCAT_EE  PCAST PCAST_CL PCAST_EE   PMAT PMAT_NC PMAT_EFM PMAT_CR   PANG PANG_CO PANG_CE PFRAN PFRAN_CO PFRAN_CE PANG_EE PFRAN_EE PCAT_CO PCAST_CO  PMED PMED_COMP1 PMED_COMP2 PMED_COMP3 GENERE MES_NAIXEMENT ANY_NAIXEMENT           AREA_TERRITORIAL NATURALESA            HABITAT   linea  n_PCAT  n_PCAT_CL  n_PCAT_EE  n_PCAST  n_PCAST_CL  n_PCAST_EE  n_PMAT  n_PMAT_NC  n_PMAT_EFM  n_PMAT_CR  n_PANG  n_PANG_CO  n_PANG_CE  n_PFRAN  n_PFRAN_CO  n_PFRAN_CE  n_PANG_EE  n_PFRAN_EE  n_PCAT_CO  n_PCAST_CO  n_PMED  n_PMED_COMP1  n_PMED_COMP2  n_PMED_COMP3
+0  2017  2483875190  78,18   72,73   86,36  86,36    77,27    82,73  82,68   71,43    75,00  100,00  76,67   85,71   83,33  None     None     None   33,33     None    None     None  None       None       None       None      D             1          2005  Maresme - Vallès Oriental     Públic  De 10001 a 100000  525396   78.18      72.73      86.36    86.36       77.27       82.73   82.68      71.43       75.00     100.00   76.67      85.71      83.33      NaN         NaN         NaN      33.33         NaN        NaN         NaN     NaN           NaN           NaN           NaN
+1  2017  2483875190    NaN     NaN     NaN    NaN      NaN      NaN  65,45   67,14    58,33   71,11    NaN     NaN     NaN  None     None     None     NaN     None    None     None  None       None       None       None      D             1          2005        Barcelona Comarques     Privat      Més de 100000  525397     NaN        NaN        NaN      NaN         NaN         NaN   65.45      67.14       58.33      71.11     NaN        NaN        NaN      NaN         NaN         NaN        NaN         NaN        NaN         NaN     NaN           NaN           NaN           NaN
+
+columnas que difieren: 17 ['PCAT', 'PCAT_CL', 'PCAT_EE', 'PCAST', 'PCAST_CL', 'PCAST_EE', 'PMAT', 'PMAT_NC', 'PMAT_EFM', 'PMAT_CR', 'PANG', 'PANG_CO', 'PANG_CE', 'PANG_EE', 'AREA_TERRITORIAL', 'NATURALESA', 'HABITAT']
+de ellas puntuaciones: 14
+
+-- SQL:
+SELECT "ANY", count(*) FROM d WHERE CODI_ALUMNE = '2483875190' GROUP BY 1
+    ANY  count_star()
+0  2017             2
+
+
+==============================================================================================================
+COD-03 códigos en más de una convocatoria
+==============================================================================================================
+
+-- SQL:
+WITH c AS (SELECT CODI_ALUMNE, count(DISTINCT anio) AS n_anios, count(*) AS n_filas,
+                      max(anio) - min(anio) AS salto, min(anio) a1, max(anio) a2
+               FROM v WHERE CODI_ALUMNE IS NOT NULL GROUP BY 1 HAVING count(DISTINCT anio) > 1)
+    SELECT n_anios, n_filas, salto, count(*) AS codigos FROM c GROUP BY ALL ORDER BY ALL
+   n_anios  n_filas  salto  codigos
+0        2        2      1      914
+
+
+-- SQL:
+WITH c AS (SELECT CODI_ALUMNE, min(anio) a1, max(anio) a2
+               FROM v WHERE CODI_ALUMNE IS NOT NULL GROUP BY 1 HAVING count(DISTINCT anio) > 1)
+    SELECT a1, a2, count(*) AS codigos FROM c GROUP BY ALL ORDER BY ALL
+     a1    a2  codigos
+0  2016  2017      280
+1  2017  2018      215
+2  2018  2019      189
+3  2021  2022      103
+4  2022  2023       53
+5  2023  2024       29
+6  2024  2025       45
+
+
+-- SQL:
+SELECT count(*) AS pares, count(DISTINCT CODI_ALUMNE) AS codigos,
+           count(*) FILTER (WHERE g1 = g2) AS mismo_genero,
+           count(*) FILTER (WHERE an1 = an2 AND m1 = m2) AS misma_fecha,
+           count(*) FILTER (WHERE g1 = g2 AND an1 = an2 AND m1 = m2) AS genero_y_fecha,
+           count(*) FILTER (WHERE ar1 = ar2) AS misma_area,
+           count(*) FILTER (WHERE n1 = n2) AS misma_naturaleza,
+           count(*) FILTER (WHERE graw1 = graw2) AS mismo_genero_sin_normalizar
+        FROM pares
+   pares  codigos  mismo_genero  misma_fecha  genero_y_fecha  misma_area  misma_naturaleza  mismo_genero_sin_normalizar
+0    914      914           911          909             906         883               876                          809
+
+
+-- SQL:
+SELECT e1, e2, count(*) FROM pares GROUP BY ALL ORDER BY ALL
+   e1  e2  count_star()
+0  12  13           906
+1  13  14             7
+2  15  13             1
+
+
+-- SQL:
+SELECT * FROM pares WHERE NOT (g1 = g2 AND an1 = an2 AND m1 = m2) ORDER BY a1
+  CODI_ALUMNE    a1    a2 g1 g2 graw1 graw2   an1   an2  m1  m2  e1  e2                        ar1                        ar2       n1       n2      l1      l2
+0   955832388  2016  2017  D  D     D     D  2004  2004   1  12  12  13          Catalunya Central          Catalunya Central  Pública  Pública  588122  516052
+1  5978183322  2016  2017  H  H     H     H  2001  2004   1  10  15  13             Baix Llobregat             Baix Llobregat  Pública  Pública  621267  549077
+2  6194719699  2016  2017  D  D     D     D  2004  2004   1  12  12  13             Baix Llobregat             Baix Llobregat  Privada  Pública  623063  550947
+3  8000354298  2016  2017  D  D     D     D  2004  2004   1   2  12  13                     Lleida                     Lleida  Pública  Pública  637925  566068
+4  7266474504  2017  2018  D  D     D     D  2005  2005   9   8  12  13  Maresme - Vallès Oriental  Maresme - Vallès Oriental  Pública  Pública  560274  486903
+5  1543302457  2021  2022  D  H  Dona     H  2009  2009   7   7  12  13        Barcelona Comarques        Barcelona Comarques  Privada  Privada  296521  221518
+6  1606620757  2024  2025  D  H     D     H  2012  2012  11  11  12  13                    Penedès                    Penedès  Privada  Privada   77618   51363
+7  2162593753  2024  2025  D  H     D     H  2012  2012  12  12  12  13                     Lleida                     Lleida  Privada  Privada   80697   58238
+
+
+-- SQL:
+SELECT (g1 = g2 AND an1 = an2 AND m1 = m2) AS coherente, e1, e2, count(*)
+        FROM pares GROUP BY ALL ORDER BY ALL
+   coherente  e1  e2  count_star()
+0      False  12  13             7
+1      False  15  13             1
+2       True  12  13           899
+3       True  13  14             7
+
+
+==============================================================================================================
+COD-03 simulación de la regla propuesta (merge con ANY-1) en pandas
+==============================================================================================================
+filas con código: 653508 | filas tras merge: 653508 | filas duplicadas por el merge: 0
+CodigoEnConvocatoriaAnterior: 914 | RepeticionProbable: 906
+claves (código, ANY+1) duplicadas en 'prev': 2
+
+==============================================================================================================
+COD-04 formato de CODI_ALUMNE
+==============================================================================================================
+
+-- SQL:
+SELECT count(*) FILTER (WHERE NOT regexp_matches(CODI_ALUMNE, '^[0-9]+$')) AS no_digitos,
+               min(length(CODI_ALUMNE)) AS lmin, max(length(CODI_ALUMNE)) AS lmax,
+               count(*) FILTER (WHERE CODI_ALUMNE LIKE '0%') AS empieza_por_0,
+               count(DISTINCT CODI_ALUMNE) AS distintos_texto,
+               count(DISTINCT TRY_CAST(CODI_ALUMNE AS BIGINT)) AS distintos_bigint
+        FROM d WHERE CODI_ALUMNE IS NOT NULL
+   no_digitos  lmin  lmax  empieza_por_0  distintos_texto  distintos_bigint
+0           0     6    11              0           652593            652593
+
+
+-- SQL:
+SELECT "ANY", count(*) AS con_codigo,
+               round(100.0*count(*) FILTER (WHERE length(CODI_ALUMNE)=11)/count(*), 2) AS pct_11,
+               round(100.0*count(*) FILTER (WHERE length(CODI_ALUMNE)=10)/count(*), 2) AS pct_10,
+               round(100.0*count(*) FILTER (WHERE length(CODI_ALUMNE)<=9)/count(*), 2) AS pct_le9,
+               min(TRY_CAST(CODI_ALUMNE AS BIGINT)) AS minimo, max(TRY_CAST(CODI_ALUMNE AS BIGINT)) AS maximo
+        FROM d WHERE CODI_ALUMNE IS NOT NULL GROUP BY 1 ORDER BY 1
+    ANY  con_codigo  pct_11  pct_10  pct_le9    minimo       maximo
+0  2016       71197   12.07   79.42     8.51   1198010  14666115274
+1  2017       72036   12.34   79.29     8.37   1288000  16117995823
+2  2018       74196   12.88   79.00     8.12   2368771  17402046593
+3  2019       74792   13.77   78.24     7.99   5079688  18637300727
+4  2021       73674   15.50   76.80     7.70   5472423  20794344489
+5  2022       74891   16.06   76.45     7.49    669290  22280936381
+6  2023       73431   17.66   74.81     7.53    444315  23616168111
+7  2024       70380   19.40   73.04     7.56    399320  24765933011
+8  2025       68911   98.86    1.07     0.07  32908713  25887351345
+
+
+-- SQL:
+SELECT count(*) AS codigos_2024_2025,
+               count(*) FILTER (WHERE g1=g2 AND an1=an2 AND m1=m2) AS coinciden,
+               list(DISTINCT length(CODI_ALUMNE)) AS longitudes
+        FROM pares WHERE a1 = 2024 AND a2 = 2025
+   codigos_2024_2025  coinciden   longitudes
+0                 45         43  [11, 10, 9]
+
+
+-- SQL:
+SELECT count(*) AS filas_2025 FROM d WHERE "ANY" = '2025'
+   filas_2025
+0       68911
+
+
+==============================================================================================================
+GEN-01 GENERE
+==============================================================================================================
+
+-- SQL:
+PIVOT (SELECT "ANY", coalesce(GENERE, '<NULL>') AS g FROM d) ON g USING count(*)
+        GROUP BY "ANY" ORDER BY "ANY"
+     ANY      D   Dona      H   Home
+0   2009  28926      0  30137      0
+1   2010  28827      0  30502      0
+2   2011  30927      0  31669      0
+3   2012  32347      0  33391      0
+4   2013  32378      0  33220      0
+5   2014  33087      0  33821      0
+6   2015  34294      0  35232      0
+7   2016  35303      0  35941      0
+8   2017  35616      0  36420      0
+9   2018  36693      0  37514      0
+10  2019  37077      0  37715      0
+11  2021      0  36172      0  37502
+12  2022  36959      0  37932      0
+13  2023  36463      0  36968      0
+14  2024  35071      0  35309      0
+15  2025  34141      0  34770      0
+
+
+-- SQL:
+SELECT count(DISTINCT GENERE) AS distintos_bruto,
+               count(*) FILTER (WHERE GENERE IS NULL) AS nulos,
+               count(*) FILTER (WHERE gen IS NULL) AS sin_mapear,
+               count(DISTINCT gen) AS distintos_tras_regla FROM v
+   distintos_bruto  nulos  sin_mapear  distintos_tras_regla
+0                4      0           0                     2
+
+
+==============================================================================================================
+NAT-01 NATURALESA
+==============================================================================================================
+
+-- SQL:
+PIVOT (SELECT "ANY", coalesce(NATURALESA, '<NULL>') AS n FROM d) ON n USING count(*)
+        GROUP BY "ANY" ORDER BY "ANY"
+     ANY  Privada  Privat  Públic  Pública
+0   2009        0   23108   35955        0
+1   2010        0   22694   36635        0
+2   2011        0   23425   39171        0
+3   2012        0   23845   41893        0
+4   2013        0   23759   41839        0
+5   2014        0   24140   42768        0
+6   2015        0   24689   44837        0
+7   2016        0   25166   46078        0
+8   2017        0   25065   46971        0
+9   2018        0   25451   48756        0
+10  2019        0   25308   49484        0
+11  2021        0   24324   49350        0
+12  2022        0   24515   50376        0
+13  2023        0   24556   48875        0
+14  2024    23467       0       0    46913
+15  2025    23144       0       0    45767
+
+
+-- SQL:
+SELECT count(*) FILTER (WHERE nat IS NULL) AS sin_mapear,
+               count(*) FILTER (WHERE NATURALESA IN ('Pública','Privada')) AS etiqueta_nueva
+        FROM v
+   sin_mapear  etiqueta_nueva
+0           0          139291
+
+
+==============================================================================================================
+HAB-01/02 valores de HÀBITAT
+==============================================================================================================
+
+-- SQL:
+SELECT count(DISTINCT HABITAT) AS distintos_bruto, count(*) FILTER (WHERE HABITAT IS NULL) AS nulos,
+               count(*) FILTER (WHERE hab IS NULL) AS sin_mapear FROM v
+   distintos_bruto  nulos  sin_mapear
+0            13361      0           0
+
+
+-- SQL:
+SELECT CASE WHEN regexp_matches(HABITAT, '^Fins a [0-9]+$') AND HABITAT <> 'Fins a 10000'
+                    THEN 'Fins a N (N<>10000)' ELSE HABITAT END AS valor,
+               "ANY", count(*) AS filas
+        FROM d GROUP BY ALL ORDER BY valor, "ANY"
+                  valor   ANY  filas
+0     De 10001 a 100000  2009  24458
+1     De 10001 a 100000  2010  25097
+2     De 10001 a 100000  2011  26450
+3     De 10001 a 100000  2012  27580
+4     De 10001 a 100000  2013  27778
+5     De 10001 a 100000  2014  28415
+6     De 10001 a 100000  2015  29765
+7     De 10001 a 100000  2016  30603
+8     De 10001 a 100000  2017  30862
+9     De 10001 a 100000  2018  31890
+10    De 10001 a 100000  2019  32261
+11    De 10001 a 100000  2021  31800
+12    De 10001 a 100000  2022  32207
+13    De 10001 a 100000  2023  31407
+14    De 10001 a 100000  2024  29974
+15    De 10001 a 100000  2025  29519
+16         Fins a 10000  2009  10824
+17         Fins a 10000  2010  10827
+18         Fins a 10000  2011  11605
+19         Fins a 10000  2012  12767
+20         Fins a 10000  2013  12739
+21         Fins a 10000  2014  12917
+22         Fins a 10000  2015  13454
+23         Fins a 10000  2016  13842
+24         Fins a 10000  2017  14308
+25         Fins a 10000  2018  14381
+26         Fins a 10000  2019  14375
+27         Fins a 10000  2021  14262
+28         Fins a 10000  2022  14760
+29         Fins a 10000  2023  14262
+30         Fins a 10000  2024      1
+31         Fins a 10000  2025  12928
+32  Fins a N (N<>10000)  2024  13357
+33        Més de 100000  2009  23781
+34        Més de 100000  2010  23405
+35        Més de 100000  2011  24541
+36        Més de 100000  2012  25391
+37        Més de 100000  2013  25081
+38        Més de 100000  2014  25576
+39        Més de 100000  2015  26307
+40        Més de 100000  2016  26799
+41        Més de 100000  2017  26866
+42        Més de 100000  2018  27936
+43        Més de 100000  2019  28156
+44        Més de 100000  2021  27612
+45        Més de 100000  2022  27924
+46        Més de 100000  2023  27762
+47        Més de 100001  2024  27048
+48        Més de 100001  2025  26464
+
+
+-- SQL:
+SELECT anio, count(*) AS filas_fins, count(*) FILTER (WHERE n = 10000) AS n10000,
+               count(*) FILTER (WHERE n <> 10000) AS n_otro, min(n) FILTER (WHERE n<>10000) AS nmin,
+               max(n) AS nmax, count(DISTINCT n) FILTER (WHERE n<>10000) AS n_distintos,
+               count(*) FILTER (WHERE n IS NULL) AS n_no_numerico
+        FROM fins GROUP BY 1 ORDER BY 1
+    anio  filas_fins  n10000  n_otro   nmin   nmax  n_distintos  n_no_numerico
+0   2009       10824   10824       0   <NA>  10000            0              0
+1   2010       10827   10827       0   <NA>  10000            0              0
+2   2011       11605   11605       0   <NA>  10000            0              0
+3   2012       12767   12767       0   <NA>  10000            0              0
+4   2013       12739   12739       0   <NA>  10000            0              0
+5   2014       12917   12917       0   <NA>  10000            0              0
+6   2015       13454   13454       0   <NA>  10000            0              0
+7   2016       13842   13842       0   <NA>  10000            0              0
+8   2017       14308   14308       0   <NA>  10000            0              0
+9   2018       14381   14381       0   <NA>  10000            0              0
+10  2019       14375   14375       0   <NA>  10000            0              0
+11  2021       14262   14262       0   <NA>  10000            0              0
+12  2022       14760   14760       0   <NA>  10000            0              0
+13  2023       14262   14262       0   <NA>  10000            0              0
+14  2024       13358       1   13357  10001  23357        13357              0
+15  2025       12928   12928       0   <NA>  10000            0              0
+
+
+-- SQL:
+SELECT linea, anio, AREA_TERRITORIAL, nat FROM fins WHERE anio = 2024 AND n = 10000
+   linea  anio    AREA_TERRITORIAL      nat
+0  91916  2024  Alt Pirineu i Aran  Pública
+
+
+-- SQL:
+WITH s AS (SELECT n FROM fins WHERE anio = 2024 AND n > 10000)
+        SELECT count(*) AS filas, count(DISTINCT n) AS distintos, max(n) - min(n) + 1 AS rango,
+               (max(n) - min(n) + 1) - count(DISTINCT n) AS huecos FROM s
+   filas  distintos  rango  huecos
+0  13357      13357  13357       0
+
+
+-- SQL:
+WITH s AS (SELECT linea, n, n - lag(n) OVER (ORDER BY linea) AS dn
+                   FROM fins WHERE anio = 2024 AND n > 10000)
+        SELECT round(corr(linea, n), 3) AS corr_linea_n,
+               count(*) FILTER (WHERE dn > 0) AS subidas, count(*) FILTER (WHERE dn < 0) AS bajadas
+        FROM s
+   corr_linea_n  subidas  bajadas
+0        -0.149    11141     2215
+
+
+-- SQL:
+WITH s AS (SELECT n - lag(n) OVER (ORDER BY linea) AS dn FROM fins WHERE anio = 2024)
+        SELECT count(*) FILTER (WHERE dn > 0) AS subidas_incl_10000,
+               count(*) FILTER (WHERE dn < 0) AS bajadas_incl_10000 FROM s
+   subidas_incl_10000  bajadas_incl_10000
+0               11141                2216
+
+
+-- SQL:
+SELECT nat, count(*) FROM fins WHERE anio = 2024 AND n > 10000 GROUP BY 1 ORDER BY 1
+       nat  count_star()
+0  Privada          1702
+1  Pública         11655
+
+
+-- SQL:
+SELECT round(corr(f.n, TRY_CAST(v.CODI_ALUMNE AS DOUBLE)), 3) AS corr_n_codigo,
+               round(corr(f.n, v.n_PCAT), 3) AS corr_n_pcat, round(corr(f.n, v.n_PMAT), 3) AS corr_n_pmat,
+               round(corr(f.n, v.anio_nac * 12 + v.mes), 3) AS corr_n_fecha_nac
+        FROM fins f JOIN v USING (linea) WHERE f.anio = 2024 AND f.n > 10000
+   corr_n_codigo  corr_n_pcat  corr_n_pmat  corr_n_fecha_nac
+0         -0.093       -0.028       -0.033             0.001
+
+
+-- SQL:
+SELECT round(100.0 * count(*) FILTER (WHERE n > 10000) / count(*), 3) AS pct_afectado_2024
+        FROM fins WHERE anio = 2024
+   pct_afectado_2024
+0             99.993
+
+
+==============================================================================================================
+HAB-01 extra: ¿el orden de N agrupa por área/naturaleza? (indicaría orden de la hoja al arrastrar)
+==============================================================================================================
+
+-- SQL:
+WITH s AS (SELECT n, AREA_TERRITORIAL a, nat, CODI_ALUMNE c,
+                          lag(AREA_TERRITORIAL) OVER (ORDER BY n) a_prev,
+                          lag(nat) OVER (ORDER BY n) nat_prev FROM fins WHERE anio = 2024)
+        SELECT count(*) FILTER (WHERE a <> a_prev) AS cambios_area_en_orden_n,
+               count(*) FILTER (WHERE nat <> nat_prev) AS cambios_nat_en_orden_n FROM s
+   cambios_area_en_orden_n  cambios_nat_en_orden_n
+0                      563                     684
+
+
+-- SQL:
+SELECT AREA_TERRITORIAL, nat, min(n) AS nmin, max(n) AS nmax, count(*) AS filas,
+               max(n)-min(n)+1 = count(*) AS bloque_contiguo
+        FROM fins WHERE anio = 2024 GROUP BY ALL ORDER BY nmin
+             AREA_TERRITORIAL      nat   nmin   nmax  filas  bloque_contiguo
+0          Alt Pirineu i Aran  Pública  10000  19155    321            False
+1           Catalunya Central  Pública  10005  23207   1717            False
+2                      Girona  Pública  10006  22961   3010            False
+3                      Lleida  Pública  10008  23051   1356            False
+4                   Tarragona  Pública  10011  21706   1270            False
+5            Terres de l'Ebre  Pública  10014  22049    661            False
+6                   Tarragona  Privada  10016  20804     76            False
+7                     Penedès  Pública  10158  21663   1051            False
+8   Maresme - Vallès Oriental  Pública  10185  22783   1333            False
+9                     Penedès  Privada  10856  18652    204            False
+10          Vallès Occidental  Pública  11079  23357    456            False
+11             Baix Llobregat  Pública  12692  23116    481            False
+12                     Girona  Privada  13833  19706    562            False
+13          Catalunya Central  Privada  14273  23209    437            False
+14  Maresme - Vallès Oriental  Privada  14413  22641    138            False
+15                     Lleida  Privada  18044  20961     89            False
+16           Terres de l'Ebre  Privada  18751  18774     24             True
+17         Alt Pirineu i Aran  Privada  19092  19153     19            False
+18             Baix Llobregat  Privada  20629  21597     70            False
+19          Vallès Occidental  Privada  22784  23350     83            False
+
+
+==============================================================================================================
+HAB-01 % 'Fins a' por área y peso en Cataluña
+==============================================================================================================
+
+-- SQL:
+PIVOT (SELECT anio, coalesce(AREA_TERRITORIAL,'<NULL>') AS area, (hab = 1)::INT AS es1
+               FROM v WHERE anio >= 2021)
+        ON anio USING round(100.0 * avg(es1), 1)
+        GROUP BY area ORDER BY area
+                                area  2021  2022  2023  2024  2025
+0                             <NULL>   NaN   NaN   NaN   0.0   NaN
+1                 Alt Pirineu i Aran   NaN   NaN   NaN  66.1  66.5
+2                     Baix Llobregat   8.5   7.2   7.7   7.2   6.4
+3                Barcelona Comarques   7.5   8.4   8.0   0.0   NaN
+4                         Barcelonès   NaN   NaN   NaN   NaN   0.0
+5                  Catalunya Central  49.7  51.5  52.2  52.5  50.9
+6   Consorci d'Educació de Barcelona   0.0   0.0   0.0   0.0   0.0
+7                             Girona  36.6  36.9  35.7  49.0  48.5
+8                             Lleida  50.2  47.9  47.6  41.7  42.6
+9          Maresme - Vallès Oriental  24.7  25.2  25.4  17.2  16.8
+10                           Penedès   NaN   NaN   NaN  26.5  25.9
+11                         Tarragona  26.7  28.3  26.8  26.1  26.9
+12                  Terres de l'Ebre  44.2  47.5  44.1  44.1  46.0
+13                 Vallès Occidental   5.6   5.6   6.1   5.6   5.3
+
+
+-- SQL:
+SELECT anio, count(*) AS filas,
+               count(*) FILTER (WHERE hab=1) AS h1, count(*) FILTER (WHERE hab=2) AS h2,
+               count(*) FILTER (WHERE hab=3) AS h3,
+               round(100.0*count(*) FILTER (WHERE hab=1)/count(*), 2) AS pct1,
+               round(100.0*count(*) FILTER (WHERE hab=2)/count(*), 2) AS pct2,
+               round(100.0*count(*) FILTER (WHERE hab=3)/count(*), 2) AS pct3
+        FROM v GROUP BY 1 ORDER BY 1
+    anio  filas     h1     h2     h3   pct1   pct2   pct3
+0   2009  59063  10824  24458  23781  18.33  41.41  40.26
+1   2010  59329  10827  25097  23405  18.25  42.30  39.45
+2   2011  62596  11605  26450  24541  18.54  42.26  39.21
+3   2012  65738  12767  27580  25391  19.42  41.95  38.62
+4   2013  65598  12739  27778  25081  19.42  42.35  38.23
+5   2014  66908  12917  28415  25576  19.31  42.47  38.23
+6   2015  69526  13454  29765  26307  19.35  42.81  37.84
+7   2016  71244  13842  30603  26799  19.43  42.96  37.62
+8   2017  72036  14308  30862  26866  19.86  42.84  37.30
+9   2018  74207  14381  31890  27936  19.38  42.97  37.65
+10  2019  74792  14375  32261  28156  19.22  43.13  37.65
+11  2021  73674  14262  31800  27612  19.36  43.16  37.48
+12  2022  74891  14760  32207  27924  19.71  43.01  37.29
+13  2023  73431  14262  31407  27762  19.42  42.77  37.81
+14  2024  70380  13358  29974  27048  18.98  42.59  38.43
+15  2025  68911  12928  29519  26464  18.76  42.84  38.40
+
+
+-- SQL:
+SELECT "ANY", count(*) FROM d WHERE HABITAT = 'Més de 100001' GROUP BY 1 ORDER BY 1
+    ANY  count_star()
+0  2024         27048
+1  2025         26464
+
+
+==============================================================================================================
+HAB-03 combinaciones área x hábitat raras
+==============================================================================================================
+
+-- SQL:
+WITH c AS (SELECT AREA_TERRITORIAL, hab, anio, count(*) AS filas FROM v
+                   WHERE AREA_TERRITORIAL IS NOT NULL GROUP BY ALL),
+             r AS (SELECT AREA_TERRITORIAL, hab, count(DISTINCT anio) AS n_anios,
+                          string_agg(anio || ':' || filas, ', ' ORDER BY anio) AS detalle
+                   FROM c GROUP BY ALL)
+        SELECT * FROM r WHERE n_anios <= 4 ORDER BY AREA_TERRITORIAL, hab
+                    AREA_TERRITORIAL  hab  n_anios               detalle
+0                 Alt Pirineu i Aran    1        2    2024:340, 2025:370
+1                 Alt Pirineu i Aran    2        2    2024:174, 2025:186
+2                     Baix Llobregat    3        2    2010:2629, 2014:29
+3                         Barcelonès    2        1              2025:264
+4                         Barcelonès    3        1             2025:5144
+5                  Catalunya Central    3        1             2010:1458
+6   Consorci d'Educació de Barcelona    1        1              2010:744
+7   Consorci d'Educació de Barcelona    2        1             2010:1916
+8                            Penedès    1        2  2024:1255, 2025:1204
+9                            Penedès    2        2  2024:3484, 2025:3437
+10                  Terres de l'Ebre    3        1              2010:505
+
+
+-- SQL:
+SELECT AREA_TERRITORIAL, hab, string_agg(anio || ':' || filas, ', ' ORDER BY anio) AS por_anio
+        FROM (SELECT AREA_TERRITORIAL, hab, anio, count(*) filas FROM v GROUP BY ALL)
+        GROUP BY ALL ORDER BY ALL
+                    AREA_TERRITORIAL  hab                                                                                                                                                                                       por_anio
+0                 Alt Pirineu i Aran    1                                                                                                                                                                             2024:340, 2025:370
+1                 Alt Pirineu i Aran    2                                                                                                                                                                             2024:174, 2025:186
+2                     Baix Llobregat    1                                2009:426, 2010:1027, 2011:490, 2012:508, 2013:533, 2014:542, 2015:647, 2016:626, 2017:694, 2018:700, 2019:708, 2021:712, 2022:608, 2023:618, 2024:551, 2025:474
+3                     Baix Llobregat    2                 2009:5859, 2010:2887, 2011:6426, 2012:6763, 2013:7078, 2014:7238, 2015:7501, 2016:7652, 2017:7852, 2018:7890, 2019:7909, 2021:7669, 2022:7853, 2023:7444, 2024:7103, 2025:6949
+4                     Baix Llobregat    3                                                                                                                                                                             2010:2629, 2014:29
+5                Barcelona Comarques    1                                                    2009:387, 2010:1546, 2011:444, 2012:539, 2013:520, 2014:533, 2015:626, 2016:642, 2017:607, 2018:627, 2019:654, 2021:612, 2022:702, 2023:660
+6                Barcelona Comarques    2                             2009:1817, 2010:2671, 2011:1931, 2012:2062, 2013:2066, 2014:2145, 2015:2212, 2016:2213, 2017:2207, 2018:2300, 2019:2338, 2021:2244, 2022:2317, 2023:2254, 2024:271
+7                Barcelona Comarques    3                            2009:4337, 2010:2332, 2011:4458, 2012:4675, 2013:4684, 2014:4670, 2015:4822, 2016:4928, 2017:5006, 2018:5252, 2019:5433, 2021:5288, 2022:5343, 2023:5297, 2024:5115
+8                         Barcelonès    2                                                                                                                                                                                       2025:264
+9                         Barcelonès    3                                                                                                                                                                                      2025:5144
+10                 Catalunya Central    1                 2009:2246, 2010:1188, 2011:2369, 2012:2422, 2013:2448, 2014:2488, 2015:2583, 2016:2741, 2017:2791, 2018:2798, 2019:2885, 2021:2701, 2022:2922, 2023:2904, 2024:2154, 2025:2037
+11                 Catalunya Central    2                 2009:2070, 2010:1617, 2011:2254, 2012:2272, 2013:2235, 2014:2333, 2015:2399, 2016:2491, 2017:2538, 2018:2496, 2019:2644, 2021:2738, 2022:2753, 2023:2661, 2024:1952, 2025:1962
+12                 Catalunya Central    3                                                                                                                                                                                      2010:1458
+13  Consorci d'Educació de Barcelona    1                                                                                                                                                                                       2010:744
+14  Consorci d'Educació de Barcelona    2                                                                                                                                                                                      2010:1916
+15  Consorci d'Educació de Barcelona    3  2009:11471, 2010:8654, 2011:11919, 2012:12047, 2013:11727, 2014:11963, 2015:12324, 2016:12337, 2017:12265, 2018:12567, 2019:12535, 2021:12133, 2022:12446, 2023:12438, 2024:12352, 2025:12139
+16                            Girona    1                 2009:2079, 2010:1158, 2011:2113, 2012:2398, 2013:2404, 2014:2364, 2015:2557, 2016:2538, 2017:2697, 2018:2870, 2019:2790, 2021:2822, 2022:2984, 2023:2766, 2024:3572, 2025:3465
+17                            Girona    2                 2009:3963, 2010:4889, 2011:4034, 2012:4216, 2013:4071, 2014:4091, 2015:4394, 2016:4633, 2017:4470, 2018:4830, 2019:4843, 2021:4881, 2022:5099, 2023:4992, 2024:3711, 2025:3674
+18                            Lleida    1                  2009:1465, 2010:998, 2011:1623, 2012:1731, 2013:1707, 2014:1728, 2015:1712, 2016:1792, 2017:1836, 2018:1790, 2019:1843, 2021:2060, 2022:1964, 2023:1937, 2024:1445, 2025:1440
+19                            Lleida    2                                 2009:576, 2010:466, 2011:624, 2012:602, 2013:566, 2014:593, 2015:573, 2016:605, 2017:646, 2018:673, 2019:676, 2021:696, 2022:648, 2023:693, 2024:653, 2025:642
+20                            Lleida    3                 2009:1153, 2010:1826, 2011:1193, 2012:1192, 2013:1235, 2014:1217, 2015:1314, 2016:1278, 2017:1340, 2018:1390, 2019:1428, 2021:1351, 2022:1484, 2023:1436, 2024:1368, 2025:1299
+21         Maresme - Vallès Oriental    1                 2009:1797, 2010:1390, 2011:1998, 2012:2282, 2013:2196, 2014:2280, 2015:2332, 2016:2438, 2017:2423, 2018:2446, 2019:2362, 2021:2273, 2022:2333, 2023:2287, 2024:1471, 2025:1383
+22         Maresme - Vallès Oriental    2                 2009:4222, 2010:3220, 2011:4667, 2012:4854, 2013:4884, 2014:4931, 2015:5261, 2016:5406, 2017:5425, 2018:5634, 2019:5510, 2021:5517, 2022:5538, 2023:5283, 2024:5769, 2025:5548
+23         Maresme - Vallès Oriental    3                 2009:1074, 2010:2448, 2011:1095, 2012:1216, 2013:1169, 2014:1206, 2015:1222, 2016:1301, 2017:1333, 2018:1336, 2019:1387, 2021:1425, 2022:1381, 2023:1422, 2024:1316, 2025:1325
+24                           Penedès    1                                                                                                                                                                           2024:1255, 2025:1204
+25                           Penedès    2                                                                                                                                                                           2024:3484, 2025:3437
+26                         Tarragona    1                 2009:1251, 2010:1074, 2011:1362, 2012:1577, 2013:1631, 2014:1696, 2015:1730, 2016:1768, 2017:1904, 2018:1765, 2019:1842, 2021:1782, 2022:1897, 2023:1741, 2024:1346, 2025:1370
+27                         Tarragona    2                 2009:1480, 2010:2799, 2011:1656, 2012:1772, 2013:1736, 2014:1764, 2015:1872, 2016:1936, 2017:1880, 2018:2063, 2019:2151, 2021:2213, 2022:2189, 2023:2215, 2024:1356, 2025:1391
+28                         Tarragona    3                 2009:2109, 2010:1211, 2011:2197, 2012:2316, 2013:2199, 2014:2352, 2015:2362, 2016:2538, 2017:2518, 2018:2617, 2019:2632, 2021:2690, 2022:2611, 2023:2529, 2024:2462, 2025:2339
+29                  Terres de l'Ebre    1                                 2009:722, 2010:232, 2011:691, 2012:726, 2013:713, 2014:692, 2015:684, 2016:665, 2017:731, 2018:782, 2019:693, 2021:725, 2022:779, 2023:726, 2024:685, 2025:692
+30                  Terres de l'Ebre    2                                 2009:797, 2010:754, 2011:790, 2012:808, 2013:786, 2014:820, 2015:792, 2016:730, 2017:835, 2018:855, 2019:889, 2021:914, 2022:860, 2023:919, 2024:868, 2025:813
+31                  Terres de l'Ebre    3                                                                                                                                                                                       2010:505
+32                 Vallès Occidental    1                                2009:451, 2010:1470, 2011:515, 2012:584, 2013:587, 2014:594, 2015:583, 2016:632, 2017:625, 2018:603, 2019:598, 2021:575, 2022:571, 2023:623, 2024:539, 2025:493
+33                 Vallès Occidental    2                 2009:3674, 2010:3878, 2011:4068, 2012:4231, 2013:4356, 2014:4500, 2015:4761, 2016:4937, 2017:5009, 2018:5149, 2019:5301, 2021:4928, 2022:4950, 2023:4946, 2024:4633, 2025:4653
+34                 Vallès Occidental    3                 2009:3637, 2010:2342, 2011:3679, 2012:3945, 2013:4067, 2014:4139, 2015:4263, 2016:4417, 2017:4404, 2018:4774, 2019:4741, 2021:4725, 2022:4659, 2023:4640, 2024:4434, 2025:4218
+35                               NaN    3                                                                                                                                                                                         2024:1
+
+
+-- SQL:
+SELECT anio, AREA_TERRITORIAL, nat,
+               count(*) FILTER (WHERE hab=1) h1, count(*) FILTER (WHERE hab=2) h2,
+               count(*) FILTER (WHERE hab=3) h3
+        FROM v WHERE anio IN (2009, 2010, 2011)
+          AND AREA_TERRITORIAL IN ('Consorci d''Educació de Barcelona','Catalunya Central',
+                                   'Terres de l''Ebre','Baix Llobregat')
+        GROUP BY ALL ORDER BY AREA_TERRITORIAL, nat, anio
+    anio                  AREA_TERRITORIAL      nat    h1    h2    h3
+0   2009                    Baix Llobregat  Privada    47  1975     0
+1   2010                    Baix Llobregat  Privada   277   944   890
+2   2011                    Baix Llobregat  Privada    62  2039     0
+3   2009                    Baix Llobregat  Pública   379  3884     0
+4   2010                    Baix Llobregat  Pública   750  1943  1739
+5   2011                    Baix Llobregat  Pública   428  4387     0
+6   2009                 Catalunya Central  Privada   522   958     0
+7   2010                 Catalunya Central  Privada   543   567   404
+8   2011                 Catalunya Central  Privada   507  1016     0
+9   2009                 Catalunya Central  Pública  1724  1112     0
+10  2010                 Catalunya Central  Pública   645  1050  1054
+11  2011                 Catalunya Central  Pública  1862  1238     0
+12  2009  Consorci d'Educació de Barcelona  Privada     0     0  7219
+13  2010  Consorci d'Educació de Barcelona  Privada    84   767  6177
+14  2011  Consorci d'Educació de Barcelona  Privada     0     0  7375
+15  2009  Consorci d'Educació de Barcelona  Pública     0     0  4252
+16  2010  Consorci d'Educació de Barcelona  Pública   660  1149  2477
+17  2011  Consorci d'Educació de Barcelona  Pública     0     0  4544
+18  2009                  Terres de l'Ebre  Privada    23   171     0
+19  2010                  Terres de l'Ebre  Privada    23    90    74
+20  2011                  Terres de l'Ebre  Privada    23   166     0
+21  2009                  Terres de l'Ebre  Pública   699   626     0
+22  2010                  Terres de l'Ebre  Pública   209   664   431
+23  2011                  Terres de l'Ebre  Pública   668   624     0
+
+
+-- SQL:
+WITH f AS (SELECT *, (AREA_TERRITORIAL = 'Consorci d''Educació de Barcelona' AND hab IN (1,2))
+                            OR (AREA_TERRITORIAL IN ('Catalunya Central','Terres de l''Ebre','Baix Llobregat')
+                                AND hab = 3) AS incoh FROM v)
+        SELECT anio, count(*) AS filas, count(*) FILTER (WHERE incoh) AS incoherentes,
+               round(100.0*count(*) FILTER (WHERE incoh)/count(*), 2) AS pct
+        FROM f GROUP BY 1 HAVING count(*) FILTER (WHERE incoh) > 0 ORDER BY 1
+   anio  filas  incoherentes    pct
+0  2010  59329          7252  12.22
+1  2014  66908            29   0.04
+
+
+==============================================================================================================
+HAB-03 extra: naturaleza x hábitat y relación hábitat-puntuación por año
+==============================================================================================================
+
+-- SQL:
+SELECT anio,
+               round(100.0*count(*) FILTER (WHERE nat='Privada' AND hab=3)/count(*) FILTER (WHERE hab=3),1) AS pct_priv_en_h3,
+               round(100.0*count(*) FILTER (WHERE nat='Privada' AND hab=1)/count(*) FILTER (WHERE hab=1),1) AS pct_priv_en_h1,
+               round(avg(n_PMAT) FILTER (WHERE hab=3) - avg(n_PMAT) FILTER (WHERE hab=1), 2) AS pmat_h3_menos_h1,
+               round(avg(n_PCAT) FILTER (WHERE hab=1) - avg(n_PCAT) FILTER (WHERE hab=3), 2) AS pcat_h1_menos_h3,
+               round(avg(n_PCAST) FILTER (WHERE hab=3) - avg(n_PCAST) FILTER (WHERE hab=1), 2) AS pcast_h3_menos_h1
+        FROM v GROUP BY 1 ORDER BY 1
+    anio  pct_priv_en_h3  pct_priv_en_h1  pmat_h3_menos_h1  pcat_h1_menos_h3  pcast_h3_menos_h1
+0   2009            55.4            12.9             -0.80              0.28               1.30
+1   2010            46.2            35.2              0.13             -0.13               0.52
+2   2011            54.0            12.4             -1.25              1.04               1.48
+3   2012            53.2            11.6             -0.85              1.20              -0.27
+4   2013            53.2            11.6             -1.45              1.44               0.65
+5   2014            53.2            12.0             -1.07              0.34               0.86
+6   2015            52.9            11.2             -0.45              0.34               0.77
+7   2016            52.1            11.9             -1.48              1.15               0.26
+8   2017            51.6            11.2             -1.36              1.24               0.91
+9   2018            50.7            10.8             -1.44              0.75               0.34
+10  2019            49.9            10.6             -0.66              1.01               0.61
+11  2021            48.5             9.9             -2.04              1.64              -0.44
+12  2022            48.1             9.9             -1.47              1.83              -0.29
+13  2023            48.6            10.7             -1.73              1.74              -0.16
+14  2024            47.8            12.7             -1.73              1.73              -0.91
+15  2025            47.5            13.2             -1.91              2.12              -1.06
+
+
+==============================================================================================================
+HAB-03 extra: alcance real en 2010 (cota inferior por distancia de variación total)
+==============================================================================================================
+
+-- SQL:
+WITH c AS (SELECT anio, AREA_TERRITORIAL a, hab, count(*) n FROM v WHERE anio IN (2009,2010,2011) GROUP BY ALL),
+             t AS (SELECT anio, a, sum(n) na FROM c GROUP BY ALL),
+             p AS (SELECT c.a, c.hab, avg(c.n / t.na) AS p FROM c JOIN t USING (anio, a)
+                   WHERE anio IN (2009, 2011) GROUP BY ALL),
+             e AS (SELECT t.a, p.hab, t.na * p.p AS esperado FROM t JOIN p USING (a) WHERE t.anio = 2010),
+             o AS (SELECT a, hab, n FROM c WHERE anio = 2010)
+        SELECT round(0.5 * sum(abs(coalesce(o.n,0) - coalesce(e.esperado,0)))) AS filas_minimas_mal_asignadas,
+               round(100.0 * 0.5 * sum(abs(coalesce(o.n,0) - coalesce(e.esperado,0))) / 59329, 1) AS pct_2010
+        FROM e FULL JOIN o USING (a, hab)
+   filas_minimas_mal_asignadas  pct_2010
+0                      15186.0      25.6
+
+
+-- SQL:
+WITH s AS (SELECT anio,
+            AREA_TERRITORIAL <> lag(AREA_TERRITORIAL) OVER w AS c_area,
+            NATURALESA <> lag(NATURALESA) OVER w AS c_nat,
+            HABITAT <> lag(HABITAT) OVER w AS c_hab,
+            ANY_NAIXEMENT IS DISTINCT FROM lag(ANY_NAIXEMENT) OVER w AS c_anac
+          FROM v WINDOW w AS (PARTITION BY anio ORDER BY linea))
+        SELECT anio, count(*) FILTER (WHERE c_area) AS cambios_area, count(*) FILTER (WHERE c_nat) AS cambios_nat,
+               count(*) FILTER (WHERE c_hab) AS cambios_hab, count(*) FILTER (WHERE c_anac) AS cambios_anio_nac
+        FROM s WHERE anio <= 2012 GROUP BY 1 ORDER BY 1
+   anio  cambios_area  cambios_nat  cambios_hab  cambios_anio_nac
+0  2009           534          398          448              8061
+1  2010           531          396          198             10068
+2  2011           546          398          490              7593
+3  2012           568          400          505              8011
+
+
+-- SQL:
+WITH t AS (SELECT ntile(10) OVER (ORDER BY linea) AS decil, * FROM v WHERE anio = 2010)
+        SELECT decil, min(linea) AS desde, max(linea) AS hasta,
+          round(100.0*count(*) FILTER (WHERE AREA_TERRITORIAL='Consorci d''Educació de Barcelona' AND hab<>3)/
+                nullif(count(*) FILTER (WHERE AREA_TERRITORIAL='Consorci d''Educació de Barcelona'),0),1) AS pct_consorci_no_mas_de,
+          round(100.0*count(*) FILTER (WHERE AREA_TERRITORIAL IN ('Baix Llobregat','Catalunya Central','Terres de l''Ebre') AND hab=3)/
+                nullif(count(*) FILTER (WHERE AREA_TERRITORIAL IN ('Baix Llobregat','Catalunya Central','Terres de l''Ebre')),0),1) AS pct_bll_cc_te_mas_de,
+          round(avg(n_PMAT) FILTER (WHERE edad=12) - avg(n_PMAT) FILTER (WHERE edad=13),2) AS pmat_12_menos_13
+        FROM t GROUP BY 1 ORDER BY 1
+   decil    desde    hasta  pct_consorci_no_mas_de  pct_bll_cc_te_mas_de  pmat_12_menos_13
+0      1   983934   989866                    17.6                   0.0              1.68
+1      2   989867   995799                     0.0                 100.0             -0.79
+2      3   995800  1001732                     NaN                  55.9             -0.87
+3      4  1001733  1007665                     NaN                   0.0             -0.67
+4      5  1007666  1013598                     NaN                  22.5             -1.10
+5      6  1013599  1019531                    56.6                  45.2              0.64
+6      7  1019532  1025464                    87.4                  11.6              0.57
+7      8  1025465  1031397                     0.0                  96.5             -0.77
+8      9  1031398  1037330                     NaN                  75.8             -0.96
+9     10  1037331  1043262                     NaN                  24.6              1.30
+
+
+==============================================================================================================
+HAB-04 reclasificación de hábitat en 2024 por área
+==============================================================================================================
+
+-- SQL:
+SELECT AREA_TERRITORIAL, anio, count(*) filas, count(*) FILTER (WHERE hab=1) h1,
+               count(*) FILTER (WHERE hab=2) h2, count(*) FILTER (WHERE hab=3) h3,
+               round(100.0*count(*) FILTER (WHERE hab=1)/count(*),1) p1,
+               round(100.0*count(*) FILTER (WHERE hab=2)/count(*),1) p2,
+               round(100.0*count(*) FILTER (WHERE hab=3)/count(*),1) p3
+        FROM v WHERE anio >= 2021 GROUP BY ALL ORDER BY AREA_TERRITORIAL, anio
+                    AREA_TERRITORIAL  anio  filas    h1    h2     h3    p1    p2     p3
+0                 Alt Pirineu i Aran  2024    514   340   174      0  66.1  33.9    0.0
+1                 Alt Pirineu i Aran  2025    556   370   186      0  66.5  33.5    0.0
+2                     Baix Llobregat  2021   8381   712  7669      0   8.5  91.5    0.0
+3                     Baix Llobregat  2022   8461   608  7853      0   7.2  92.8    0.0
+4                     Baix Llobregat  2023   8062   618  7444      0   7.7  92.3    0.0
+5                     Baix Llobregat  2024   7654   551  7103      0   7.2  92.8    0.0
+6                     Baix Llobregat  2025   7423   474  6949      0   6.4  93.6    0.0
+7                Barcelona Comarques  2021   8144   612  2244   5288   7.5  27.6   64.9
+8                Barcelona Comarques  2022   8362   702  2317   5343   8.4  27.7   63.9
+9                Barcelona Comarques  2023   8211   660  2254   5297   8.0  27.5   64.5
+10               Barcelona Comarques  2024   5386     0   271   5115   0.0   5.0   95.0
+11                        Barcelonès  2025   5408     0   264   5144   0.0   4.9   95.1
+12                 Catalunya Central  2021   5439  2701  2738      0  49.7  50.3    0.0
+13                 Catalunya Central  2022   5675  2922  2753      0  51.5  48.5    0.0
+14                 Catalunya Central  2023   5565  2904  2661      0  52.2  47.8    0.0
+15                 Catalunya Central  2024   4106  2154  1952      0  52.5  47.5    0.0
+16                 Catalunya Central  2025   3999  2037  1962      0  50.9  49.1    0.0
+17  Consorci d'Educació de Barcelona  2021  12133     0     0  12133   0.0   0.0  100.0
+18  Consorci d'Educació de Barcelona  2022  12446     0     0  12446   0.0   0.0  100.0
+19  Consorci d'Educació de Barcelona  2023  12438     0     0  12438   0.0   0.0  100.0
+20  Consorci d'Educació de Barcelona  2024  12352     0     0  12352   0.0   0.0  100.0
+21  Consorci d'Educació de Barcelona  2025  12139     0     0  12139   0.0   0.0  100.0
+22                            Girona  2021   7703  2822  4881      0  36.6  63.4    0.0
+23                            Girona  2022   8083  2984  5099      0  36.9  63.1    0.0
+24                            Girona  2023   7758  2766  4992      0  35.7  64.3    0.0
+25                            Girona  2024   7283  3572  3711      0  49.0  51.0    0.0
+26                            Girona  2025   7139  3465  3674      0  48.5  51.5    0.0
+27                            Lleida  2021   4107  2060   696   1351  50.2  16.9   32.9
+28                            Lleida  2022   4096  1964   648   1484  47.9  15.8   36.2
+29                            Lleida  2023   4066  1937   693   1436  47.6  17.0   35.3
+30                            Lleida  2024   3466  1445   653   1368  41.7  18.8   39.5
+31                            Lleida  2025   3381  1440   642   1299  42.6  19.0   38.4
+32         Maresme - Vallès Oriental  2021   9215  2273  5517   1425  24.7  59.9   15.5
+33         Maresme - Vallès Oriental  2022   9252  2333  5538   1381  25.2  59.9   14.9
+34         Maresme - Vallès Oriental  2023   8992  2287  5283   1422  25.4  58.8   15.8
+35         Maresme - Vallès Oriental  2024   8556  1471  5769   1316  17.2  67.4   15.4
+36         Maresme - Vallès Oriental  2025   8256  1383  5548   1325  16.8  67.2   16.0
+37                           Penedès  2024   4739  1255  3484      0  26.5  73.5    0.0
+38                           Penedès  2025   4641  1204  3437      0  25.9  74.1    0.0
+39                         Tarragona  2021   6685  1782  2213   2690  26.7  33.1   40.2
+40                         Tarragona  2022   6697  1897  2189   2611  28.3  32.7   39.0
+41                         Tarragona  2023   6485  1741  2215   2529  26.8  34.2   39.0
+42                         Tarragona  2024   5164  1346  1356   2462  26.1  26.3   47.7
+43                         Tarragona  2025   5100  1370  1391   2339  26.9  27.3   45.9
+44                  Terres de l'Ebre  2021   1639   725   914      0  44.2  55.8    0.0
+45                  Terres de l'Ebre  2022   1639   779   860      0  47.5  52.5    0.0
+46                  Terres de l'Ebre  2023   1645   726   919      0  44.1  55.9    0.0
+47                  Terres de l'Ebre  2024   1553   685   868      0  44.1  55.9    0.0
+48                  Terres de l'Ebre  2025   1505   692   813      0  46.0  54.0    0.0
+49                 Vallès Occidental  2021  10228   575  4928   4725   5.6  48.2   46.2
+50                 Vallès Occidental  2022  10180   571  4950   4659   5.6  48.6   45.8
+51                 Vallès Occidental  2023  10209   623  4946   4640   6.1  48.4   45.5
+52                 Vallès Occidental  2024   9606   539  4633   4434   5.6  48.2   46.2
+53                 Vallès Occidental  2025   9364   493  4653   4218   5.3  49.7   45.0
+54                               NaN  2024      1     0     0      1   0.0   0.0  100.0
+
+
+-- SQL:
+SELECT count(*) AS filas_girona_maresme_2024_2025 FROM d
+        WHERE AREA_TERRITORIAL IN ('Girona','Maresme - Vallès Oriental') AND "ANY" IN ('2024','2025')
+   filas_girona_maresme_2024_2025
+0                           31234
+
+
+-- SQL:
+SELECT count(*) AS filas_girona_maresme_todos FROM d
+        WHERE AREA_TERRITORIAL IN ('Girona','Maresme - Vallès Oriental')
+   filas_girona_maresme_todos
+0                      249384
+
+
+==============================================================================================================
+ARE-01 área vacía
+==============================================================================================================
+
+-- SQL:
+SELECT linea, "ANY", CODI_ALUMNE, GENERE, MES_NAIXEMENT, ANY_NAIXEMENT, NATURALESA, HABITAT
+        FROM d WHERE AREA_TERRITORIAL IS NULL OR trim(AREA_TERRITORIAL) = ''
+   linea   ANY CODI_ALUMNE GENERE MES_NAIXEMENT ANY_NAIXEMENT NATURALESA        HABITAT
+0  82995  2024  2579871639      H            12          2012    Pública  Més de 100001
+
+
+-- SQL:
+SELECT "ANY", AREA_TERRITORIAL FROM d WHERE CODI_ALUMNE =
+           (SELECT CODI_ALUMNE FROM d WHERE AREA_TERRITORIAL IS NULL)
+    ANY AREA_TERRITORIAL
+0  2024             None
+
+
+==============================================================================================================
+ARE-02 áreas por año
+==============================================================================================================
+
+-- SQL:
+PIVOT (SELECT anio, coalesce(AREA_TERRITORIAL,'<NULL>') AS area FROM v WHERE anio >= 2019)
+        ON anio USING count(*) GROUP BY area ORDER BY area
+                                area   2019   2021   2022   2023   2024   2025
+0                             <NULL>      0      0      0      0      1      0
+1                 Alt Pirineu i Aran      0      0      0      0    514    556
+2                     Baix Llobregat   8617   8381   8461   8062   7654   7423
+3                Barcelona Comarques   8425   8144   8362   8211   5386      0
+4                         Barcelonès      0      0      0      0      0   5408
+5                  Catalunya Central   5529   5439   5675   5565   4106   3999
+6   Consorci d'Educació de Barcelona  12535  12133  12446  12438  12352  12139
+7                             Girona   7633   7703   8083   7758   7283   7139
+8                             Lleida   3947   4107   4096   4066   3466   3381
+9          Maresme - Vallès Oriental   9259   9215   9252   8992   8556   8256
+10                           Penedès      0      0      0      0   4739   4641
+11                         Tarragona   6625   6685   6697   6485   5164   5100
+12                  Terres de l'Ebre   1582   1639   1639   1645   1553   1505
+13                 Vallès Occidental  10640  10228  10180  10209   9606   9364
+
+
+-- SQL:
+SELECT AREA_TERRITORIAL, min(anio) AS desde, max(anio) AS hasta, count(DISTINCT anio) AS n_anios
+        FROM v GROUP BY 1 ORDER BY 1
+                    AREA_TERRITORIAL  desde  hasta  n_anios
+0                 Alt Pirineu i Aran   2024   2025        2
+1                     Baix Llobregat   2009   2025       16
+2                Barcelona Comarques   2009   2024       15
+3                         Barcelonès   2025   2025        1
+4                  Catalunya Central   2009   2025       16
+5   Consorci d'Educació de Barcelona   2009   2025       16
+6                             Girona   2009   2025       16
+7                             Lleida   2009   2025       16
+8          Maresme - Vallès Oriental   2009   2025       16
+9                            Penedès   2024   2025        2
+10                         Tarragona   2009   2025       16
+11                  Terres de l'Ebre   2009   2025       16
+12                 Vallès Occidental   2009   2025       16
+13                               NaN   2024   2024        1
+
+
+-- SQL:
+SELECT * FROM ar ORDER BY anio
+   anio    cat    est   lle  apa    bc   bcs   pen   tar    cc   cons
+0  2023  73431  49104  4066    0  8211     0     0  6485  5565  12438
+1  2024  70380  47004  3466  514  5386     0  4739  5164  4106  12352
+2  2025  68911  45826  3381  556     0  5408  4641  5100  3999  12139
+
+
+-- SQL:
+SELECT a.anio, round(a.est / b.est, 4) AS factor_estables, round(a.cat / b.cat, 4) AS factor_cat,
+               a.lle + a.apa AS lle_apa, round((a.lle + a.apa) / b.lle, 4) AS ratio_lle_apa,
+               round(b.lle * a.est / b.est - a.lle) AS faltan_lle,
+               round(b.bc * a.est / b.est - a.bc) AS faltan_bc,
+               round(b.tar * a.est / b.est - a.tar) AS faltan_tar,
+               round(b.cc * a.est / b.est - a.cc) AS faltan_cc,
+               round(b.cons * a.est / b.est - a.cons) AS faltan_cons,
+               a.bc + a.pen AS bc_mas_pen,
+               (a.bc + a.bcs + a.pen + a.tar + a.cc) AS grupo, round((a.bc + a.bcs + a.pen + a.tar + a.cc) /
+                   (b.bc + b.bcs + b.pen + b.tar + b.cc), 4) AS ratio_grupo,
+               round(a.bcs / b.bc, 4) AS ratio_bcs_bc
+        FROM ar a JOIN ar b ON a.anio = b.anio + 1 ORDER BY 1
+   anio  factor_estables  factor_cat  lle_apa  ratio_lle_apa  faltan_lle  faltan_bc  faltan_tar  faltan_cc  faltan_cons  bc_mas_pen  grupo  ratio_grupo  ratio_bcs_bc
+0  2024           0.9572      0.9585     3980         0.9788       426.0     2474.0      1044.0     1221.0       -446.0       10125  19395       0.9573        0.0000
+1  2025           0.9749      0.9791     3937         1.1359        -2.0     5251.0       -65.0        4.0        -97.0        4641  19148       0.9873        1.0041
+
+
+-- SQL:
+WITH x AS (SELECT anio, nat, count(*) FILTER (WHERE AREA_TERRITORIAL IN ('Baix Llobregat','Consorci d''Educació de Barcelona','Girona','Maresme - Vallès Oriental','Terres de l''Ebre','Vallès Occidental')) est,
+                           count(*) FILTER (WHERE AREA_TERRITORIAL IN ('Barcelona Comarques','Tarragona','Catalunya Central')) grp,
+                           count(*) FILTER (WHERE AREA_TERRITORIAL = 'Penedès') pen
+                    FROM v WHERE anio IN (2023, 2024) GROUP BY ALL)
+         SELECT a.nat, round(b.grp * a.est / b.est - a.grp) AS faltan, a.pen
+         FROM x a JOIN x b ON a.nat = b.nat AND a.anio = 2024 AND b.anio = 2023
+       nat  faltan   pen
+0  Privada  1140.0  1100
+1  Pública  3600.0  3639
+
+
+-- SQL:
+SELECT AREA_TERRITORIAL, anio, nat, hab, count(*) FROM v
+        WHERE (AREA_TERRITORIAL = 'Barcelona Comarques' AND anio = 2024)
+           OR (AREA_TERRITORIAL = 'Barcelonès' AND anio = 2025)
+        GROUP BY ALL ORDER BY nat, hab, anio
+      AREA_TERRITORIAL  anio      nat  hab  count_star()
+0  Barcelona Comarques  2024  Privada    2           166
+1           Barcelonès  2025  Privada    2           165
+2  Barcelona Comarques  2024  Privada    3          2054
+3           Barcelonès  2025  Privada    3          2061
+4  Barcelona Comarques  2024  Pública    2           105
+5           Barcelonès  2025  Pública    2            99
+6  Barcelona Comarques  2024  Pública    3          3061
+7           Barcelonès  2025  Pública    3          3083
+
+
+-- SQL:
+SELECT count(*) FILTER (WHERE hab = 3) AS penedes_mes_de FROM v WHERE AREA_TERRITORIAL = 'Penedès'
+   penedes_mes_de
+0               0
+
+
+-- SQL:
+WITH c AS (SELECT CODI_ALUMNE, anio, AREA_TERRITORIAL a FROM v WHERE CODI_ALUMNE IS NOT NULL AND anio >= 2023)
+        SELECT x.anio a1, x.a area1, y.anio a2, y.a area2, count(*) AS codigos
+        FROM c x JOIN c y ON x.CODI_ALUMNE = y.CODI_ALUMNE AND y.anio = x.anio + 1
+        WHERE x.a IS DISTINCT FROM y.a GROUP BY ALL ORDER BY ALL
+     a1                             area1    a2                             area2  codigos
+0  2023               Barcelona Comarques  2024  Consorci d'Educació de Barcelona        1
+1  2023               Barcelona Comarques  2024                           Penedès        2
+2  2023  Consorci d'Educació de Barcelona  2024                           Penedès        1
+3  2023  Consorci d'Educació de Barcelona  2024                 Vallès Occidental        1
+4  2023                            Lleida  2024                Alt Pirineu i Aran        1
+5  2024               Barcelona Comarques  2025                        Barcelonès        7
+6  2024  Consorci d'Educació de Barcelona  2025                 Vallès Occidental        1
+
+
+-- SQL:
+SELECT count(*) AS filas_bc_bcs_pen_tar_cc_lle_apa_todos_anios FROM d
+        WHERE AREA_TERRITORIAL IN ('Barcelona Comarques','Barcelonès','Penedès','Tarragona',
+                                   'Catalunya Central','Lleida','Alt Pirineu i Aran')
+   filas_bc_bcs_pen_tar_cc_lle_apa_todos_anios
+0                                       358593
+
+
+-- SQL:
+SELECT count(*) AS filas_grupo_2023_2025 FROM v WHERE anio >= 2023 AND AREA_TERRITORIAL IN
+           ('Barcelona Comarques','Barcelonès','Penedès','Tarragona','Catalunya Central','Lleida','Alt Pirineu i Aran')
+   filas_grupo_2023_2025
+0                  70787
+
+
+-- SQL:
+SELECT count(*) AS filas_grupo_2024_2025 FROM v WHERE anio >= 2024 AND AREA_TERRITORIAL IN
+           ('Barcelona Comarques','Barcelonès','Penedès','Tarragona','Catalunya Central','Lleida','Alt Pirineu i Aran')
+   filas_grupo_2024_2025
+0                  46460
+
+
+==============================================================================================================
+FEC-01 nulos de fecha de nacimiento
+==============================================================================================================
+
+-- SQL:
+SELECT "ANY", count(*) FILTER (WHERE ANY_NAIXEMENT IS NULL) AS anio_nulo,
+               count(*) FILTER (WHERE MES_NAIXEMENT IS NULL) AS mes_nulo,
+               count(*) FILTER (WHERE ANY_NAIXEMENT IS NULL AND MES_NAIXEMENT IS NOT NULL) AS anio_nulo_mes_ok,
+               count(*) FILTER (WHERE ANY_NAIXEMENT IS NOT NULL AND MES_NAIXEMENT IS NULL) AS mes_nulo_anio_ok
+        FROM d GROUP BY 1 HAVING anio_nulo + mes_nulo > 0 ORDER BY 1
+    ANY  anio_nulo  mes_nulo  anio_nulo_mes_ok  mes_nulo_anio_ok
+0  2009        449        10               439                 0
+1  2010        396       335                61                 0
+2  2011        986       986                 0                 0
+3  2012          1         1                 0                 0
+4  2014          3         3                 0                 0
+
+
+-- SQL:
+SELECT count(*) FILTER (WHERE ANY_NAIXEMENT IS NULL) AS anio_nulo,
+               count(*) FILTER (WHERE MES_NAIXEMENT IS NULL) AS mes_nulo,
+               count(*) FILTER (WHERE ANY_NAIXEMENT IS NULL AND MES_NAIXEMENT IS NOT NULL) AS anio_nulo_mes_ok
+        FROM d
+   anio_nulo  mes_nulo  anio_nulo_mes_ok
+0       1835      1335               500
+
+
+-- SQL:
+SELECT list(DISTINCT MES_NAIXEMENT ORDER BY MES_NAIXEMENT) AS valores_mes,
+               count(*) FILTER (WHERE ANY_NAIXEMENT IS NOT NULL AND NOT regexp_matches(ANY_NAIXEMENT, '^[0-9]{4}$')) AS anio_mal,
+               min(ANY_NAIXEMENT) AS min_anio, max(ANY_NAIXEMENT) AS max_anio FROM d
+                                     valores_mes  anio_mal min_anio max_anio
+0  [1, 10, 11, 12, 2, 3, 4, 5, 6, 7, 8, 9, None]         0     1964     2014
+
+
+==============================================================================================================
+FEC-02 edades
+==============================================================================================================
+
+-- SQL:
+SELECT edad, count(*) FROM v WHERE edad IS NOT NULL AND edad NOT BETWEEN 10 AND 14 GROUP BY 1 ORDER BY 1
+    edad  count_star()
+0      2             1
+1      4             1
+2      6             1
+3      7             2
+4      8             1
+5      9             3
+6     15            65
+7     16             6
+8     17             4
+9     18             2
+10    21             2
+11    22             1
+12    23             1
+13    42             1
+14    44             1
+15    47             2
+16    48             1
+
+
+-- SQL:
+SELECT anio, count(*) AS fuera_rango, count(*) FILTER (WHERE edad < 10) AS menor10,
+               count(*) FILTER (WHERE edad > 14) AS mayor14,
+               count(*) FILTER (WHERE anio_nac = 2001 AND mes = 1) AS nac_1_2001,
+               count(*) FILTER (WHERE anio_nac = 2001 AND mes = 1 AND CODI_ALUMNE IS NOT NULL) AS nac_1_2001_con_codigo
+        FROM v WHERE edad NOT BETWEEN 10 AND 14 GROUP BY 1 ORDER BY 1
+   anio  fuera_rango  menor10  mayor14  nac_1_2001  nac_1_2001_con_codigo
+0  2009            7        2        5           0                      0
+1  2010           15        1       14           0                      0
+2  2011           14        1       13           0                      0
+3  2012            4        0        4           0                      0
+4  2013            5        2        3           0                      0
+5  2014            5        2        3           0                      0
+6  2015            3        0        3           0                      0
+7  2016           41        0       41          41                     25
+8  2018            1        1        0           0                      0
+
+
+-- SQL:
+SELECT anio_nac, mes, CODI_ALUMNE IS NULL AS sin_codigo, count(*) FROM v WHERE anio = 2016 AND anio_nac <= 2002
+        GROUP BY ALL ORDER BY ALL
+    anio_nac  mes  sin_codigo  count_star()
+0       2001    1       False            25
+1       2001    1        True            16
+2       2002    1       False             1
+3       2002    3       False             1
+4       2002    4       False             2
+5       2002    5       False             1
+6       2002    6       False             1
+7       2002    7       False             1
+8       2002    8       False             1
+9       2002    9       False             4
+10      2002   10       False             1
+11      2002   11       False             5
+12      2002   12       False             6
+
+
+-- SQL:
+SELECT anio_nac, mes, count(*) FROM v WHERE anio = 2016 AND CODI_ALUMNE IS NULL GROUP BY ALL ORDER BY ALL
+   anio_nac  mes  count_star()
+0      2001    1            16
+1      2003    1             6
+2      2004    1            23
+3      2005    1             2
+
+
+-- SQL:
+SELECT anio_nac, mes, count(*) FROM v WHERE anio = 2018 AND CODI_ALUMNE IS NULL GROUP BY ALL ORDER BY ALL
+   anio_nac  mes  count_star()
+0      2005    1             1
+1      2006    1             9
+2      2011    1             1
+
+
+-- SQL:
+SELECT anio, mode(edad) AS moda FROM v GROUP BY 1 HAVING mode(edad) <> 12 ORDER BY 1
+(sin filas)
+
+
+-- SQL:
+WITH r AS (SELECT CASE WHEN anio = 2010 THEN NULL
+                               WHEN edad BETWEEN 10 AND 14 THEN edad END AS edad_prueba FROM v)
+        SELECT edad_prueba, count(*) FROM r GROUP BY 1 ORDER BY 1 NULLS LAST
+   edad_prueba  count_star()
+0           10           159
+1           11          1416
+2           12        987183
+3           13         52247
+4           14           471
+5         <NA>         60848
+
+
+-- SQL:
+SELECT count(*) FILTER (WHERE edad IS NULL) AS sin_edad,
+               count(*) FILTER (WHERE edad NOT BETWEEN 10 AND 14) AS fuera_rango,
+               count(*) FILTER (WHERE anio = 2010 AND edad BETWEEN 10 AND 14) AS validas_2010,
+               count(*) FILTER (WHERE anio = 2010) AS filas_2010,
+               count(*) FILTER (WHERE anio = 2010 AND edad NOT BETWEEN 10 AND 14) AS fuera_2010,
+               count(*) FILTER (WHERE anio = 2010 AND edad IS NULL) AS nulas_2010
+        FROM v
+   sin_edad  fuera_rango  validas_2010  filas_2010  fuera_2010  nulas_2010
+0      1835           95         58918       59329          15         396
+
+
+==============================================================================================================
+FEC-03 2010: relación edad-rendimiento
+==============================================================================================================
+
+-- SQL:
+SELECT anio,
+           round(avg(n_PMAT) FILTER (WHERE edad=12) - avg(n_PMAT) FILTER (WHERE edad=13), 2) AS pmat_12_13,
+           round(avg(n_PCAT) FILTER (WHERE edad=12) - avg(n_PCAT) FILTER (WHERE edad=13), 2) AS pcat_12_13,
+           round(100.0*count(*) FILTER (WHERE edad>12)/count(edad), 2) AS pct_mayor12_sobre_conedad,
+           round(100.0*count(*) FILTER (WHERE edad>12)/count(*), 2) AS pct_mayor12_sobre_todas,
+           round(100.0*count(*) FILTER (WHERE edad>12 AND gen='H')/count(edad) FILTER (WHERE gen='H'), 2) AS pct_h,
+           round(100.0*count(*) FILTER (WHERE edad>12 AND gen='D')/count(edad) FILTER (WHERE gen='D'), 2) AS pct_d,
+           round(100.0*count(*) FILTER (WHERE edad>12 AND nat='Pública')/count(edad) FILTER (WHERE nat='Pública'), 2) AS pct_pub,
+           round(100.0*count(*) FILTER (WHERE edad>12 AND nat='Privada')/count(edad) FILTER (WHERE nat='Privada'), 2) AS pct_priv,
+           round(avg(n_PMAT) FILTER (WHERE mes BETWEEN 1 AND 3) - avg(n_PMAT) FILTER (WHERE mes BETWEEN 10 AND 12), 2) AS pmat_t1_t4,
+           round(avg(n_PMAT) FILTER (WHERE nat='Privada') - avg(n_PMAT) FILTER (WHERE nat='Pública'), 2) AS pmat_priv_pub
+        FROM v GROUP BY 1 ORDER BY 1
+    anio  pmat_12_13  pcat_12_13  pct_mayor12_sobre_conedad  pct_mayor12_sobre_todas  pct_h  pct_d  pct_pub  pct_priv  pmat_t1_t4  pmat_priv_pub
+0   2009       14.60       14.75                       7.03                     6.97   7.80   6.22     7.93      5.61        3.00           4.58
+1   2010       -0.05        0.21                       9.18                     9.12   9.20   9.16     9.03      9.43        2.66           4.56
+2   2011       12.27       12.54                       6.61                     6.51   7.28   5.92     7.16      5.65        2.89           3.66
+3   2012       16.27       15.23                       6.63                     6.63   7.53   5.70     7.22      5.61        2.93           4.24
+4   2013       16.44       15.55                       6.67                     6.67   7.57   5.75     7.33      5.52        3.85           3.85
+5   2014       14.93       13.82                       6.35                     6.35   7.14   5.54     6.93      5.32        3.00           2.63
+6   2015       11.43       14.52                       5.68                     5.68   6.47   4.87     6.29      4.58        2.77           2.69
+7   2016       15.93       14.40                       5.52                     5.52   6.33   4.70     6.10      4.45        3.56           2.97
+8   2017       16.86       16.37                       5.46                     5.46   6.12   4.79     6.10      4.27        3.85           3.55
+9   2018       15.37       12.73                       5.10                     5.10   5.77   4.41     5.63      4.07        3.34           2.96
+10  2019       10.37       14.73                       4.94                     4.94   5.45   4.42     5.49      3.85        2.87           2.82
+11  2021       16.15       14.51                       4.37                     4.37   4.95   3.78     4.97      3.16        3.67           5.21
+12  2022       14.67       15.99                       3.84                     3.84   4.29   3.39     4.26      2.99        3.60           4.90
+13  2023       14.87       15.82                       3.32                     3.32   3.67   2.97     3.65      2.67        4.28           4.64
+14  2024       15.35       15.01                       2.83                     2.83   3.19   2.46     3.01      2.47        4.23           4.94
+15  2025       14.59       14.35                       2.60                     2.60   3.05   2.14     2.73      2.34        4.34           4.31
+
+
+-- SQL:
+SELECT anio, round(avg(n_PMAT) FILTER (WHERE mes BETWEEN 1 AND 3 AND edad = 12)
+                            - avg(n_PMAT) FILTER (WHERE mes BETWEEN 10 AND 12 AND edad = 12), 2) AS pmat_t1_t4_edad12
+        FROM v GROUP BY 1 ORDER BY 1
+    anio  pmat_t1_t4_edad12
+0   2009               2.31
+1   2010               2.64
+2   2011               2.41
+3   2012               2.38
+4   2013               3.20
+5   2014               2.43
+6   2015               2.38
+7   2016               3.04
+8   2017               3.13
+9   2018               2.89
+10  2019               2.53
+11  2021               3.13
+12  2022               3.11
+13  2023               3.87
+14  2024               3.88
+15  2025               4.00
+
+
+-- SQL:
+SELECT anio, min(d) AS min_dif_area, max(d) AS max_dif_area FROM (
+           SELECT anio, AREA_TERRITORIAL,
+                  round(avg(n_PMAT) FILTER (WHERE edad=12) - avg(n_PMAT) FILTER (WHERE edad=13), 2) AS d
+           FROM v WHERE anio IN (2009, 2010, 2011) GROUP BY ALL) GROUP BY 1 ORDER BY 1
+   anio  min_dif_area  max_dif_area
+0  2009         13.50         16.17
+1  2010         -1.34          2.00
+2  2011         10.87         13.31
+
+
+==============================================================================================================
+FEC-04 exceso de nacidos en enero
+==============================================================================================================
+
+-- SQL:
+WITH m AS (SELECT anio, mes, count(*) AS n FROM v WHERE mes IS NOT NULL GROUP BY ALL),
+             r AS (SELECT anio,
+                     max(n) FILTER (WHERE mes = 1) AS enero,
+                     avg(n) FILTER (WHERE mes IN (1,3,5,7,8,10,12)) AS media31_con_enero,
+                     avg(n) FILTER (WHERE mes IN (3,5,7,8,10,12)) AS media31_sin_enero
+                   FROM m GROUP BY 1)
+        SELECT anio, enero, round(media31_sin_enero, 1) AS m31_sin_ene,
+               round(100.0*(enero/media31_sin_enero - 1), 1) AS pct_exceso_sin,
+               round(enero - media31_sin_enero) AS exceso_sin,
+               round(100.0*(enero/media31_con_enero - 1), 1) AS pct_exceso_con,
+               round(enero - media31_con_enero) AS exceso_con
+        FROM r ORDER BY 1
+    anio  enero  m31_sin_ene  pct_exceso_sin  exceso_sin  pct_exceso_con  exceso_con
+0   2009   5493       4976.7            10.4       516.0             8.8       443.0
+1   2010   5165       4945.7             4.4       219.0             3.8       188.0
+2   2011   5227       5215.2             0.2        12.0             0.2        10.0
+3   2012   6327       5509.3            14.8       818.0            12.5       701.0
+4   2013   6504       5505.3            18.1       999.0            15.2       856.0
+5   2014   6166       5644.7             9.2       521.0             7.8       447.0
+6   2015   6322       5844.8             8.2       477.0             6.9       409.0
+7   2016   6221       5999.3             3.7       222.0             3.2       190.0
+8   2017   6141       6083.3             0.9        58.0             0.8        49.0
+9   2018   6195       6302.3            -1.7      -107.0            -1.5       -92.0
+10  2019   6403       6368.8             0.5        34.0             0.5        29.0
+11  2021   6232       6235.8            -0.1        -4.0            -0.1        -3.0
+12  2022   6212       6409.8            -3.1      -198.0            -2.7      -170.0
+13  2023   5998       6257.3            -4.1      -259.0            -3.6      -222.0
+14  2024   6085       5942.0             2.4       143.0             2.1       123.0
+15  2025   5932       5846.3             1.5        86.0             1.3        73.0
+
+
+-- SQL:
+SELECT count(*) AS filas_enero_en_2009_2012_2015 FROM v
+        WHERE mes = 1 AND anio IN (2009, 2012, 2013, 2014, 2015)
+   filas_enero_en_2009_2012_2015
+0                          30812
+
+
+==============================================================================================================
+EXTRA-1 filas completamente idénticas (todas las columnas salvo la línea)
+==============================================================================================================
+
+-- SQL:
+WITH g AS (SELECT "ANY", "CODI_ALUMNE", "PCAT", "PCAT_CL", "PCAT_EE", "PCAST", "PCAST_CL", "PCAST_EE", "PMAT", "PMAT_NC", "PMAT_EFM", "PMAT_CR", "PANG", "PANG_CO", "PANG_CE", "PFRAN", "PFRAN_CO", "PFRAN_CE", "PANG_EE", "PFRAN_EE", "PCAT_CO", "PCAST_CO", "PMED", "PMED_COMP1", "PMED_COMP2", "PMED_COMP3", "GENERE", "MES_NAIXEMENT", "ANY_NAIXEMENT", "AREA_TERRITORIAL", "NATURALESA", "HABITAT", count(*) AS n FROM d GROUP BY ALL HAVING count(*) > 1)
+         SELECT "ANY", CODI_ALUMNE IS NULL AS sin_codigo, count(*) AS grupos, sum(n) AS filas,
+                sum(n) - count(*) AS filas_sobrantes
+         FROM g GROUP BY ALL ORDER BY ALL
+    ANY  sin_codigo  grupos  filas  filas_sobrantes
+0  2009        True       3    6.0              3.0
+1  2011        True       2    4.0              2.0
+2  2012        True       2    4.0              2.0
+3  2014        True       4    8.0              4.0
+
+
+-- SQL:
+WITH g AS (SELECT "ANY", "CODI_ALUMNE", "PCAT", "PCAT_CL", "PCAT_EE", "PCAST", "PCAST_CL", "PCAST_EE", "PMAT", "PMAT_NC", "PMAT_EFM", "PMAT_CR", "PANG", "PANG_CO", "PANG_CE", "PFRAN", "PFRAN_CO", "PFRAN_CE", "PANG_EE", "PFRAN_EE", "PCAT_CO", "PCAST_CO", "PMED", "PMED_COMP1", "PMED_COMP2", "PMED_COMP3", "GENERE", "MES_NAIXEMENT", "ANY_NAIXEMENT", "AREA_TERRITORIAL", "NATURALESA", "HABITAT", count(*) AS n FROM d GROUP BY ALL HAVING count(*) > 1)
+         SELECT "ANY", n, (SELECT count(*) FROM (SELECT unnest([PCAT, PCAT_CL, PCAT_EE, PCAST, PCAST_CL, PCAST_EE, PMAT, PMAT_NC, PMAT_EFM, PMAT_CR, PANG, PANG_CO, PANG_CE, PFRAN, PFRAN_CO, PFRAN_CE, PANG_EE, PFRAN_EE, PCAT_CO, PCAST_CO, PMED, PMED_COMP1, PMED_COMP2, PMED_COMP3]) x) WHERE x IS NOT NULL) AS punt_informadas,
+                count(*) AS grupos
+         FROM g GROUP BY ALL ORDER BY "ANY", punt_informadas, n
+    ANY  n  punt_informadas  grupos
+0  2009  2               10       3
+1  2011  2                4       2
+2  2012  2                3       1
+3  2012  2                4       1
+4  2014  2               14       4
+
+
+-- SQL:
+WITH g AS (SELECT "ANY", "CODI_ALUMNE", "PCAT", "PCAT_CL", "PCAT_EE", "PCAST", "PCAST_CL", "PCAST_EE", "PMAT", "PMAT_NC", "PMAT_EFM", "PMAT_CR", "PANG", "PANG_CO", "PANG_CE", "PFRAN", "PFRAN_CO", "PFRAN_CE", "PANG_EE", "PFRAN_EE", "PCAT_CO", "PCAST_CO", "PMED", "PMED_COMP1", "PMED_COMP2", "PMED_COMP3", "GENERE", "MES_NAIXEMENT", "ANY_NAIXEMENT", "AREA_TERRITORIAL", "NATURALESA", "HABITAT", count(*) AS n, list(linea ORDER BY linea) AS lineas FROM d GROUP BY ALL HAVING count(*) > 1)
+         SELECT "ANY", lineas, PCAT, PCAST, PMAT, PANG, GENERE, MES_NAIXEMENT, ANY_NAIXEMENT,
+                AREA_TERRITORIAL, NATURALESA, HABITAT FROM g ORDER BY 1, 2
+     ANY              lineas   PCAT  PCAST    PMAT   PANG GENERE MES_NAIXEMENT ANY_NAIXEMENT                  AREA_TERRITORIAL NATURALESA            HABITAT
+0   2009  [1048388, 1053219]  95,18  91,46  100,00    NaN      H             1          1997  Consorci d'Educació de Barcelona     Privat      Més de 100000
+1   2009  [1087939, 1088654]   0,00   0,00    0,00    NaN      H             2          1997                            Girona     Privat  De 10001 a 100000
+2   2009  [1099093, 1099294]  97,59  96,34   95,18    NaN      H             5          1997                         Tarragona     Privat      Més de 100000
+3   2011    [970871, 972169]    NaN    NaN  100,00    NaN      D             6          1999                            Girona     Públic       Fins a 10000
+4   2011    [970874, 970882]    NaN    NaN  100,00    NaN      H            10          1999                            Girona     Públic       Fins a 10000
+5   2012    [858648, 903730]    NaN    NaN     NaN  61,80      H             1          2000  Consorci d'Educació de Barcelona     Públic      Més de 100000
+6   2012    [894288, 899424]    NaN    NaN  100,00    NaN      D            11          2000  Consorci d'Educació de Barcelona     Públic      Més de 100000
+7   2014    [723498, 767517]  95,91  95,91  100,00  98,61      D             3          2002                            Girona     Privat  De 10001 a 100000
+8   2014    [754761, 773292]  95,91  95,91  100,00  98,61      D             2          2002                            Lleida     Públic       Fins a 10000
+9   2014    [758904, 758908]  95,91  95,49  100,00  98,61      D             1          2002                            Girona     Privat  De 10001 a 100000
+10  2014    [764243, 764248]  93,64  93,22  100,00  96,23      D            11          2002  Consorci d'Educació de Barcelona     Privat      Més de 100000
+
+
+==============================================================================================================
+EXTRA-2 relación GENERE-puntuación por año (¿2010 también desordenado?)
+==============================================================================================================
+
+-- SQL:
+SELECT anio,
+           round(avg(n_PCAT) FILTER (WHERE gen='D') - avg(n_PCAT) FILTER (WHERE gen='H'), 2) AS pcat_d_menos_h,
+           round(avg(n_PCAST) FILTER (WHERE gen='D') - avg(n_PCAST) FILTER (WHERE gen='H'), 2) AS pcast_d_menos_h,
+           round(avg(n_PMAT) FILTER (WHERE gen='H') - avg(n_PMAT) FILTER (WHERE gen='D'), 2) AS pmat_h_menos_d,
+           round(100.0*count(*) FILTER (WHERE gen='D')/count(*), 2) AS pct_d
+        FROM v GROUP BY 1 ORDER BY 1
+    anio  pcat_d_menos_h  pcast_d_menos_h  pmat_h_menos_d  pct_d
+0   2009            2.98             3.74            2.92  48.97
+1   2010            0.41             3.30            4.08  48.59
+2   2011            4.07             4.22            3.18  49.41
+3   2012            3.27             2.21            3.96  49.21
+4   2013            2.74             2.46            2.27  49.36
+5   2014            2.57             2.50            1.77  49.45
+6   2015            2.36             3.12            1.20  49.33
+7   2016            3.28             3.56            2.52  49.55
+8   2017            4.35             0.35            3.67  49.44
+9   2018            3.04             3.43            2.65  49.45
+10  2019            3.63             3.94            1.84  49.57
+11  2021            3.61             2.60            1.16  49.10
+12  2022            4.35             3.20            0.82  49.35
+13  2023            4.16             3.10            3.71  49.66
+14  2024            3.27             2.34            2.98  49.83
+15  2025            3.98             4.35            4.59  49.54
+
+
+==============================================================================================================
+EXTRA-3 relación ÁREA-puntuación en 2009-2011 (¿el área de 2010 es fiable?)
+==============================================================================================================
+
+-- SQL:
+PIVOT (SELECT anio, AREA_TERRITORIAL AS area, n_PMAT FROM v WHERE anio BETWEEN 2008 AND 2012)
+        ON anio USING round(avg(n_PMAT), 2) GROUP BY area ORDER BY area
+                               area   2009   2010   2011   2012
+0                    Baix Llobregat  77.54  77.12  81.26  79.59
+1               Barcelona Comarques  75.80  75.63  78.55  77.91
+2                 Catalunya Central  78.44  79.36  80.98  80.03
+3  Consorci d'Educació de Barcelona  80.30  80.45  82.33  82.46
+4                            Girona  76.51  77.35  79.58  79.59
+5                            Lleida  78.60  79.17  82.32  81.77
+6         Maresme - Vallès Oriental  78.29  78.57  81.70  79.85
+7                         Tarragona  77.16  77.57  80.07  80.17
+8                  Terres de l'Ebre  79.11  78.89  81.87  82.66
+9                 Vallès Occidental  77.70  77.78  80.39  79.86
+
+
+-- SQL:
+PIVOT (SELECT anio, AREA_TERRITORIAL AS area, (nat = 'Privada')::INT AS priv FROM v
+               WHERE anio BETWEEN 2009 AND 2011)
+        ON anio USING round(100.0 * avg(priv), 1) GROUP BY area ORDER BY area
+                               area  2009  2010  2011
+0                    Baix Llobregat  32.2  32.3  30.4
+1               Barcelona Comarques  42.2  40.6  39.0
+2                 Catalunya Central  34.3  35.5  32.9
+3  Consorci d'Educació de Barcelona  62.9  62.1  61.9
+4                            Girona  26.7  25.9  25.8
+5                            Lleida  29.6  28.9  28.4
+6         Maresme - Vallès Oriental  31.9  31.3  29.8
+7                         Tarragona  29.9  28.7  28.9
+8                  Terres de l'Ebre  12.8  12.5  12.8
+9                 Vallès Occidental  40.7  39.1  38.5
+
+
+-- SQL:
+PIVOT (SELECT anio, AREA_TERRITORIAL AS area FROM v WHERE anio BETWEEN 2009 AND 2012)
+        ON anio USING count(*) GROUP BY area ORDER BY area
+                               area   2009   2010   2011   2012
+0                    Baix Llobregat   6285   6543   6916   7271
+1               Barcelona Comarques   6541   6549   6833   7276
+2                 Catalunya Central   4316   4263   4623   4694
+3  Consorci d'Educació de Barcelona  11471  11314  11919  12047
+4                            Girona   6042   6047   6147   6614
+5                            Lleida   3194   3290   3440   3525
+6         Maresme - Vallès Oriental   7093   7058   7760   8352
+7                         Tarragona   4840   5084   5215   5665
+8                  Terres de l'Ebre   1519   1491   1481   1534
+9                 Vallès Occidental   7762   7690   8262   8760
+
+
+==============================================================================================================
+EXTRA-4 edad 'calendario' vs edad a la fecha de la prueba
+==============================================================================================================
+
+-- SQL:
+SELECT anio, mes, count(*) FILTER (WHERE edad = 12) AS edad12 FROM v
+        WHERE anio = 2023 GROUP BY ALL ORDER BY ALL
+    anio  mes  edad12
+0   2023    1    5857
+1   2023    2    5644
+2   2023    3    6238
+3   2023    4    5665
+4   2023    5    6006
+5   2023    6    5691
+6   2023    7    6096
+7   2023    8    6151
+8   2023    9    6032
+9   2023   10    5979
+10  2023   11    5882
+11  2023   12    5654
+
+
+==============================================================================================================
+EXTRA-5 valores de AREA_TERRITORIAL en bruto (variantes de escritura)
+==============================================================================================================
+
+-- SQL:
+SELECT AREA_TERRITORIAL, length(AREA_TERRITORIAL) AS len, count(*) AS filas,
+               min(anio) desde, max(anio) hasta FROM v GROUP BY 1, 2 ORDER BY 1
+                    AREA_TERRITORIAL   len   filas  desde  hasta
+0                 Alt Pirineu i Aran    18    1070   2024   2025
+1                     Baix Llobregat    14  124595   2009   2025
+2                Barcelona Comarques    19  111787   2009   2024
+3                         Barcelonès    10    5408   2025   2025
+4                  Catalunya Central    17   78550   2009   2025
+5   Consorci d'Educació de Barcelona    32  193977   2009   2025
+6                             Girona     6  112368   2009   2025
+7                             Lleida     6   58507   2009   2025
+8          Maresme - Vallès Oriental    25  137016   2009   2025
+9                            Penedès     7    9380   2024   2025
+10                         Tarragona     9   93891   2009   2025
+11                  Terres de l'Ebre    16   24673   2009   2025
+12                 Vallès Occidental    17  151101   2009   2025
+13                               NaN  <NA>       1   2024   2024
+
+
+==============================================================================================================
+EXTRA-6 repetidores: fecha incoherente explicada por mes=1 en 2016
+==============================================================================================================
+
+-- SQL:
+SELECT a1, m1 = 1 AS mes1_en_primer_anio, an1 = an2 AS mismo_anio_nac, m1 = m2 AS mismo_mes, count(*)
+        FROM pares WHERE g1 = g2 GROUP BY ALL ORDER BY ALL
+      a1  mes1_en_primer_anio  mismo_anio_nac  mismo_mes  count_star()
+0   2016                False            True       True           263
+1   2016                 True           False      False             1
+2   2016                 True            True      False             3
+3   2016                 True            True       True            13
+4   2017                False            True      False             1
+5   2017                False            True       True           204
+6   2017                 True            True       True            10
+7   2018                False            True       True           172
+8   2018                 True            True       True            17
+9   2021                False            True       True            98
+10  2021                 True            True       True             4
+11  2022                False            True       True            52
+12  2022                 True            True       True             1
+13  2023                False            True       True            29
+14  2024                False            True       True            39
+15  2024                 True            True       True             4
+
+
+==============================================================================================================
+EXTRA-7 HAB-01: ¿los repetidores que siguen en la misma área conservan la categoría de hábitat?
+==============================================================================================================
+
+-- SQL:
+SELECT p.a1, p.a2, count(*) AS pares_misma_area_nat,
+               count(*) FILTER (WHERE x.hab = y.hab) AS mismo_hab,
+               round(100.0 * count(*) FILTER (WHERE x.hab = y.hab) / count(*), 1) AS pct
+        FROM pares p JOIN v x ON x.linea = p.l1 JOIN v y ON y.linea = p.l2
+        WHERE p.ar1 = p.ar2 AND p.n1 = p.n2 GROUP BY ALL ORDER BY ALL
+     a1    a2  pares_misma_area_nat  mismo_hab    pct
+0  2016  2017                   268        264   98.5
+1  2017  2018                   202        199   98.5
+2  2018  2019                   181        180   99.4
+3  2021  2022                    94         94  100.0
+4  2022  2023                    52         52  100.0
+5  2023  2024                    22         21   95.5
+6  2024  2025                    36         36  100.0
+
+
+-- SQL:
+SELECT y.HABITAT AS hab_2024, x.HABITAT AS hab_2023, count(*)
+        FROM pares p JOIN v x ON x.linea = p.l1 JOIN v y ON y.linea = p.l2
+        WHERE p.a2 = 2024 AND p.ar1 = p.ar2 GROUP BY ALL ORDER BY ALL
+            hab_2024           hab_2023  count_star()
+0  De 10001 a 100000  De 10001 a 100000             7
+1  De 10001 a 100000       Fins a 10000             1
+2       Fins a 10244       Fins a 10000             1
+3       Fins a 10278       Fins a 10000             1
+4       Fins a 11818       Fins a 10000             1
+5       Fins a 22564       Fins a 10000             1
+6      Més de 100001      Més de 100000            11
+
+
+==============================================================================================================
+EXTRA-8 2014: las 29 filas Baix Llobregat 'Més de 100000'
+==============================================================================================================
+
+-- SQL:
+SELECT nat, CODI_ALUMNE IS NULL AS sin_cod, min(linea), max(linea), count(*) FROM v
+        WHERE anio = 2014 AND AREA_TERRITORIAL = 'Baix Llobregat' AND hab = 3 GROUP BY ALL
+       nat  sin_cod  min(linea)  max(linea)  count_star()
+0  Privada     True      786241      786269            29
+
+
+==============================================================================================================
+EXTRA-9 2010: ¿qué columna está desordenada? área x naturaleza y área x puntuación
+==============================================================================================================
+
+-- SQL:
+WITH a AS (SELECT anio, AREA_TERRITORIAL area, avg(n_PMAT) m FROM v WHERE anio BETWEEN 2009 AND 2011 GROUP BY ALL)
+        SELECT round(corr(x.m, y.m), 3) AS corr_area_pmat_2009_2010,
+               round(corr(x.m, z.m), 3) AS corr_area_pmat_2009_2011,
+               round(corr(y.m, z.m), 3) AS corr_area_pmat_2010_2011
+        FROM a x JOIN a y ON x.area = y.area AND x.anio = 2009 AND y.anio = 2010
+                 JOIN a z ON z.area = x.area AND z.anio = 2011
+   corr_area_pmat_2009_2010  corr_area_pmat_2009_2011  corr_area_pmat_2010_2011
+0                     0.945                     0.913                     0.853
+

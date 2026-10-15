@@ -1,0 +1,352 @@
+filas cargadas: 1102324
+
+====================================================================================================
+A. PMED: ¿media simple o pesos oficiales 42/25/33 (Quadern 68, Taula 3)?
+====================================================================================================
+
+-- SQL:
+SELECT anio, count(*) n,
+  count(*) FILTER (WHERE abs(PMED/100.0 - (PMED_COMP1+PMED_COMP2+PMED_COMP3)/300.0) <= 0.115) ok_simple,
+  count(*) FILTER (WHERE abs(PMED/100.0 - (0.42*PMED_COMP1+0.25*PMED_COMP2+0.33*PMED_COMP3)/100.0) <= 0.115) ok_42_25_33,
+  round(avg(abs(PMED/100.0 - (0.42*PMED_COMP1+0.25*PMED_COMP2+0.33*PMED_COMP3)/100.0)), 3) err_medio_oficial
+FROM tc WHERE PMED IS NOT NULL AND PMED_COMP1 IS NOT NULL AND PMED_COMP2 IS NOT NULL AND PMED_COMP3 IS NOT NULL
+GROUP BY 1 ORDER BY 1
+   anio      n  ok_simple  ok_42_25_33  err_medio_oficial
+0  2018  72648      72648         3916              1.618
+1  2019  73167      73167         3467              1.415
+2  2021  71762      71762         4861              1.561
+3  2022  72436      72436         6315              1.368
+4  2023  71221      71221         5208              1.498
+5  2024  69002      69002         4000              1.392
+6  2025  66509      66509         4292              1.320
+
+====================================================================================================
+B. Umbrales fijos frente a % oficiales por nivel (baix / mitjà-baix / mitjà-alt / alt)
+====================================================================================================
+
+Cortes implícitos en el CSV que reproducen los % oficiales (primer valor observado en cada corte):
+   materia  anio  n_csv  corte_bajo  corte_medio  corte_alto
+0     PCAT  2018  72464       60.05        71.04       84.02
+1    PCAST  2018  72956       63.59        75.55       86.36
+2     PANG  2018  72612       56.67        74.17       87.92
+3     PMAT  2018  72939       57.03        74.90       89.04
+4     PMED  2018  72648       50.08        68.11       84.24
+5     PCAT  2019  72936       58.11        70.58       84.02
+6    PCAST  2019  73546       56.29        72.02       85.96
+7     PANG  2019  73253       55.00        73.33       90.00
+8     PMAT  2019  73339       62.02        74.90       89.04
+9     PMED  2019  73167       50.30        67.86       83.93
+10    PCAT  2021  71655       58.16        70.56       85.00
+11   PCAST  2021  72199       58.51        71.92       84.34
+12    PANG  2021  71847       52.08        70.42       88.33
+13    PMAT  2021  72136       55.94        72.44       90.22
+14    PMED  2021  71762       55.42        72.64       85.69
+15    PCAT  2022  72584       56.70        70.70       85.10
+16   PCAST  2022  73024       58.40        71.70       84.30
+17    PANG  2022  72913       54.60        72.50       87.90
+18    PMAT  2022  73074       53.94        68.94       85.61
+19    PMED  2022  72436       51.11        70.28       85.83
+20    PCAT  2023  70801       56.60        70.60       84.90
+21   PCAST  2023  71117       56.10        70.70       85.60
+22    PANG  2023  71323       56.08        71.00       89.33
+23    PMAT  2023  71497       50.70        69.90       89.70
+24    PMED  2023  71221       50.14        70.14       85.69
+25    PCAT  2024  68729       56.36        70.98       85.68
+26   PCAST  2024  70380       55.98        70.71       85.63
+27    PANG  2024  68392       53.33        68.75       88.75
+28    PMAT  2024  69836       50.63        70.38       90.50
+29    PMED  2024  69002       55.83        70.55       85.20
+30    PCAT  2025  66151       56.10        70.80       85.40
+31   PCAST  2025  67212       56.10        70.70       85.40
+32    PANG  2025  66813       52.92        68.33       88.33
+33    PMAT  2025  66995       50.30        69.87       89.43
+34    PMED  2025  66509       52.02        68.47       85.20
+
+Resumen de cortes implícitos:
+       corte_bajo  corte_medio  corte_alto
+count       35.00        35.00       35.00
+mean        55.23        71.04       86.62
+std          3.36         1.90        2.09
+min         50.08        67.86       83.93
+25%         52.50        70.21       85.15
+50%         55.98        70.70       85.69
+75%         56.68        71.97       88.54
+max         63.59        75.55       90.50
+
+Detalle 50/70/85 (CSV frente a oficial, 2018-2025):
+   materia  anio  bajo    mb    ma  alto  of_bajo  of_mb  of_ma  of_alto  dif_bajo
+31    PANG  2018  10.2  19.3  29.0  41.4     15.9   19.7   31.5     32.9      -5.7
+33    PANG  2019  11.1  18.7  22.0  48.3     15.4   19.1   27.5     38.0      -4.3
+17    PANG  2021  16.7  21.8  23.9  37.6     18.7   21.1   28.4     31.8      -2.0
+8     PANG  2022  10.9  21.1  24.1  43.8     15.2   20.9   26.5     37.3      -4.3
+12    PANG  2023   9.0  19.5  26.9  44.6     13.8   16.1   38.5     31.6      -4.8
+19    PANG  2024  11.4  27.5  29.2  31.9     15.4   22.0   39.2     23.4      -4.0
+6     PANG  2025  10.4  24.7  25.5  39.4     13.6   19.6   34.8     32.0      -3.2
+13   PCAST  2018   4.2  19.7  45.2  30.8     13.9   23.2   38.6     24.3      -9.7
+24   PCAST  2019   9.8  23.1  35.6  31.4     14.8   22.0   35.2     28.0      -5.0
+5    PCAST  2021   7.5  26.7  42.1  23.7     15.0   23.8   36.2     25.0      -7.5
+0    PCAST  2022   7.7  25.4  42.0  24.9     15.0   22.4   36.2     26.4      -7.3
+28   PCAST  2023  11.4  26.9  37.3  24.4     17.2   22.6   37.0     23.2      -5.8
+4    PCAST  2024   9.6  23.5  39.3  27.5     14.2   20.3   39.1     26.4      -4.6
+18   PCAST  2025   7.2  18.9  40.1  33.8     10.5   16.9   40.6     32.0      -3.3
+3     PCAT  2018   5.8  28.6  44.7  20.8     15.3   21.8   40.2     22.7      -9.5
+27    PCAT  2019   6.5  24.1  39.4  30.0     12.8   19.0   35.3     32.9      -6.3
+25    PCAT  2021   6.7  20.6  37.6  35.0     12.3   16.1   36.6     35.0      -5.6
+29    PCAT  2022  10.4  27.4  37.6  24.6     16.6   22.5   36.3     24.6      -6.2
+23    PCAT  2023  11.6  24.8  36.7  26.9     17.5   20.1   35.5     26.9      -5.9
+26    PCAT  2024   9.6  22.2  36.5  31.7     14.2   19.3   36.2     30.4      -4.6
+15    PCAT  2025  10.4  23.8  37.8  28.0     15.3   20.6   37.3     26.8      -4.9
+11    PMAT  2018   6.7  17.9  30.3  45.0     10.9   21.7   33.2     34.2      -4.2
+21    PMAT  2019   0.7  27.1  39.3  32.8     13.0   24.3   40.4     22.3     -12.3
+7     PMAT  2021  10.4  21.0  30.0  38.6     14.9   20.1   39.3     25.8      -4.5
+16    PMAT  2022  12.8  28.4  35.9  22.9     16.5   22.1   40.2     21.2      -3.7
+32    PMAT  2023  11.8  24.9  31.9  31.5     12.5   24.1   43.8     19.6      -0.7
+9     PMAT  2024  11.8  23.6  29.7  34.9     12.2   23.3   43.1     21.4      -0.4
+1     PMAT  2025  17.2  26.9  27.8  28.2     17.5   26.5   38.0     18.0      -0.3
+14    PMED  2018  14.9  28.7  33.2  23.2     15.0   24.7   35.6     24.7      -0.1
+10    PMED  2019  15.2  34.3  34.2  16.2     15.7   29.3   36.3     18.7      -0.5
+22    PMED  2021   7.6  22.5  38.9  31.0     11.5   23.6   35.3     29.6      -3.9
+34    PMED  2022  12.2  26.3  31.6  29.8     13.2   25.6   33.5     27.7      -1.0
+30    PMED  2023  15.2  25.6  29.5  29.7     15.5   25.7   30.9     27.9      -0.3
+20    PMED  2024   9.4  24.1  35.8  30.8     14.0   20.4   35.9     29.7      -4.6
+2     PMED  2025  19.8  34.4  29.4  16.4     22.6   28.5   32.8     16.1      -2.8
+
+Detalle 55/70/85 (CSV frente a oficial, 2018-2025):
+   materia  anio  bajo    mb    ma  alto  of_bajo  of_mb  of_ma  of_alto  dif_bajo
+31    PANG  2018  14.1  15.4  29.0  41.4     15.9   19.7   31.5     32.9      -1.8
+18    PANG  2019  15.1  14.7  22.0  48.3     15.4   19.1   27.5     38.0      -0.3
+14    PANG  2021  21.7  16.8  23.9  37.6     18.7   21.1   28.4     31.8       3.0
+24    PANG  2022  15.2  16.8  24.1  43.8     15.2   20.9   26.5     37.3       0.0
+3     PANG  2023  12.6  15.9  26.9  44.6     13.8   16.1   38.5     31.6      -1.2
+13    PANG  2024  17.2  21.7  29.2  31.9     15.4   22.0   39.2     23.4       1.8
+8     PANG  2025  15.4  19.7  25.5  39.4     13.6   19.6   34.8     32.0       1.8
+12   PCAST  2018   6.6  17.4  45.2  30.8     13.9   23.2   38.6     24.3      -7.3
+29   PCAST  2019  13.6  19.4  35.6  31.4     14.8   22.0   35.2     28.0      -1.2
+7    PCAST  2021  11.3  22.9  42.1  23.7     15.0   23.8   36.2     25.0      -3.7
+1    PCAST  2022  11.5  21.6  42.0  24.9     15.0   22.4   36.2     26.4      -3.5
+21   PCAST  2023  16.1  22.2  37.3  24.4     17.2   22.6   37.0     23.2      -1.1
+9    PCAST  2024  13.3  19.8  39.3  27.5     14.2   20.3   39.1     26.4      -0.9
+16   PCAST  2025   9.8  16.2  40.1  33.8     10.5   16.9   40.6     32.0      -0.7
+11    PCAT  2018   9.6  24.9  44.7  20.8     15.3   21.8   40.2     22.7      -5.7
+20    PCAT  2019   9.9  20.6  39.4  30.0     12.8   19.0   35.3     32.9      -2.9
+33    PCAT  2021   9.8  17.5  37.6  35.0     12.3   16.1   36.6     35.0      -2.5
+17    PCAT  2022  14.9  23.0  37.6  24.6     16.6   22.5   36.3     24.6      -1.7
+30    PCAT  2023  15.9  20.5  36.7  26.9     17.5   20.1   35.5     26.9      -1.6
+34    PCAT  2024  13.1  18.8  36.5  31.7     14.2   19.3   36.2     30.4      -1.1
+28    PCAT  2025  14.2  20.0  37.8  28.0     15.3   20.6   37.3     26.8      -1.1
+2     PMAT  2018   9.7  15.0  30.3  45.0     10.9   21.7   33.2     34.2      -1.2
+4     PMAT  2019   4.4  23.4  39.3  32.8     13.0   24.3   40.4     22.3      -8.6
+25    PMAT  2021  14.3  17.1  30.0  38.6     14.9   20.1   39.3     25.8      -0.6
+15    PMAT  2022  17.9  23.3  35.9  22.9     16.5   22.1   40.2     21.2       1.4
+32    PMAT  2023  16.4  20.3  31.9  31.5     12.5   24.1   43.8     19.6       3.9
+23    PMAT  2024  16.0  19.4  29.7  34.9     12.2   23.3   43.1     21.4       3.8
+0     PMAT  2025  22.7  21.4  27.8  28.2     17.5   26.5   38.0     18.0       5.2
+27    PMED  2018  20.2  23.4  33.2  23.2     15.0   24.7   35.6     24.7       5.2
+26    PMED  2019  21.9  27.6  34.2  16.2     15.7   29.3   36.3     18.7       6.2
+6     PMED  2021  11.1  19.0  38.9  31.0     11.5   23.6   35.3     29.6      -0.4
+19    PMED  2022  16.9  21.6  31.6  29.8     13.2   25.6   33.5     27.7       3.7
+22    PMED  2023  20.1  20.8  29.5  29.7     15.5   25.7   30.9     27.9       4.6
+5     PMED  2024  13.2  20.3  35.8  30.8     14.0   20.4   35.9     29.7      -0.8
+10    PMED  2025  26.9  27.3  29.4  16.4     22.6   28.5   32.8     16.1       4.3
+
+Error absoluto medio (puntos porcentuales) frente a los % oficiales, 35 materia-año 2018-2025:
+     cortes  MAE_bajo  sesgo_bajo  MAE_mb  MAE_ma  MAE_alto  sesgo_alto  bajo_min  bajo_max
+0  50/70/85      4.39       -4.39    2.97    4.18      4.75        4.09       0.7      19.8
+1  55/70/85      2.70       -0.14    2.29    4.18      4.75        4.09       4.4      26.9
+2  60/70/85      5.57        5.22    7.17    4.18      4.75        4.09      10.3      35.0
+3  55/70/90      2.70       -0.14    2.29   10.80      8.91       -8.85       4.4      26.9
+4  60/70/90      5.57        5.22    7.17   10.80      8.91       -8.85      10.3      35.0
+
+====================================================================================================
+C. % por nivel con los umbrales propuestos 55/70/85 (2009-2025, globales corregidas)
+====================================================================================================
+
+-- SQL:
+SELECT materia, count(*) n,
+  round(100.0*count(*) FILTER (WHERE x <  5500)/count(*), 1) bajo,
+  round(100.0*count(*) FILTER (WHERE x >= 5500 AND x < 7000)/count(*), 1) medio_bajo,
+  round(100.0*count(*) FILTER (WHERE x >= 7000 AND x < 8500)/count(*), 1) medio_alto,
+  round(100.0*count(*) FILTER (WHERE x >= 8500)/count(*), 1) alto
+FROM globales GROUP BY ROLLUP (materia) ORDER BY materia NULLS LAST
+  materia        n  bajo  medio_bajo  medio_alto  alto
+0    PANG  1019666  15.8        18.1        26.5  39.5
+1   PCAST  1084355  11.6        21.0        40.4  27.1
+2    PCAT  1078135  11.4        20.6        38.6  29.4
+3   PFRAN     5130  14.7        26.5        35.0  23.9
+4    PMAT  1085820  11.6        18.0        31.6  38.9
+5    PMED   496745  18.6        22.8        33.2  25.3
+6     NaN  4769851  13.2        19.8        34.3  32.8
+
+-- SQL:
+PIVOT (SELECT materia, anio, round(100.0*count(*) FILTER (WHERE x < 5500)/count(*), 1) pct_bajo
+        FROM globales GROUP BY 1, 2) ON anio USING first(pct_bajo) GROUP BY materia ORDER BY materia
+  materia  2009  2010  2011  2012  2013  2014  2015  2016  2017  2018  2019  2021  2022  2023  2024  2025
+0    PANG   NaN  23.6   6.7  14.0  19.1  16.3  21.6  15.7   9.7  14.1  15.1  21.7  15.2  12.6  17.2  15.4
+1   PCAST  12.4  16.5  12.1   9.1  11.7   8.6   7.9  10.0  14.9   6.6  13.6  11.3  11.5  16.1  13.3   9.8
+2    PCAT   9.0  13.2   7.7   7.5  15.2   8.7  10.9  11.2  11.2   9.6   9.9   9.8  14.9  15.9  13.1  14.2
+3   PFRAN   NaN   7.0   9.9  13.4  17.4  24.8  26.1  16.5   7.7  18.6  15.6   9.6   0.6   8.7  29.7  21.8
+4    PMAT   8.4   9.3   6.7  10.6  13.6   8.0   2.8  11.2  11.9   9.7   4.4  14.3  17.9  16.4  16.0  22.7
+5    PMED   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN   NaN  20.2  21.9  11.1  16.9  20.1  13.2  26.9
+
+-- SQL:
+SELECT round(100.0*count(*) FILTER (WHERE x < 5500)/count(*), 1) pct_bajo_55,
+  round(100.0*count(*) FILTER (WHERE x < 5000)/count(*), 1) pct_bajo_50 FROM globales
+   pct_bajo_55  pct_bajo_50
+0         13.2          9.1
+
+-- SQL:
+SELECT 'PANG 2015 global = 48,79' caso, count(*) FILTER (WHERE x = 4879) n_suelo,
+        count(*) FILTER (WHERE x < 5500) n_bajo_55, count(*) n FROM globales WHERE materia='PANG' AND anio=2015
+UNION ALL SELECT 'PMAT 2016 global = 59,20', count(*) FILTER (WHERE x = 5920), count(*) FILTER (WHERE x < 5500), count(*)
+        FROM globales WHERE materia='PMAT' AND anio=2016
+                       caso  n_suelo  n_bajo_55      n
+0  PANG 2015 global = 48,79     8801      14733  68342
+1  PMAT 2016 global = 59,20      251       7898  70426
+
+====================================================================================================
+D. FlagGlobalIncoherente con tolerancia única 0,115 en 2011-2025
+====================================================================================================
+pesos estimados PMAT 2011: [0.36 0.35 0.29]
+pesos estimados PMAT 2012: [0.35 0.33 0.32]
+   materia  anio  n_evaluable  fuera_0115
+4     PANG  2015        68342       23427
+10    PANG  2022        72913       13228
+19   PCAST  2016        70227           1
+20   PCAST  2017        71036         658
+24   PCAST  2022        73024       12000
+28    PCAT  2011        61191           1
+38    PCAT  2022        72584           1
+42   PFRAN  2011          505          30
+52   PFRAN  2022          319         145
+56    PMAT  2011        61746           1
+61    PMAT  2016        70426         248
+total filas marcadas (2011-2025, tolerancia 0,115): 49740
+total globales evaluables: 4359515
+
+====================================================================================================
+E. Recuentos de flags de calidad propuestos
+====================================================================================================
+
+-- SQL:
+SELECT
+  count(*) FILTER (WHERE (codi IS NULL AND anio IN (2016, 2018))
+                      OR (anio = 2016 AND anio_nac = 2001 AND mes = 1)) fecha_nac_dudosa,
+  count(*) FILTER (WHERE codi IS NULL AND anio IN (2016, 2018)) sin_codigo_2016_2018,
+  count(*) FILTER (WHERE anio = 2016 AND anio_nac = 2001 AND mes = 1) relleno_1_2001,
+  count(*) FILTER (WHERE anio = 2016 AND anio_nac = 2001 AND mes = 1 AND codi IS NOT NULL) relleno_con_codigo,
+  count(*) FILTER (WHERE mes = 1 AND anio IN (2009, 2012, 2013, 2014, 2015)) mes_dudoso_enero,
+  count(*) FILTER (WHERE anio = 2010) filas_2010,
+  count(*) FILTER (WHERE anio = 2014 AND area = 'Baix Llobregat' AND habitat = 'Més de 100000') bll_2014
+FROM tc
+   fecha_nac_dudosa  sin_codigo_2016_2018  relleno_1_2001  relleno_con_codigo  mes_dudoso_enero  filas_2010  bll_2014
+0                83                    58              41                  25             30812       59329        29
+
+-- SQL:
+SELECT
+  count(PANG_EE) FILTER (WHERE anio = 2015) pang_ee_2015,
+  count(PANG_CO) FILTER (WHERE anio = 2015) pang_co_2015,
+  count(PANG_CE) FILTER (WHERE anio = 2015) pang_ce_2015,
+  count(*) FILTER (WHERE anio = 2015 AND PANG = 4879) pang_2015_suelo,
+  count(*) FILTER (WHERE anio = 2015 AND PANG_CO = 5319) pang_co_2015_suelo,
+  count(*) FILTER (WHERE anio = 2015 AND PANG_CE = 4500) pang_ce_2015_suelo,
+  count(PCAT_EE) FILTER (WHERE anio = 2018) pcat_ee_2018,
+  count(*) FILTER (WHERE anio = 2018 AND PCAT_EE = 4940) pcat_ee_2018_suelo,
+  count(PANG_CO) FILTER (WHERE anio = 2016) + count(PANG_CE) FILTER (WHERE anio = 2016)
+    + count(PANG_EE) FILTER (WHERE anio = 2016) pang_subs_2016,
+  count(PANG_EE) FILTER (WHERE anio = 2013) pang_ee_2013,
+  count(PANG_EE) FILTER (WHERE anio = 2014) pang_ee_2014,
+  count(PANG_CO) FILTER (WHERE anio = 2011) pang_co_2011,
+  count(PCAT_CL) FILTER (WHERE anio = 2011) pcat_cl_2011,
+  count(*) FILTER (WHERE anio = 2016 AND PMAT = 5920) pmat_2016_5920
+FROM tc
+   pang_ee_2015  pang_co_2015  pang_ce_2015  pang_2015_suelo  pang_co_2015_suelo  pang_ce_2015_suelo  pcat_ee_2018  pcat_ee_2018_suelo  pang_subs_2016  pang_ee_2013  pang_ee_2014  pang_co_2011  pcat_cl_2011  pmat_2016_5920
+0         68342         68342         68342             8801                8655                7554         72464               10093          209955         64440         65787         61013         61191             251
+
+-- SQL:
+SELECT
+  count(PANG_EE) FILTER (WHERE anio = 2015) + count(PANG_CO) FILTER (WHERE anio = 2015)
+  + count(PANG_CE) FILTER (WHERE anio = 2015) pang_subs_2015,
+  count(PANG_EE) FILTER (WHERE anio BETWEEN 2013 AND 2016) pang_ee_2013_2016,
+  count(PFRAN) + count(PFRAN_CO) + count(PFRAN_CE) + count(PFRAN_EE) celdas_frances
+FROM tc
+   pang_subs_2015  pang_ee_2013_2016  celdas_frances
+0          205026             268554           19256
+
+====================================================================================================
+F. Cardinalidad estimada de las dimensiones tras la limpieza
+====================================================================================================
+
+-- SQL:
+SELECT count(*) FILTER (WHERE genero IS NULL) genero_sin_mapear,
+  count(*) FILTER (WHERE naturaleza IS NULL) naturaleza_sin_mapear,
+  count(*) FILTER (WHERE habitat_cod IS NULL) habitat_sin_mapear FROM lim
+   genero_sin_mapear  naturaleza_sin_mapear  habitat_sin_mapear
+0                  0                      0                   0
+
+-- SQL:
+SELECT count(*) combinaciones_contexto FROM (SELECT DISTINCT area_original, area_perimetro, naturaleza,
+  habitat_cod, habitat_incoherente_2014 FROM lim)
+   combinaciones_contexto
+0                      86
+
+-- SQL:
+SELECT count(*) combinaciones_perfil FROM (SELECT DISTINCT genero, mes, edad, situacion_edad FROM lim)
+   combinaciones_perfil
+0                   169
+
+-- SQL:
+SELECT situacion_edad, count(*) filas FROM lim GROUP BY 1 ORDER BY 2 DESC
+      situacion_edad   filas
+0       Edad teórica  987151
+1   No fiable (2010)   59329
+2   Retraso de 1 año   52240
+3         Adelantado    1573
+4        Desconocida    1560
+5  Retraso de 2 años     471
+
+-- SQL:
+SELECT edad, count(*) filas FROM lim GROUP BY 1 ORDER BY 1 NULLS LAST
+   edad   filas
+0    10     159
+1    11    1414
+2    12  987151
+3    13   52240
+4    14     471
+5  <NA>   60889
+
+====================================================================================================
+G. n y media de la global en el CSV (rotaciones corregidas) para contrastar con los Quaderns
+====================================================================================================
+
+-- SQL:
+PIVOT (SELECT materia, anio, printf('%d | %.2f', count(*), avg(x)/100.0) v FROM globales
+        WHERE anio IN (2009, 2012, 2017, 2018, 2023, 2024, 2025) GROUP BY 1, 2)
+   ON anio USING first(v) GROUP BY materia ORDER BY materia
+  materia           2009           2012           2017           2018           2023           2024           2025
+0    PANG            NaN  64286 | 74.30  70629 | 79.97  72612 | 76.27  71323 | 77.96  68392 | 73.27  66813 | 75.74
+1   PCAST  58969 | 74.65  64613 | 76.62  71036 | 73.51  72956 | 76.99  71117 | 72.14  70380 | 73.89  67212 | 76.47
+2    PCAT  58955 | 76.84  64207 | 79.67  71669 | 75.87  72464 | 73.56  70801 | 72.70  68729 | 74.85  66151 | 73.53
+3   PFRAN            NaN    418 | 72.47    403 | 76.76    306 | 69.44    298 | 74.09    266 | 62.80    243 | 66.09
+4    PMAT  58968 | 78.02  64612 | 80.27  72036 | 77.63  72939 | 79.23  71497 | 73.55  69836 | 74.37  66995 | 70.42
+5    PMED            NaN            NaN            NaN  72648 | 70.20  71221 | 71.59  69002 | 74.48  66509 | 66.32
+
+-- SQL:
+SELECT count(*) n_raw, round(avg(CAST(replace(PCAST, ',', '.') AS DOUBLE)), 2) media_sin_corregir
+   FROM raw WHERE "ANY" = '2017' AND PCAST IS NOT NULL
+   n_raw  media_sin_corregir
+0  71036                74.3
+
+====================================================================================================
+H. RepeticionProbable: variantes de comparación de la fecha (COD-03 y su verificación)
+====================================================================================================
+pares en años consecutivos: 914
+estricta (género + año + mes): 906
+género + año de nacimiento: 910
+relajada (mes de enero de 2016 y 1/2001 como desconocidos): 910
+           codi  anio_ant  anio g_ant  g  an_ant    an  m_ant   m
+96   7266474504      2017  2018     D  D    2005  2005      9   8
+133  1606620757      2024  2025     D  H    2012  2012     11  11
+258  1543302457      2021  2022     D  H    2009  2009      7   7
+545  2162593753      2024  2025     D  H    2012  2012     12  12
+
+Fin. Log en /home/kiara-rodriguez-uribe/Uni/TFG_Project/validacion/perfilado/salidas_complemento/complemento_informe_calidad.log

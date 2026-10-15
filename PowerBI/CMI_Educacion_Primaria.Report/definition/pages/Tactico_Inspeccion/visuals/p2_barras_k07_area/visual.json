@@ -1,0 +1,180 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "p2_barras_k07_area",
+  "position": {
+    "x": 16,
+    "y": 188,
+    "z": 9000,
+    "height": 520,
+    "width": 410,
+    "tabOrder": 9000
+  },
+  "visual": {
+    "visualType": "clusteredBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimContextoCentro"
+                    }
+                  },
+                  "Property": "AreaTerritorial"
+                }
+              },
+              "queryRef": "DimContextoCentro.AreaTerritorial",
+              "nativeQueryRef": "Área territorial",
+              "displayName": "Área territorial",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "K07 Desviación respecto a Cataluña"
+                }
+              },
+              "queryRef": "_Medidas.K07 Desviación respecto a Cataluña",
+              "nativeQueryRef": "Desviación respecto a Cataluña (K07)",
+              "displayName": "Desviación respecto a Cataluña (K07)"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "K01 Puntuación media competencia"
+                }
+              },
+              "queryRef": "_Medidas.K01 Puntuación media competencia",
+              "nativeQueryRef": "Puntuación media (K01)",
+              "displayName": "Puntuación media (K01)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "K09 Posición del área"
+                }
+              },
+              "queryRef": "_Medidas.K09 Posición del área",
+              "nativeQueryRef": "Posición del área (K09)",
+              "displayName": "Posición del área (K09)"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "_Medidas"
+                  }
+                },
+                "Property": "K07 Desviación respecto a Cataluña"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Desviación de cada área respecto a Cataluña (K07)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Puntos de diferencia sobre la media de Cataluña'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Gráfico de barras con la desviación de la puntuación media de cada área respecto a Cataluña'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

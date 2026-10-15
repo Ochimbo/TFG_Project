@@ -1,0 +1,3 @@
+materia,anio,columna_que_contiene_la_global,predictores,pct_ok,n
+PCAST,2017,PCAST_EE,0.600*PCAST + 0.400*PCAST_CL,99.1,71036
+PFRAN,2016,PFRAN_EE,0.350*PFRAN + 0.500*PFRAN_CO + 0.150*PFRAN_CE,100.0,389
