@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
   "name": "p2_seg_materia",
   "position": {
     "x": 880,
@@ -28,8 +28,8 @@
               },
               "queryRef": "DimCompetencia.Materia",
               "nativeQueryRef": "Materia",
-              "displayName": "Materia",
-              "active": true
+              "active": true,
+              "displayName": "Materia"
             }
           ]
         }
@@ -60,6 +60,11 @@
               }
             }
           }
+        }
+      ],
+      "general": [
+        {
+          "properties": {}
         }
       ]
     },

@@ -33,3 +33,4 @@ relationship 5507a116-7373-5246-bc5b-621799dd7fd0
 relationship a9524a17-0cd9-5e11-a6af-1bd60e3df530
 	fromColumn: FactEvaluacion.PerfilKey
 	toColumn: DimPerfilAlumno.PerfilKey
+

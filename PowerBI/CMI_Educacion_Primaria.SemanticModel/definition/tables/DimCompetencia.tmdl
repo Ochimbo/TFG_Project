@@ -177,3 +177,4 @@ table DimCompetencia
 				    Resultado
 
 	annotation PBI_ResultType = Table
+

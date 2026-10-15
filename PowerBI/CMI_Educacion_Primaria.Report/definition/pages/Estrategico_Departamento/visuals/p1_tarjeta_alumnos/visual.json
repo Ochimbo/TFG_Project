@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "p1_tarjeta_alumnos",
   "position": {
-    "x": 1064.0,
+    "x": 1064,
     "y": 76,
     "z": 9000,
     "height": 100,

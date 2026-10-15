@@ -414,3 +414,4 @@ table _Medidas
 				    Origen = #table(type table [Columna = text], {})
 				in
 				    Origen
+

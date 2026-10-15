@@ -38,3 +38,6 @@ ref table DimCalidadDato
 ref table FactEvaluacion
 ref table FactPuntuacion
 ref table _Medidas
+
+ref cultureInfo es-ES
+

@@ -89,3 +89,4 @@ table FactEvaluacion
 				    Resultado
 
 	annotation PBI_ResultType = Table
+

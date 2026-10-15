@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
   "name": "p2_seg_area",
   "position": {
     "x": 1076,
@@ -28,8 +28,8 @@
               },
               "queryRef": "DimContextoCentro.AreaTerritorial",
               "nativeQueryRef": "Área territorial",
-              "displayName": "Área territorial",
-              "active": true
+              "active": true,
+              "displayName": "Área territorial"
             }
           ]
         }
@@ -60,6 +60,11 @@
               }
             }
           }
+        }
+      ],
+      "general": [
+        {
+          "properties": {}
         }
       ]
     },

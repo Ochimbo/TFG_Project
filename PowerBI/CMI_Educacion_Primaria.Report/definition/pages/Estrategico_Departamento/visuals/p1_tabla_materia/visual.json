@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
   "name": "p1_tabla_materia",
   "position": {
     "x": 748,
@@ -97,16 +97,16 @@
         "sort": [
           {
             "field": {
-              "Column": {
+              "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "DimCompetencia"
+                    "Entity": "_Medidas"
                   }
                 },
-                "Property": "Materia"
+                "Property": "K10 Variación interanual"
               }
             },
-            "direction": "Ascending"
+            "direction": "Descending"
           }
         ]
       }
@@ -167,5 +167,79 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "9fcde508218de137fd16",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimCompetencia"
+              }
+            },
+            "Property": "Materia"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "281552575de89a693972",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "K01 Puntuación media competencia"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "19e32ec60f57e4456f81",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "K10 Variación interanual"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "f17b6de47ebce76ed136",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "K11 Tendencia 5 convocatorias"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "1727206d9278f8f9745b",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "K03 % alumnado nivel bajo"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

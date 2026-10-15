@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "CMI_Educacion_Primaria"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "afd33617-5458-466e-9320-9dfb7ab4743b"
+  }
+}

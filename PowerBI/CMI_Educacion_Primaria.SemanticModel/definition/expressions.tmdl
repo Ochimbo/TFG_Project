@@ -1,5 +1,5 @@
 /// Ruta completa del fichero Datos.csv (Avaluació de sisè, 32 columnas). Ajustar antes de actualizar.
-expression RutaDatos = "C:\TFG_Project\Datos.csv" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+expression RutaDatos = "C:/Users/kiara/Desktop/Uni/TFG/Project/TFG_Project/Datos.csv " meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
 	lineageTag: f4da9f65-ba17-52cd-bb95-b272a5d72d7a
 	queryGroup: Parámetros
 
@@ -308,3 +308,4 @@ expression stg_Evaluaciones =
 	queryGroup: Staging
 
 	annotation PBI_ResultType = Table
+
