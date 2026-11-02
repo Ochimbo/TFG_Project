@@ -6,11 +6,11 @@
 |---|---|
 | Estudiante | Kiara Kristin Rodríguez Uribe |
 | Directoras | Carme Martín Escofet · Maria Hitz Martinez |
-| Fecha | 2 de noviembre de 2026 · 60 min |
+| Fecha | ____ de noviembre de 2026 · 60 min |
 | Momento del Gantt | Semana 8: fin de la fase de análisis e inicio del diseño del modelo |
 | Objetivo | Presentar la fase de análisis y **validar con vosotras las decisiones abiertas** antes de construir |
 
-> **Cómo usar este documento:** el texto normal es el guion de la exposición. Los bloques ** Si preguntan…** son notas de apoyo plegadas (clic para desplegar). Solo se abren si surge una pregunta concreta.
+> **Cómo usar este documento:** el texto normal es el guion de la exposición. Los bloques **📎 Si preguntan…** son notas de apoyo plegadas (clic para desplegar). Solo se abren si surge una pregunta concreta.
 
 ---
 
@@ -22,7 +22,7 @@
 | 5–15 | 2. Auditoría de calidad de los datos: qué he encontrado y cómo | T7 · T12 |
 | 15–22 | 3. Requisitos por perfil y catálogo de KPIs | T8 · T9 |
 | 22–27 | 4. Diseño del modelo dimensional (en curso) | T10 |
-| 27–55 | **5. Cuestiones abiertas: vuestra validación**  | T9 · T10 · T12 |
+| 27–55 | **5. Cuestiones abiertas: vuestra validación** ⭐ | T9 · T10 · T12 |
 | 55–60 | 6. Próximos pasos y, brevemente, el prototipo | — |
 
 ---
@@ -31,18 +31,18 @@
 
 | Tarea | Semanas | Estado |
 |---|---|---|
-| T1–T4 Entregables de GEP (hito H1) | 1–4 | ✓ Entregados |
-| T7 Perfilado y auditoría del dataset | 1–3 | ✓ Informe de calidad con 34 reglas |
-| T8 Análisis de requisitos por perfil | 4–5 | ✓ 3 perfiles con sus preguntas de decisión (para validar hoy) |
-| T9 Catálogo de KPIs del CMI | 6–7 | ✓ 12 KPIs en 4 perspectivas, con fichas |
-| T12 ETL I: limpieza y homogeneización | 5–7 | ✓ Reglas definidas y probadas sobre el fichero completo |
-| T10 Diseño del modelo dimensional | 8 | ⇄ Diseño hecho y en revisión (hoy) |
-| T5 / T6 Seguimiento y memoria | continuas | ⇄ Hay documentación técnica reutilizable en la memoria |
+| T1–T4 Entregables de GEP (hito H1) | 1–4 | ✅ Entregados |
+| T7 Perfilado y auditoría del dataset | 1–3 | ✅ Informe de calidad con 34 reglas |
+| T8 Análisis de requisitos por perfil | 4–5 | ✅ 3 perfiles con sus preguntas de decisión (para validar hoy) |
+| T9 Catálogo de KPIs del CMI | 6–7 | ✅ 12 KPIs en 4 perspectivas, con fichas |
+| T12 ETL I: limpieza y homogeneización | 5–7 | ✅ Reglas definidas y probadas sobre el fichero completo |
+| T10 Diseño del modelo dimensional | 8 | 🔄 Diseño hecho y en revisión (hoy) |
+| T5 / T6 Seguimiento y memoria | continuas | 🔄 Hay documentación técnica reutilizable en la memoria |
 
 **Conclusión:** voy al día según el Gantt, sin desviaciones. El riesgo R1 (inconsistencias en los datos) **se ha materializado**, pero se ha absorbido en T7/T12 sin necesidad del plan B.
 
 <details>
-<summary> Si preguntan: ¿qué era el riesgo R1 y por qué no ha hecho falta el plan B?</summary>
+<summary>📎 Si preguntan: ¿qué era el riesgo R1 y por qué no ha hecho falta el plan B?</summary>
 
 - **R1 (GEP2/GEP4):** «Inconsistencias en los datos fuente mayores de lo previsto». Probabilidad estimada: media (30 %); impacto: alto.
 - **Plan B previsto:** reglas adicionales de limpieza (+20 h) y, en el peor caso, recortar el histórico a 2018–2025, el periodo con esquema estable.
@@ -63,7 +63,7 @@
 5. **Criterio de limpieza:** solo corrijo lo que es **demostrablemente un error**. Lo demás se conserva y se **marca con un indicador de calidad**. No se borra ningún registro.
 
 <details>
-<summary> Si preguntan: herramientas y por qué estas</summary>
+<summary>📎 Si preguntan: herramientas y por qué estas</summary>
 
 - **Python + DuckDB** (con pandas y pyarrow), en un entorno virtual del proyecto.
 - **¿Por qué DuckDB?** Es un motor SQL analítico que lee directamente el CSV de 240 MB y 1,1 M de filas en segundos, sin montar una base de datos. Permite consultas SQL reproducibles.
@@ -73,7 +73,7 @@
 </details>
 
 <details>
-<summary> Si preguntan: ¿qué son las dimensiones de calidad ISO/IEC 25012?</summary>
+<summary>📎 Si preguntan: ¿qué son las dimensiones de calidad ISO/IEC 25012?</summary>
 
 | Dimensión | Qué se comprueba | Ejemplo en el dataset |
 |---|---|---|
@@ -85,7 +85,7 @@
 </details>
 
 <details>
-<summary> Si preguntan: ¿cómo funciona la verificación independiente?</summary>
+<summary>📎 Si preguntan: ¿cómo funciona la verificación independiente?</summary>
 
 - **Paso 1:** dos scripts de perfilado (columnas categóricas y de puntuación) documentan cada hallazgo con su consulta, cifra, impacto y regla propuesta.
 - **Paso 2:** otros dos scripts, **escritos desde cero** y con **otra vía de lectura** (pyarrow y lectura línea a línea con el número de línea real), reproducen cada cifra sin reutilizar el código anterior.
@@ -105,7 +105,7 @@
 | 5 | **Suelos artificiales** en inglés 2015 y catalán 2018 | Histogramas por año | Indicador de calidad «censurada» |
 
 <details>
-<summary> Hallazgo 1 en detalle: columnas rotadas</summary>
+<summary>📎 Hallazgo 1 en detalle: columnas rotadas</summary>
 
 - **Idea:** la nota global de cada materia es una media ponderada de sus subcompetencias (por ejemplo, castellano 2016: 0,60·comprensión lectora + 0,40·expresión escrita). Si se hace una regresión de la global sobre las subcompetencias, deberían salir esos pesos.
 - **Castellano 2017 (71.036 alumnos):**
@@ -119,7 +119,7 @@
 </details>
 
 <details>
-<summary> Hallazgo 2 en detalle: 2010 desalineado</summary>
+<summary>📎 Hallazgo 2 en detalle: 2010 desalineado</summary>
 
 - **Síntoma:** en 2010 aparecen combinaciones área × hábitat que no existen en ningún otro año. Por ejemplo, el Consorci d'Educació de Barcelona (la ciudad) tiene 744 alumnos en municipios de **menos de 10.000 habitantes**, y Terres de l'Ebre 505 en municipios de **más de 100.000**.
 - **Magnitud:** 7.252 filas imposibles (12,2 % del año). Comparando con 2009 y 2011, la cota inferior es de **al menos 15.186 filas mal asignadas (25,6 %)**.
@@ -130,7 +130,7 @@
 </details>
 
 <details>
-<summary> Hallazgo 3 en detalle: codificaciones</summary>
+<summary>📎 Hallazgo 3 en detalle: codificaciones</summary>
 
 | Columna | Variantes | Años | Filas afectadas |
 |---|---|---|---|
@@ -146,7 +146,7 @@
 </details>
 
 <details>
-<summary> Hallazgo 4 en detalle: rupturas temporales</summary>
+<summary>📎 Hallazgo 4 en detalle: rupturas temporales</summary>
 
 - **2020:** no hubo prueba por la COVID-19 (Quadern 50: «no es va poder dur a terme l'avaluació de sisè… programada per al mes de maig del 2020»).
 - **Mapa territorial en 2024** (Decret 59/2022 y Decret 120/2023, operativos desde octubre de 2023):
@@ -160,7 +160,7 @@
 </details>
 
 <details>
-<summary> Hallazgo 5 en detalle: suelos artificiales</summary>
+<summary>📎 Hallazgo 5 en detalle: suelos artificiales</summary>
 
 - **Qué es:** muchos alumnos con exactamente la misma nota mínima, por encima de 0. Indica que en origen se recortó la escala.
 - **Casos:** catalán expresión escrita 2018 (suelo en 49,40); inglés 2015, global (48,79), comprensión oral (53,19) y comprensión lectora (45,00).
@@ -173,7 +173,7 @@
 **Resultado del contraste:** **70 de las 72 medias** por materia y año coinciden con las oficiales dentro de ±0,2 puntos.
 
 <details>
-<summary> Si preguntan: ¿qué pasa con las 2 que no cuadran? ¿Y otros datos curiosos?</summary>
+<summary>📎 Si preguntan: ¿qué pasa con las 2 que no cuadran? ¿Y otros datos curiosos?</summary>
 
 - **Inglés 2016:** 73,94 frente a 73,7 oficial (+0,24). No es redondeo ni un error de carga. Causa más probable: ese año la escala está comprimida (la global no llega a 100; el máximo es 95,55).
 - **Francés 2024:** 62,80 frente a 62,5 (+0,30). Muy pocos alumnos: 266 en el CSV frente a 272 oficiales. Unos pocos alumnos de diferencia mueven la media.
@@ -183,7 +183,7 @@
 </details>
 
 <details>
-<summary> Si preguntan: ¿qué son las 34 reglas de limpieza?</summary>
+<summary>📎 Si preguntan: ¿qué son las 34 reglas de limpieza?</summary>
 
 | Grupo | Reglas | Qué hacen |
 |---|---|---|
@@ -215,7 +215,7 @@ El detalle de cada regla, con las filas afectadas, está en el informe de calida
 **Limitación detectada:** el dataset **no incluye el código de centro**. El perfil de Dirección verá **centros de contexto similar** (cuestión 11).
 
 <details>
-<summary> Si preguntan: ¿de dónde salen estos perfiles y requisitos?</summary>
+<summary>📎 Si preguntan: ¿de dónde salen estos perfiles y requisitos?</summary>
 
 - Parten de los **stakeholders definidos en el GEP1** (tabla de agentes implicados) y de los **tres niveles de decisión** clásicos de los sistemas de información: estratégico, táctico y operativo.
 - Las preguntas de decisión se han acotado a **lo que el dataset permite responder**. Por ejemplo, no hay datos socioeconómicos ni de centro, así que no se pueden plantear preguntas sobre un centro concreto ni sobre el nivel socioeconómico.
@@ -235,7 +235,7 @@ El detalle de cada regla, con las filas afectadas, está en el informe de calida
 | Eficiencia y progreso | K10 variación interanual · K11 tendencia de 5 convocatorias · K12 % de competencias que mejoran |
 
 <details>
-<summary> Si preguntan: ¿por qué estas 4 perspectivas y no las 4 clásicas del CMI?</summary>
+<summary>📎 Si preguntan: ¿por qué estas 4 perspectivas y no las 4 clásicas del CMI?</summary>
 
 - **CMI clásico** (Kaplan y Norton, 1992): financiera, clientes, procesos internos, y aprendizaje y crecimiento. Está pensado para empresas con ánimo de lucro.
 - **Sector público** (Niven, 2008): la **misión** pasa a la cúspide y la perspectiva financiera deja de ser el objetivo final. Además, este dataset **no tiene datos económicos**.
@@ -250,7 +250,7 @@ El detalle de cada regla, con las filas afectadas, está en el informe de calida
 </details>
 
 <details>
-<summary> Si preguntan: ¿qué calcula exactamente cada KPI?</summary>
+<summary>📎 Si preguntan: ¿qué calcula exactamente cada KPI?</summary>
 
 | KPI | Definición (en palabras) | Unidad |
 |---|---|---|
@@ -275,7 +275,7 @@ El detalle de cada regla, con las filas afectadas, está en el informe de calida
 </details>
 
 <details>
-<summary> Si preguntan: ¿qué dicen los datos? (Cataluña, 2025)</summary>
+<summary>📎 Si preguntan: ¿qué dicen los datos? (Cataluña, 2025)</summary>
 
 | Materia | K01 media | K03 % nivel bajo | K04 niños − niñas | K05 pública − privada | K10 respecto a 2024 |
 |---|---|---|---|---|---|
@@ -303,7 +303,7 @@ El detalle de cada regla, con las filas afectadas, está en el informe de calida
 - **Decisiones clave:** la nota global **nunca se recalcula**, y los problemas de calidad son una **dimensión filtrable**, no se borran.
 
 <details>
-<summary> Si preguntan: ¿por qué dos tablas de hechos y no una?</summary>
+<summary>📎 Si preguntan: ¿por qué dos tablas de hechos y no una?</summary>
 
 - **Granos distintos.** Contar alumnado requiere una fila por alumno (`FactEvaluacion`); las medias por competencia requieren una fila por nota (`FactPuntuacion`). Con una sola tabla, contar alumnos exigiría un recuento distinto sobre un identificador que **no existe antes de 2016**.
 - **Despivotado:** el CSV tiene 24 columnas de notas por fila. En `FactPuntuacion` cada nota es una fila con un enlace a la dimensión Competencia, de modo que se puede filtrar por materia o subcompetencia sin 24 medidas distintas. Las celdas vacías no generan fila.
@@ -312,7 +312,7 @@ El detalle de cada regla, con las filas afectadas, está en el informe de calida
 </details>
 
 <details>
-<summary> Si preguntan: ¿qué es la dimensión «Calidad del dato»?</summary>
+<summary>📎 Si preguntan: ¿qué es la dimensión «Calidad del dato»?</summary>
 
 - Una tabla de 16 filas que combina 4 indicadores (una máscara de bits):
   - **No válida:** expresión escrita de inglés 2015.
@@ -325,7 +325,7 @@ El detalle de cada regla, con las filas afectadas, está en el informe de calida
 </details>
 
 <details>
-<summary> Si preguntan: otras decisiones (claves, áreas, Año)</summary>
+<summary>📎 Si preguntan: otras decisiones (claves, áreas, Año)</summary>
 
 - **Dimensiones *junk*** (Kimball): Contexto (área × naturaleza × hábitat) y Perfil (género × edad × mes) agrupan atributos de baja cardinalidad en una sola dimensión de 120 y 182 filas.
 - **Claves deterministas:** la clave se calcula con una fórmula (por ejemplo, Contexto = área·100 + naturaleza·10 + hábitat), así que no hace falta cruzar tablas en la ETL. Es más rápido y menos propenso a errores.
@@ -350,7 +350,7 @@ Para cada cuestión propongo una opción por defecto, justificada con los datos.
 - *Alternativas:* 50/70/85 · cortes calibrados por materia y año.
 
 <details>
-<summary> Detalle: comparación de umbrales</summary>
+<summary>📎 Detalle: comparación de umbrales</summary>
 
 - **El problema:** el CSV no trae el nivel oficial de cada alumno, y los informes **no publican cortes fijos**: los recalculan cada año con la media y la dispersión. Solo dan horquillas: nivel mínimo entre 50 y 60, «llindar òptim» en 70 y nivel alto entre 80 y 90.
 - **Método:** se probaron varios cortes y se compararon con los % oficiales por nivel en 35 combinaciones materia-año (2018–2025).
@@ -372,7 +372,7 @@ Para cada cuestión propongo una opción por defecto, justificada con los datos.
 - *Alternativas:* añadir una puntuación estandarizada (z) · quitar los KPIs de evolución.
 
 <details>
-<summary> Detalle: qué significa «no equiparada» y qué sería la puntuación z</summary>
+<summary>📎 Detalle: qué significa «no equiparada» y qué sería la puntuación z</summary>
 
 - **Equiparar** (*equating*) es ajustar las puntuaciones de pruebas distintas a una escala común, de modo que 70 signifique lo mismo cada año. El Consell **no lo hace** en esta prueba (Quadern 68).
 - **Consecuencia:** si la media baja de 74 a 72, puede ser que el alumnado sepa menos **o** que la prueba fuera más difícil. No se puede distinguir.
@@ -389,7 +389,7 @@ Para cada cuestión propongo una opción por defecto, justificada con los datos.
 - *Alternativas:* evolución solo de las áreas estables · comparar solo 2024–2025.
 
 <details>
-<summary> Detalle: qué áreas se agrupan y por qué</summary>
+<summary>📎 Detalle: qué áreas se agrupan y por qué</summary>
 
 | Serie comparable | Áreas que agrupa | Motivo |
 |---|---|---|
@@ -408,7 +408,7 @@ Para cada cuestión propongo una opción por defecto, justificada con los datos.
 - *Alternativa:* romper la serie en 2020.
 
 <details>
-<summary> Detalle</summary>
+<summary>📎 Detalle</summary>
 
 - 2021 fue la primera prueba tras el confinamiento, y los informes oficiales la tratan como «primera onada» después de la COVID.
 - El Quadern 68 (gráfico 3) dibuja **dos series separadas**, antes y después de 2020.
@@ -430,7 +430,7 @@ Para cada cuestión propongo una opción por defecto, justificada con los datos.
 | 11 | Dirección sin código de centro | Comparar con centros de contexto similar |
 
 <details>
-<summary> Detalle de las cuestiones 5 a 11</summary>
+<summary>📎 Detalle de las cuestiones 5 a 11</summary>
 
 - **5. Marcar en lugar de excluir:** excluir convocatorias enteras crearía huecos en la serie. Marcándolas, las medias siguen disponibles y solo se excluyen donde distorsionan (el % en nivel bajo y la dispersión).
 - **6. 2010:** usar valores que se sabe que están mal daría brechas por hábitat falsas. Las puntuaciones de 2010 sí se usan.
@@ -458,7 +458,7 @@ Para cada cuestión propongo una opción por defecto, justificada con los datos.
 - **Memoria:** ¿qué peso debe tener la auditoría de datos frente al desarrollo del CMI?
 
 <details>
-<summary> Detalle: cómo sería la prueba de usabilidad</summary>
+<summary>📎 Detalle: cómo sería la prueba de usabilidad</summary>
 
 - **Plan (GEP4 §4.3):** al menos 5 usuarios con perfiles representativos, tareas guiadas (por ejemplo, «encuentra el área con más alumnado en nivel bajo en matemáticas en 2025») y el cuestionario **SUS** (System Usability Scale, Brooke 1996). Objetivo: SUS ≥ 68.
 - **Plan B (riesgo R4):** perfiles simulados (estudiantes o docentes conocidos) más una **evaluación heurística** según las heurísticas de Nielsen.
@@ -478,7 +478,7 @@ Para cada cuestión propongo una opción por defecto, justificada con los datos.
 **Sobre el prototipo:** para comprobar que el diseño funciona con los datos reales, he montado un **prototipo exploratorio** en Power BI, que ya abre y se actualiza con el dataset completo. Si os parece, os lo enseño en 2 minutos.
 
 <details>
-<summary> Si preguntan: ¿qué tiene el prototipo y cómo se ha validado?</summary>
+<summary>📎 Si preguntan: ¿qué tiene el prototipo y cómo se ha validado?</summary>
 
 - **Formato:** proyecto Power BI en formato de texto (PBIP), versionable en Git: modelo (TMDL), ETL en Power Query (M), 19 medidas DAX e informe de 3 páginas.
 - **Páginas:**
@@ -498,7 +498,7 @@ Para cada cuestión propongo una opción por defecto, justificada con los datos.
 ## Glosario rápido
 
 <details>
-<summary> Términos técnicos por si hace falta explicarlos</summary>
+<summary>📎 Términos técnicos por si hace falta explicarlos</summary>
 
 | Término | Significado |
 |---|---|
@@ -542,32 +542,4 @@ Para cada cuestión propongo una opción por defecto, justificada con los datos.
 
 **Otros acuerdos:**
 
-Notes Reunió 02/11/2026
-
-- Informes latex -- .docx
-- Lectura rigurosa text, redaccio no complexa i no artificiosa
-- Los apartados que estiguin acabats marcarlos, no mes revisions
-- afegir resum previ al informe en els idiomes
-- Parlar i adelantar en el estat del art, porque un CMI es una solución única, comentar, el upc + una externa, mirar reunió. (Apartat 2)
-
-- Justificación solo porque uso powerBI, i no solo porque los beneficions, mas allá de la herramienta. (Cohernecia justificación solución propuesta, e introducir solucion) [Partat 2 y 3]
-
-- Extender Requisits queda pobre per la metodologia GEP
-
-
-
-
-
-
-//Setmana que ve
-
-sosenibilitat ->8
-especificasio -> 7
-Haig de fer el que he fet a er, IES
-- Diagrama de casos, d'us, Diagrama general
-- Hostories de usuari.
-
-//Despres sota especificasio s afegira disseny disseny
-
-Aprattat 3 -> faltan mockups
-
+-
