@@ -527,19 +527,3 @@ Para cada cuestión propongo una opción por defecto, justificada con los datos.
 | Fichas de KPIs (T9) | `Documentation/Docu_Final/Docu_Parcial/03_Fichas_KPI.md` |
 | Scripts de la auditoría | `validacion/perfilado/` |
 
----
-
-## Notas de la reunión
-
-| # | Decisión | Comentarios |
-|---|---|---|
-| 1 Umbrales | | |
-| 2 Evolución | | |
-| 3 Territorio | | |
-| 4 2021–2019 | | |
-| 5–11 | | |
-| Usuarios | | |
-
-**Otros acuerdos:**
-
--
