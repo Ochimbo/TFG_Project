@@ -6,7 +6,7 @@
 |---|---|
 | Estudiante | Kiara Kristin Rodríguez Uribe |
 | Directoras | Carme Martín Escofet · Maria Hitz Martinez |
-| Fecha | ____ de noviembre de 2026 · 60 min |
+| Fecha | 2 de noviembre de 2026 · 60 min |
 | Momento del Gantt | Semana 8: fin de la fase de análisis e inicio del diseño del modelo |
 | Objetivo | Presentar la fase de análisis y **validar con vosotras las decisiones abiertas** antes de construir |
 
@@ -22,7 +22,7 @@
 | 5–15 | 2. Auditoría de calidad de los datos: qué he encontrado y cómo | T7 · T12 |
 | 15–22 | 3. Requisitos por perfil y catálogo de KPIs | T8 · T9 |
 | 22–27 | 4. Diseño del modelo dimensional (en curso) | T10 |
-| 27–55 | **5. Cuestiones abiertas: vuestra validación** ⭐ | T9 · T10 · T12 |
+| 27–55 | **5. Cuestiones abiertas: vuestra validación**  | T9 · T10 · T12 |
 | 55–60 | 6. Próximos pasos y, brevemente, el prototipo | — |
 
 ---
@@ -31,13 +31,13 @@
 
 | Tarea | Semanas | Estado |
 |---|---|---|
-| T1–T4 Entregables de GEP (hito H1) | 1–4 | ✅ Entregados |
-| T7 Perfilado y auditoría del dataset | 1–3 | ✅ Informe de calidad con 34 reglas |
-| T8 Análisis de requisitos por perfil | 4–5 | ✅ 3 perfiles con sus preguntas de decisión (para validar hoy) |
-| T9 Catálogo de KPIs del CMI | 6–7 | ✅ 12 KPIs en 4 perspectivas, con fichas |
-| T12 ETL I: limpieza y homogeneización | 5–7 | ✅ Reglas definidas y probadas sobre el fichero completo |
-| T10 Diseño del modelo dimensional | 8 | 🔄 Diseño hecho y en revisión (hoy) |
-| T5 / T6 Seguimiento y memoria | continuas | 🔄 Hay documentación técnica reutilizable en la memoria |
+| T1–T4 Entregables de GEP (hito H1) | 1–4 | ✓ Entregados |
+| T7 Perfilado y auditoría del dataset | 1–3 | ✓ Informe de calidad con 34 reglas |
+| T8 Análisis de requisitos por perfil | 4–5 | ✓ 3 perfiles con sus preguntas de decisión (para validar hoy) |
+| T9 Catálogo de KPIs del CMI | 6–7 | ✓ 12 KPIs en 4 perspectivas, con fichas |
+| T12 ETL I: limpieza y homogeneización | 5–7 | ✓ Reglas definidas y probadas sobre el fichero completo |
+| T10 Diseño del modelo dimensional | 8 | ⇄ Diseño hecho y en revisión (hoy) |
+| T5 / T6 Seguimiento y memoria | continuas | ⇄ Hay documentación técnica reutilizable en la memoria |
 
 **Conclusión:** voy al día según el Gantt, sin desviaciones. El riesgo R1 (inconsistencias en los datos) **se ha materializado**, pero se ha absorbido en T7/T12 sin necesidad del plan B.
 
@@ -289,7 +289,7 @@ El detalle de cada regla, con las filas afectadas, está en el informe de calida
 - **Titularidad:** la privada supera a la pública en todas las materias; la brecha mayor es en inglés.
 - **Nivel bajo global:** pasa del 13,7 % (2021) al **17,8 % (2025)**.
 - **Territorio (catalán 2025):** el Consorci de Barcelona es 1.º (+1,5 sobre Cataluña) y el Barcelonès, 12.º (−3,5).
-- ⚠️ Las variaciones entre años son de puntuaciones **no equiparadas** (cuestión 2).
+-  Las variaciones entre años son de puntuaciones **no equiparadas** (cuestión 2).
 </details>
 
 ---
@@ -339,7 +339,7 @@ El detalle de cada regla, con las filas afectadas, está en el informe de calida
 
 ---
 
-## 5. Cuestiones abiertas: vuestra validación (28 min) ⭐
+## 5. Cuestiones abiertas: vuestra validación (28 min) 
 
 Para cada cuestión propongo una opción por defecto, justificada con los datos. Las cuatro primeras **condicionan lo que comunica el CMI**.
 
