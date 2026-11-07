@@ -13,7 +13,8 @@ mv main.pdf "$NOMBRE.pdf"
 # Pandoc no dibuja TikZ/pgfgantt: el diagrama de Gantt solo aparece en el PDF.
 # Tampoco conoce algunos comandos de símbolos, así que se cambian por el carácter antes de exportar.
 sed -e 's/\\texteuro{}/€/g' -e 's/\\textordmasculine{}/º/g' -e 's/\\textordfeminine{}/ª/g' \
-    -e 's/\\guillemotleft{}/«/g' -e 's/\\guillemotright{}/»/g' main.tex \
+    -e 's/\\guillemotleft{}/«/g' -e 's/\\guillemotright{}/»/g' \
+    -e 's/\\textquestiondown{}/¿/g' -e 's/\\textexclamdown{}/¡/g' main.tex \
 | pandoc \
     --from=latex \
     --to=docx \

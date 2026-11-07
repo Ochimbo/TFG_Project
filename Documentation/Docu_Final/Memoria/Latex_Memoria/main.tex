@@ -340,24 +340,127 @@ Eficiencia y progreso (aprendizaje y crecimiento) & Mejora continua & Variación
 \end{table}
 
 \section{Requisitos}
+\label{sec:requisitos}
+Los requisitos salen de tres fuentes: las necesidades de los agentes implicados (Tabla~\ref{tab:stakeholders}), las preguntas que cada nivel de decisión necesita responder y los problemas de calidad encontrados al auditar los datos. Cada requisito tiene un identificador que se usa en la especificación, en el diseño y en la validación. Los perfiles se abrevian como E (estratégico, Departamento de Educación), T (táctico, inspección y coordinación territorial) y O (operativo, dirección de centro).
+
+\subsection{Preguntas de decisión por perfil}
+Antes de fijar los requisitos se acotaron las preguntas que el cuadro de mando debe ayudar a responder (Tabla~\ref{tab:preguntas}). Solo se incluyen preguntas que el dataset permite contestar: no contiene el código del centro ni variables socioeconómicas, así que no se plantean preguntas sobre un centro concreto ni sobre el nivel socioeconómico del alumnado.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{3.4cm} X @{}}
+\toprule
+\textbf{Perfil} & \textbf{Preguntas de decisión} \\ \midrule
+E: Departamento de Educación & \textquestiondown{}Cómo evolucionan las competencias básicas en Cataluña? \textquestiondown{}Aumenta el porcentaje de alumnado con nivel bajo? \textquestiondown{}Qué competencias mejoran y cuáles empeoran respecto a la convocatoria anterior? \\ \addlinespace
+T: Inspección y coordinación territorial & \textquestiondown{}Qué áreas territoriales se alejan de la media de Cataluña? \textquestiondown{}Hay brechas por género, por titularidad del centro o por tamaño del municipio? \textquestiondown{}En qué áreas conviene priorizar el refuerzo? \\ \addlinespace
+O: Dirección de centro & \textquestiondown{}Cómo rinden los centros de un contexto parecido al mío (área, titularidad y hábitat) frente a Cataluña? \textquestiondown{}En qué subcompetencias tienen más carencias? \\ \bottomrule
+\end{tabularx}
+\caption{Preguntas de decisión que debe responder cada perfil.}
+\label{tab:preguntas}
+\end{table}
+
 \subsection{Requisitos funcionales}
-\begin{itemize}
-    \item \textbf{RF01 -- ETL:} importar y transformar automáticamente los microdatos, homogeneizando códigos y formatos entre convocatorias.
-    \item \textbf{RF02 -- Análisis multidimensional:} filtrar por año, área territorial, naturaleza del centro, hábitat y género.
-    \item \textbf{RF03 -- Subcompetencias:} desglosar cada competencia en sus subcompetencias (p.\,ej., comprensión lectora y expresión escrita).
-    \item \textbf{RF04 -- KPIs dinámicos:} calcular medias, distribuciones por nivel, variaciones interanuales y brechas.
-    \item \textbf{RF05 -- Interactividad:} filtrado cruzado y \textit{drill-down} desde Cataluña hasta el área territorial.
-    \item \textbf{RF06 -- Vistas por perfil:} paneles diferenciados por nivel de decisión.
-\end{itemize}
+Los requisitos funcionales se agrupan en cuatro bloques: integración y calidad de los datos (Tabla~\ref{tab:rf_datos}), análisis y navegación (Tabla~\ref{tab:rf_analisis}), indicadores (Tabla~\ref{tab:rf_kpis}) y vistas por perfil (Tabla~\ref{tab:rf_perfiles}). La columna \textit{Origen} indica el perfil que necesita el requisito o, en el primer bloque, que procede de la auditoría de los datos.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} p{1.2cm} X p{2.2cm} @{}}
+\toprule
+\textbf{ID} & \textbf{Requisito} & \textbf{Origen} \\ \midrule
+RF01 & Cargar las 16 convocatorias publicadas (2009--2025) a partir del fichero CSV del Portal de Datos Abiertos, sin modificarlo a mano. & Auditoría \\ \addlinespace
+RF02 & Unificar los códigos y literales que cambian entre convocatorias (género, titularidad, hábitat y área territorial). & Auditoría \\ \addlinespace
+RF03 & Corregir los errores estructurales detectados en el fichero, como las columnas de puntuación rotadas y las columnas desalineadas de algunos años. & Auditoría \\ \addlinespace
+RF04 & Marcar la calidad de cada puntuación (no válida, censurada o no comparable entre años) sin eliminar el registro, de modo que cada indicador decida si la incluye. & Auditoría \\ \addlinespace
+RF05 & Detener la carga e indicar la regla incumplida cuando el fichero tenga una estructura, un código o una puntuación no previstos. & Auditoría \\ \bottomrule
+\end{tabularx}
+\caption{Requisitos funcionales de integración y calidad de los datos.}
+\label{tab:rf_datos}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} p{1.2cm} X p{2.2cm} @{}}
+\toprule
+\textbf{ID} & \textbf{Requisito} & \textbf{Origen} \\ \midrule
+RF06 & Filtrar los resultados por convocatoria, competencia, área territorial, titularidad del centro, hábitat y género. & E, T, O \\ \addlinespace
+RF07 & Desglosar cada competencia en sus subcompetencias (por ejemplo, comprensión lectora y expresión escrita). & O \\ \addlinespace
+RF08 & Mostrar la evolución de los indicadores en todas las convocatorias disponibles, con independencia del año seleccionado. & E, T, O \\ \addlinespace
+RF09 & Comparar cualquier contexto filtrado con el total de Cataluña. & T, O \\ \addlinespace
+RF10 & Aplicar el filtrado cruzado entre los elementos de una página y conservar la selección de año, competencia y área al cambiar de página. & E, T, O \\ \bottomrule
+\end{tabularx}
+\caption{Requisitos funcionales de análisis y navegación.}
+\label{tab:rf_analisis}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} p{1.2cm} X p{2.2cm} @{}}
+\toprule
+\textbf{ID} & \textbf{Requisito} & \textbf{Origen} \\ \midrule
+RF11 & Calcular los 12 KPIs del catálogo (Tabla~\ref{tab:kpis}) para cualquier combinación de filtros. & E, T, O \\ \addlinespace
+RF12 & Mostrar la distribución del alumnado por nivel de logro (bajo, medio-bajo, medio-alto y alto) en cada competencia. & E, O \\ \addlinespace
+RF13 & Indicar con un semáforo si el valor de los KPIs principales es favorable, neutro o desfavorable respecto a su referencia. & E, T, O \\ \addlinespace
+RF14 & Dejar un indicador en blanco cuando se calcule sobre menos de 30 puntuaciones, para evitar conclusiones sobre grupos muy pequeños. & T, O \\ \addlinespace
+RF15 & Avisar de las limitaciones de los datos junto a las comparaciones temporales: las puntuaciones no están equiparadas entre convocatorias y en 2020 no hubo prueba. & E, T, O \\ \bottomrule
+\end{tabularx}
+\caption{Requisitos funcionales de los indicadores.}
+\label{tab:rf_kpis}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} p{1.2cm} X p{2.2cm} @{}}
+\toprule
+\textbf{ID} & \textbf{Requisito} & \textbf{Origen} \\ \midrule
+RF16 & Ofrecer un panel estratégico con la visión global de Cataluña: puntuación media, alumnado con nivel bajo, variación respecto a la convocatoria anterior y tendencia de cada competencia. & E \\ \addlinespace
+RF17 & Ofrecer un panel táctico que compare las áreas territoriales con Cataluña, muestre las brechas de género, titularidad y hábitat y sitúe la posición de un área. & T \\ \addlinespace
+RF18 & Ofrecer un panel operativo que permita definir un contexto de centro (área, titularidad y hábitat) y compararlo con Cataluña por competencia y subcompetencia. & O \\ \bottomrule
+\end{tabularx}
+\caption{Requisitos funcionales de las vistas por perfil.}
+\label{tab:rf_perfiles}
+\end{table}
 
 \subsection{Requisitos no funcionales}
-\begin{itemize}
-    \item \textbf{RNF01 -- Rendimiento:} tiempo de respuesta inferior a 3 segundos al aplicar filtros sobre el volumen completo.
-    \item \textbf{RNF02 -- Usabilidad:} interfaz sin sobrecarga cognitiva para usuarios no técnicos \cite{few2006information}; puntuación SUS $\geq 68$ \cite{brooke1996sus}.
-    \item \textbf{RNF03 -- Privacidad (RGPD):} uso exclusivo de identificadores anonimizados, sin posibilidad de reidentificación.
-    \item \textbf{RNF04 -- Mantenibilidad:} incorporar nuevas convocatorias sin rediseñar el modelo.
-    \item \textbf{RNF05 -- Accesibilidad:} paletas de color aptas para daltonismo y contraste suficiente en todos los paneles.
-\end{itemize}
+Los requisitos no funcionales se clasifican según las características de calidad del producto de la norma ISO/IEC 25010 \cite{iso25010_2011}. Cada uno tiene un criterio que permite comprobar si se cumple (Tabla~\ref{tab:rnf}); los métodos de validación se describen en la Sección~\ref{sec:validacion}.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.05}
+\begin{tabularx}{\textwidth}{@{} p{1.3cm} X p{4.6cm} @{}}
+\toprule
+\textbf{ID} & \textbf{Requisito} & \textbf{Criterio de verificación} \\ \midrule
+\multicolumn{3}{@{}l}{\textit{Eficiencia de desempeño}} \\
+RNF01 & Responder con rapidez al aplicar filtros sobre el volumen completo de datos. & Menos de 3 s por interacción, medido con el analizador de rendimiento. \\ \addlinespace
+\multicolumn{3}{@{}l}{\textit{Usabilidad}} \\
+RNF02 & Ser fácil de usar para perfiles no técnicos, sin sobrecarga cognitiva \cite{few2006information}. & Puntuación SUS $\geq 68$ en la prueba con usuarios \cite{brooke1996sus}. \\ \addlinespace
+RNF03 & Mostrar cada panel completo en una pantalla, sin desplazamiento. & Lienzo de 1280 $\times$ 720 sin barras de desplazamiento. \\ \addlinespace
+RNF04 & Usar el castellano y los nombres de competencias y áreas de los informes oficiales en toda la interfaz. & Revisión de títulos, etiquetas y avisos. \\ \addlinespace
+RNF05 & Ser accesible para personas con daltonismo o baja visión. & Paletas aptas para daltonismo y contraste de texto de al menos 4,5:1 (nivel AA de WCAG 2.1 \cite{w3c_wcag21}). \\ \addlinespace
+\multicolumn{3}{@{}l}{\textit{Adecuación funcional}} \\
+RNF06 & Calcular los resultados con exactitud. & Medias de Cataluña a menos de 0,5 puntos de las oficiales \cite{csase_resultats}. \\ \addlinespace
+RNF07 & Documentar cada regla de limpieza y poder reproducir su efecto. & Cada regla aparece en el informe de calidad con las filas afectadas. \\ \addlinespace
+\multicolumn{3}{@{}l}{\textit{Seguridad}} \\
+RNF08 & Cumplir el RGPD: trabajar solo con datos anonimizados y no exponer ningún identificador del alumnado. & Ningún campo identificador visible en el modelo ni en los paneles. \\ \addlinespace
+\multicolumn{3}{@{}l}{\textit{Mantenibilidad}} \\
+RNF09 & Incorporar una nueva convocatoria sin rediseñar el modelo. & Sustituir el fichero y actualizar; solo cambian parámetros documentados. \\ \addlinespace
+RNF10 & Guardar todos los artefactos en formato de texto y bajo control de versiones. & Proyecto en formato \texttt{.pbip} versionado en Git. \\ \addlinespace
+\multicolumn{3}{@{}l}{\textit{Portabilidad}} \\
+RNF11 & Funcionar sin licencias de pago. & Uso completo con Power BI Desktop gratuito. \\ \bottomrule
+\end{tabularx}
+\caption{Requisitos no funcionales clasificados según ISO/IEC 25010.}
+\label{tab:rnf}
+\end{table}
 
 \section{Obstáculos y riesgos}
 \label{sec:riesgos}
@@ -400,6 +503,7 @@ La adaptación al proyecto es la siguiente: al haber una sola desarrolladora, se
 \end{itemize}
 
 \section{Métodos de validación}
+\label{sec:validacion}
 Cada subobjetivo tiene un criterio de aceptación verificable:
 \begin{itemize}
     \item \textbf{Exactitud de los datos (SO1, SO4):} conteos de registros por convocatoria antes y después de la ETL, y contraste de las medias calculadas con las publicadas en los informes oficiales \cite{csase_resultats} (tolerancia de $\pm 0{,}5$ puntos).
