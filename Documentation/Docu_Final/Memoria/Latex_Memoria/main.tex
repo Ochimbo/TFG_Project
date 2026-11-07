@@ -236,13 +236,21 @@ La Tabla~\ref{tab:stakeholders} resume los actores implicados, distinguiendo a q
 \chapter{Justificación}
 
 \section{Estudio de mercado y estado del arte}
-El sector educativo avanza hacia la toma de decisiones informada por datos (\textit{Data-Informed Decision Making}) \cite{mandinach2012data}. Sin embargo, la explotación de los resultados de 6.\textordmasculine{} de primaria en Cataluña se apoya hoy en tres tipos de soluciones, todas ellas con limitaciones:
-\begin{itemize}
-    \item \textbf{Informes oficiales estáticos} \cite{csase_resultats}: ofrecen agregados de calidad, pero con cortes predefinidos que el usuario no puede filtrar ni cruzar.
-    \item \textbf{Visor del portal de datos abiertos} \cite{transparencia_catalunya_2024}: permite consultas y gráficos simples sobre la tabla plana, pero no dispone de modelo dimensional, indicadores ni vistas por perfil.
-    \item \textbf{Análisis manuales con hojas de cálculo:} duplican esfuerzos, son propensos a errores y no superan con fluidez el millón de filas.
-\end{itemize}
-En el ámbito académico, la analítica educativa (\textit{Educational Data Mining} y \textit{Learning Analytics}) se centra mayoritariamente en modelos predictivos o en plataformas de aprendizaje en línea \cite{romero2010educational}, sin articular un modelo de gestión estratégica como el CMI para la administración educativa. Ninguna solución existente puede, por tanto, \textbf{reutilizarse o adaptarse} directamente: se justifica diseñar una solución nueva, reutilizando eso sí los datos abiertos existentes y herramientas BI de mercado en lugar de desarrollar software a medida.
+\label{sec:estado_arte}
+
+\subsection{El CMI en el ámbito educativo}
+El Cuadro de Mando Integral se diseñó para empresas \cite{kaplan1992balanced}, y para usarlo en el sector público hay que adaptar sus perspectivas y situar la misión de la organización en la parte superior del modelo \cite{niven2008balanced}. Esta adaptación se ha aplicado también a la educación.
+
+Rompho \cite{rompho2020balanced} construyó un CMI para las escuelas públicas de Tailandia y lo contrastó con datos de 3.351 centros mediante modelos de ecuaciones estructurales. El estudio confirma que las relaciones entre perspectivas que plantea el modelo también se cumplen en escuelas públicas. Los trabajos anteriores lo daban por supuesto, normalmente porque no tenían datos para comprobarlo. El autor pide prudencia al generalizar, ya que los centros de la muestra recibían apoyo del sector privado.
+
+El CMI también se usa fuera de la investigación. En Suecia, cuyo alumnado obtuvo en PISA 2022 resultados por encima de la media de la OCDE \cite{oecd2023pisa_sweden}, el \textit{Balanced Scorecard} figura entre las herramientas de autoevaluación que utilizan las escuelas \cite[p.~166]{oecd2015sweden}.
+
+La mayor parte de la investigación, sin embargo, trata de la universidad. Co\c{s}kun y Nizaeva \cite{coskun2023strategic} revisaron 267 documentos indexados en Scopus sobre el CMI en instituciones educativas y encontraron muchos menos estudios en primaria y secundaria que en educación superior. Este TFG se sitúa en ese hueco: aplica el modelo a la evaluación de 6.\textordmasculine{} de primaria de todo el sistema educativo catalán, a partir de los datos abiertos que publica la Generalitat.
+
+\subsection{Soluciones existentes para los datos de Cataluña}
+Hoy los resultados de 6.\textordmasculine{} de primaria se pueden consultar de tres maneras. Los informes del Consell Superior d'Avaluació \cite{csase_resultats} ofrecen agregados fiables, pero con cortes fijados de antemano que el usuario no puede filtrar ni cruzar. El visor del Portal de Datos Abiertos \cite{transparencia_catalunya_2024} permite hacer consultas y gráficos sencillos sobre la tabla plana, aunque no tiene un modelo dimensional, indicadores ni vistas por perfil. La tercera opción es descargar el fichero y analizarlo con una hoja de cálculo: cada usuario repite el mismo trabajo, es fácil equivocarse y la herramienta se vuelve lenta con más de un millón de filas.
+
+El sector educativo tiende a apoyar sus decisiones en datos \cite{mandinach2012data}. En el ámbito académico, la analítica educativa (\textit{Educational Data Mining} y \textit{Learning Analytics}) se ha centrado sobre todo en modelos predictivos y en plataformas de aprendizaje en línea \cite{romero2010educational}, y no ofrece un modelo de gestión estratégica para la administración educativa como el CMI. Ninguna de las soluciones existentes se puede reutilizar ni adaptar directamente, así que está justificado diseñar una nueva que aproveche los datos abiertos y una herramienta BI de mercado en lugar de desarrollar software a medida.
 
 \section{Comparativa de alternativas con criterios ponderados}
 Para pasar de una comparación descriptiva a una decisión de ingeniería, se han fijado seis criterios objetivos con un peso proporcional a su importancia para el proyecto. Cada alternativa se puntúa de 1 (muy deficiente) a 5 (excelente) y se calcula la puntuación ponderada $S = \sum_i w_i \cdot p_i$ (Tabla~\ref{tab:matriz_decision}).
