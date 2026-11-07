@@ -85,7 +85,7 @@
     linkcolor=black,
     citecolor=blue,
     urlcolor=blue,
-    pdftitle={GEP Entregable 4 - Documento final - Kiara Kristin Rodríguez Uribe},
+    pdftitle={Memoria final del TFG - Kiara Kristin Rodríguez Uribe},
     pdfauthor={Kiara Kristin Rodríguez Uribe}
 }
 
@@ -114,8 +114,8 @@
         {\Large \bfseries DISEÑO E IMPLEMENTACIÓN DE UN CUADRO DE MANDO INTEGRAL PARA EL SOPORTE A LA TOMA DE DECISIONES EN EL SISTEMA DE EDUCACIÓN PRIMARIA DE CATALUÑA} \\[0.2cm]
         \HRule \\[1.5cm]
 
-        {\large \textbf{Gestión de Proyectos (GEP)}}\\[0.2cm]
-        {\large \textbf{Entregable 4: Documento final}}\\[0.3cm]
+        {\large \textbf{Trabajo de Final de Grado}}\\[0.2cm]
+        {\large \textbf{Memoria final}}\\[0.3cm]
         {\large Grado en Ingeniería Informática (Sistemas de Información)}\\[1.5cm]
     \end{center}
 
@@ -127,8 +127,7 @@
         \textbf{Estudiante:}   & Kiara Kristin Rodríguez Uribe \\
         \textbf{Directora:}    & Carme Martín Escofet (Dept. ESSI) \\
         \textbf{Codirectora:}  & Maria Hitz Martinez (Dept. ESSI) \\
-        \textbf{Tutor GEP:}    & David Pardos Benito \\
-        \textbf{Fecha:}        & 5 de octubre de 2026
+        \textbf{Fecha:}        & noviembre de 2026
     \end{tabular}
     \end{flushleft}
 \end{titlepage}
@@ -185,7 +184,7 @@ La Tabla~\ref{tab:stakeholders} resume los actores implicados, distinguiendo a q
 \textbf{Inspección y coordinación territorial} & Usuario (nivel táctico) & Detectar brechas territoriales y de equidad para priorizar recursos de refuerzo. \\ \addlinespace
 \textbf{Dirección de centro} & Usuario (nivel operativo) & Comparar sus resultados con los de centros de contexto similar (naturaleza, hábitat, territorio). \\ \addlinespace
 \textbf{Alumnado, familias y sociedad} & Beneficiarios indirectos & Mejores decisiones educativas y mayor transparencia sobre el sistema público. \\ \addlinespace
-\textbf{Directoras del TFG y tutor de GEP} & Supervisión y validación & Asegurar el rigor técnico y metodológico del proyecto. \\ \addlinespace
+\textbf{Directoras del TFG} & Supervisión y validación & Asegurar el rigor técnico y metodológico del proyecto. \\ \addlinespace
 \textbf{Desarrolladora (estudiante)} & Diseño e implementación & Construir la solución completa: ETL, modelo dimensional, KPIs y cuadros de mando. \\ \bottomrule
 \end{tabularx}
 \caption{Matriz de agentes implicados (\textit{stakeholders}).}
@@ -358,7 +357,7 @@ La adaptación al proyecto es la siguiente: al haber una sola desarrolladora, se
     \item \textbf{Git y GitHub:} control de versiones del archivo de Power BI (formato \texttt{.pbip}), de las consultas M y DAX, de los scripts auxiliares y de la memoria.
     \item \textbf{GitHub Projects:} tablero Kanban con el \textit{backlog}, las tareas T1--T23 y el registro de horas reales por tarea, que alimenta el control de costes (Sección~\ref{sec:control}).
     \item \textbf{Overleaf / \LaTeX:} redacción de la memoria y de los entregables de GEP con formato bibliográfico IEEE.
-    \item \textbf{Reuniones de seguimiento:} quincenales con las directoras y revisiones de los entregables con el tutor de GEP.
+    \item \textbf{Reuniones de seguimiento:} quincenales con las directoras.
 \end{itemize}
 
 \section{Métodos de validación}
@@ -401,10 +400,10 @@ El trabajo se descompone en 23 tareas codificadas como T1--T23 y agrupadas en si
 
 \subsection{Gestión del proyecto (T1--T6)}
 \begin{itemize}
-    \item \textbf{T1 -- Contextualización y alcance (15 h):} estudio del contexto, estado del arte, objetivos, requisitos y riesgos. Recursos: tutor de GEP y bibliografía.
+    \item \textbf{T1 -- Contextualización y alcance (15 h):} estudio del contexto, estado del arte, objetivos, requisitos y riesgos. Recursos: bibliografía.
     \item \textbf{T2 -- Planificación temporal (12 h):} definición de tareas, estimaciones, dependencias, Gantt y planes alternativos. Dependencia: T1 $<$ T2.
     \item \textbf{T3 -- Gestión económica y sostenibilidad (12 h):} presupuesto por actividad, control de costes e informe de sostenibilidad. Dependencia: T2 $<$ T3.
-    \item \textbf{T4 -- Documento final de GEP (11 h):} integración de los entregables anteriores y de las correcciones del tutor. Dependencia: T3 $<$ T4.
+    \item \textbf{T4 -- Documento final de GEP (11 h):} integración de los entregables anteriores y de las correcciones recibidas. Dependencia: T3 $<$ T4.
     \item \textbf{T5 -- Seguimiento y control (20 h, semanas 1--19):} reuniones quincenales con las directoras (unos 10 encuentros de 1 h con su preparación) y control semanal de horas, riesgos y desviaciones. Sin dependencias.
     \item \textbf{T6 -- Redacción de la memoria del TFG (50 h, semanas 5--19):} empieza al terminar GEP y documenta cada incremento a medida que se completa (unas 3,3 h/semana). Dependencia: T4 $<$ T6.
 \end{itemize}
@@ -455,7 +454,7 @@ El trabajo se descompone en 23 tareas codificadas como T1--T23 y agrupadas en si
 \end{itemize}
 
 \section{Recursos}
-\textbf{Recursos humanos:} la estudiante desempeña todos los roles del proyecto (jefa de proyecto, analista, ingeniera de datos, desarrolladora BI, especialista en QA y redactora técnica), con la supervisión de las directoras del TFG y del tutor de GEP. La Tabla~\ref{tab:resumen_tareas} asigna un rol a cada tarea, asignación que se usa en el presupuesto.
+\textbf{Recursos humanos:} la estudiante desempeña todos los roles del proyecto (jefa de proyecto, analista, ingeniera de datos, desarrolladora BI, especialista en QA y redactora técnica), con la supervisión de las directoras del TFG. La Tabla~\ref{tab:resumen_tareas} asigna un rol a cada tarea, asignación que se usa en el presupuesto.
 
 \textbf{Recursos materiales:} portátil ASUS TUF Gaming F15 con monitor externo; Power BI Desktop, Power Query, DAX Studio, Python (pandas), draw.io, Figma (plan gratuito), Git y GitHub, y Overleaf; conexión a Internet y espacio de trabajo propio.
 
@@ -470,9 +469,9 @@ La Tabla~\ref{tab:resumen_tareas} resume las tareas con su código, horas, seman
 \begin{tabularx}{\textwidth}{@{} l X c c l l @{}}
 \toprule
 \textbf{Cód.} & \textbf{Tarea} & \textbf{Horas} & \textbf{Sem.} & \textbf{Dependencias} & \textbf{Rol / recursos} \\ \midrule
-T1 & Contextualización y alcance & 15 & 1--2 & -- & PM, tutor GEP \\
-T2 & Planificación temporal & 12 & 2--3 & T1 & PM, tutor GEP \\
-T3 & Gestión económica y sostenibilidad & 12 & 3--4 & T2 & PM, tutor GEP \\
+T1 & Contextualización y alcance & 15 & 1--2 & -- & PM \\
+T2 & Planificación temporal & 12 & 2--3 & T1 & PM \\
+T3 & Gestión económica y sostenibilidad & 12 & 3--4 & T2 & PM \\
 T4 & Documento final de GEP & 11 & 4 & T3 & PM, \LaTeX \\
 T5 & Seguimiento y control & 20 & 1--19 & -- & PM, directoras \\
 T6 & Redacción de la memoria & 50 & 5--19 & T4 & RT, Overleaf \\
