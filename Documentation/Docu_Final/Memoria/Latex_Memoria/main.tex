@@ -9,7 +9,8 @@
 \usepackage{textcomp}
 
 % 'es-noshorthands' evita conflictos de babel con TikZ y pgfgantt
-\usepackage[spanish, es-tabla, es-noshorthands]{babel}
+% Catalán e inglés solo para el resumen; el idioma principal es el último (castellano)
+\usepackage[catalan, english, spanish, es-tabla, es-noshorthands]{babel}
 
 \usepackage[top=3cm, bottom=3cm, left=3cm, right=2.5cm]{geometry} % Márgenes
 \usepackage{graphicx} % Para insertar imágenes
@@ -132,6 +133,44 @@
     \end{flushleft}
 \end{titlepage}
 \setcounter{page}{2}
+
+% ------------------------------------------
+% RESUMEN (CASTELLANO, CATALÁN E INGLÉS)
+% ------------------------------------------
+\chapter*{Resumen}
+Este Trabajo de Final de Grado diseña e implementa un Cuadro de Mando Integral (CMI) en Power BI para dar soporte a la toma de decisiones en la educación primaria de Cataluña. La fuente son los microdatos abiertos de la evaluación de 6.\textordmasculine{} de primaria que publica la Generalitat: más de 1,1 millones de registros de las convocatorias de 2009 a 2025, con las puntuaciones por competencia y subcompetencia y variables del alumno y del centro.
+
+Estos datos se publican en una sola tabla plana y los resultados oficiales solo se difunden en informes PDF, de modo que no se pueden cruzar por territorio, tipo de centro o género ni seguir su evolución. Antes de modelarlos se auditó su calidad y aparecieron problemas que alteran los resultados si no se tratan, como columnas de puntuación rotadas en 2016 y 2017, columnas desalineadas en 2010, cambios de codificación entre convocatorias y la reorganización territorial de 2024. Las reglas de limpieza resultantes se aplican en una ETL con Power Query, que carga un modelo dimensional en estrella con dos tablas de hechos.
+
+Sobre este modelo se define un catálogo de 12 indicadores clave (KPI), organizados en cuatro perspectivas del CMI adaptadas al sector público, y cuadros de mando pensados para tres perfiles: el Departamento de Educación, la inspección territorial y la dirección de centro. Una réplica independiente en Python comprueba los cálculos: 70 de las 72 medias de Cataluña coinciden con las publicadas oficialmente con una diferencia máxima de 0,2 puntos.
+
+\vspace{0.5cm}
+\noindent\textbf{Palabras clave:} Cuadro de Mando Integral, \textit{Business Intelligence}, Power BI, calidad de datos, modelo dimensional, evaluación educativa, datos abiertos.
+
+\begin{otherlanguage}{catalan}
+\chapter*{Resum}
+Aquest Treball de Final de Grau dissenya i implementa un Quadre de Comandament Integral (QCI) en Power BI per donar suport a la presa de decisions en l'educació primària de Catalunya. La font són les microdades obertes de l'avaluació de sisè de primària que publica la Generalitat: més d'1,1 milions de registres de les convocatòries de 2009 a 2025, amb les puntuacions per competència i subcompetència i variables de l'alumne i del centre.
+
+Aquestes dades es publiquen en una sola taula plana i els resultats oficials només es difonen en informes PDF, de manera que no es poden creuar per territori, tipus de centre o gènere ni seguir-ne l'evolució. Abans de modelar-les se'n va auditar la qualitat i van aparèixer problemes que alteren els resultats si no es tracten, com ara columnes de puntuació rotades el 2016 i el 2017, columnes desalineades el 2010, canvis de codificació entre convocatòries i la reorganització territorial del 2024. Les regles de neteja resultants s'apliquen en una ETL amb Power Query, que carrega un model dimensional en estrella amb dues taules de fets.
+
+Sobre aquest model es defineix un catàleg de 12 indicadors clau (KPI), organitzats en quatre perspectives del QCI adaptades al sector públic, i quadres de comandament pensats per a tres perfils: el Departament d'Educació, la inspecció territorial i la direcció de centre. Una rèplica independent en Python comprova els càlculs: 70 de les 72 mitjanes de Catalunya coincideixen amb les publicades oficialment amb una diferència màxima de 0,2 punts.
+
+\vspace{0.5cm}
+\noindent\textbf{Paraules clau:} Quadre de Comandament Integral, \textit{Business Intelligence}, Power BI, qualitat de dades, model dimensional, avaluació educativa, dades obertes.
+\end{otherlanguage}
+
+\begin{otherlanguage}{english}
+\chapter*{Abstract}
+This bachelor's thesis designs and implements a Balanced Scorecard in Power BI to support decision-making in primary education in Catalonia. The source is the open microdata of the sixth-grade primary assessment published by the Government of Catalonia: more than 1.1 million records from the 2009 to 2025 assessments, with scores by competence and sub-competence and student and school variables.
+
+The data are published as a single flat table and the official results are only released as PDF reports, so they cannot be broken down by territory, school type or gender, or tracked over time. A data quality audit carried out before modelling found problems that distort the results unless they are handled, such as rotated score columns in 2016 and 2017, misaligned columns in 2010, coding changes between years and the 2024 territorial reorganisation. The resulting cleaning rules are applied in a Power Query ETL process that loads a dimensional star schema with two fact tables.
+
+On top of this model, a catalogue of 12 key performance indicators (KPIs) is defined, grouped into four Balanced Scorecard perspectives adapted to the public sector, along with dashboards for three user profiles: the Department of Education, territorial inspection and school management. An independent Python replica checks the calculations: 70 of the 72 Catalan averages match the official figures within 0.2 points.
+
+\vspace{0.5cm}
+\noindent\textbf{Keywords:} Balanced Scorecard, Business Intelligence, Power BI, data quality, dimensional modelling, educational assessment, open data.
+\end{otherlanguage}
+
 
 % ------------------------------------------
 % ÍNDICES (GENERAL, TABLAS Y FIGURAS)
