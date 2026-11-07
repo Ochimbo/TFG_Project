@@ -36,6 +36,12 @@
 \usepackage{pgfgantt}  % Diagrama de Gantt nativo
 \usetikzlibrary{arrows.meta, positioning}
 
+% Marcas de apartados terminados para la revisión de las directoras.
+% Se pone \terminado debajo del título de cada apartado acabado. 1 = se muestran, 0 = se ocultan (PDF y .docx).
+\newcommand{\mostrarterminados}{1}
+\definecolor{verdeterminado}{RGB}{226,239,218}
+\newcommand{\terminado}{\ifnum\mostrarterminados=1\par\noindent\colorbox{verdeterminado}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{\small$\checkmark$\ \textbf{Apartado terminado:} no hace falta revisarlo.}}\par\medskip\fi}
+
 % Leyendas de tablas y figuras debajo del elemento
 \usepackage{caption}
 \captionsetup{font=small, labelfont=bf, skip=6pt}
@@ -823,6 +829,7 @@ Con estas medidas, ninguno de los riesgos compromete la defensa en el periodo or
 % CAPÍTULO 6: GESTIÓN ECONÓMICA
 % ------------------------------------------
 \chapter{Gestión económica}
+\terminado
 El presupuesto sigue la estructura propuesta en la asignatura \cite{fib_costos}: costes de personal por actividad (CPA), costes genéricos (CG), contingencia (C) e imprevistos (I). Se valora como si fuera un encargo profesional.
 
 \section{Costes de personal por actividad (CPA)}
@@ -1365,6 +1372,7 @@ HU15 & \textit{Como inspector o inspectora, quiero consultar el CMI desde el nav
 % CAPÍTULO 9: SOSTENIBILIDAD
 % ------------------------------------------
 \chapter{Sostenibilidad y compromiso social}
+\terminado
 
 \section{Autoevaluación}
 Tras responder la encuesta de autoevaluación de la competencia de sostenibilidad, he valorado todas las cuestiones con la respuesta \textit{\guillemotleft{}Bastante\guillemotright{}}. El resultado indica un nivel intermedio-alto y homogéneo en las tres dimensiones: tengo una base sólida, pero aún no domino ninguna de ellas a nivel experto.

@@ -73,6 +73,9 @@ NUEVOS = [
     estilo("TOC1", "toc 1", '<w:spacing w:before="120" w:after="20"/>', '<w:b/><w:bCs/>'),
     estilo("TOC2", "toc 2", '<w:spacing w:after="20"/><w:ind w:left="300"/>'),
     estilo("TOC3", "toc 3", '<w:spacing w:after="20"/><w:ind w:left="600"/>', '<w:sz w:val="20"/><w:szCs w:val="20"/>'),
+    estilo("Terminado", "Terminado", '<w:spacing w:before="0" w:after="200"/><w:shd w:val="clear" w:color="auto" '
+           'w:fill="E2EFDA"/><w:pBdr><w:left w:val="single" w:sz="24" w:space="6" w:color="70AD47"/></w:pBdr>',
+           '<w:sz w:val="20"/><w:szCs w:val="20"/>'),
     estilo("IndiceTitulo", "Indice Titulo", '<w:spacing w:after="280"/>',
            f'{FUENTES}<w:b/><w:bCs/><w:sz w:val="32"/><w:szCs w:val="32"/>'),
 ]

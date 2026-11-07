@@ -1,6 +1,7 @@
 -- Filtro de Pandoc para exportar la memoria a .docx con un aspecto parecido al PDF.
 -- Rehace la portada, inserta el índice tras los resúmenes, añade saltos de página antes de cada capítulo,
--- numera tablas y figuras por capítulo (Tabla 3.2) y reparte el ancho de las columnas según su contenido.
+-- numera tablas y figuras por capítulo (Tabla 3.2), reparte el ancho de las columnas según su contenido
+-- y convierte las marcas de apartado terminado en una franja verde.
 
 local capitulo = 0
 local n_tabla, n_figura = 0, 0
@@ -173,6 +174,12 @@ end
 
 local principal = {
   traverse = "topdown",
+  Para = function(p)
+    if pandoc.utils.stringify(p) == "MARCATERMINADO" then
+      return con_estilo("Terminado", { pandoc.Str("✓"), pandoc.Space(), pandoc.Strong(pandoc.Str("Apartado terminado:")),
+        pandoc.Space(), pandoc.Str("no hace falta revisarlo.") })
+    end
+  end,
   Div = function(div)
     if div.classes:includes("titlepage") then
       return portada(div), false
