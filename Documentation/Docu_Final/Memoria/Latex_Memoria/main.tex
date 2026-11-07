@@ -981,7 +981,235 @@ Siendo $t_e$ y $t_r$ las tarifas estimada y real, $h_e$ y $h_r$ las horas estima
 Las desviaciones negativas se cubren primero con la partida de imprevistos, si las causa un riesgo identificado, y después con la de contingencia. Como los imprevistos funcionan como un sistema de compensación, lo reservado para los riesgos que no se materialicen puede cubrir a los que sí lo hagan. Si la desviación acumulada supera el 10\% del coste previsto o el CPI o el SPI bajan de 0,9 durante dos \textit{sprints} consecutivos, se revisa el proyecto con las directoras: según la naturaleza del problema, se ajusta el alcance (renunciando primero a las extensiones opcionales) y se replanifica.
 
 % ------------------------------------------
-% CAPÍTULO 7: SOSTENIBILIDAD
+% CAPÍTULO 7: ESPECIFICACIÓN
+% ------------------------------------------
+\chapter{Especificación}
+\label{cap:especificacion}
+La especificación describe qué hará el sistema desde el punto de vista de quien lo usa, sin entrar todavía en cómo se construye. Parte de los requisitos de la Sección~\ref{sec:requisitos} y empieza por el modelo de casos de uso.
+
+\section{Modelo de casos de uso}
+\label{sec:casos_uso}
+El modelo tiene seis actores (Figura~\ref{fig:casos_uso}). Los actores principales son los tres perfiles de decisión (E, T y O), que se representan como especializaciones de un actor genérico, el usuario del CMI. Este actor reúne lo que puede hacer cualquier perfil: filtrar los resultados, consultar su evolución y cambiar de panel. Cada perfil añade la consulta de su propio panel. La desarrolladora es la única que carga y actualiza los datos, y el Portal de Datos Abiertos interviene como sistema externo porque de él sale el fichero de origen \cite{transparencia_catalunya_2024}. Las directoras del TFG y los beneficiarios indirectos de la Tabla~\ref{tab:stakeholders} no interactúan con el sistema, así que no aparecen en el modelo.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{imagenes/especificacion/casos_uso.png}
+\caption{Diagrama de casos de uso.}
+\label{fig:casos_uso}
+\end{figure}
+
+Los paneles táctico y operativo incluyen la comparación con Cataluña (CU07), porque los dos sitúan un territorio o un contexto frente al total. El panel operativo incluye además el desglose por subcompetencias (CU08) y la distribución del alumnado por nivel de logro (CU09), que muestran en qué falla un contexto concreto. El cálculo de los indicadores, el semáforo y la regla de las 30 puntuaciones no forman casos de uso propios, porque el usuario no los pide: el sistema los aplica en cada consulta y se describen dentro de los casos que los usan.
+
+La Tabla~\ref{tab:casos_uso} relaciona cada caso de uso con su actor y con los requisitos funcionales que cubre. Cada requisito, de RF01 a RF18, queda cubierto por al menos un caso de uso.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} p{1.1cm} X >{\raggedright\arraybackslash}p{3.7cm} >{\raggedright\arraybackslash}p{2.9cm} @{}}
+\toprule
+\textbf{ID} & \textbf{Caso de uso} & \textbf{Actor} & \textbf{Requisitos} \\ \midrule
+CU01 & Cargar y depurar las convocatorias & Desarrolladora y Portal de Datos Abiertos & RF01--RF05 \\ \addlinespace
+CU02 & Consultar el panel estratégico & E & RF08, RF11, RF13, RF16 \\ \addlinespace
+CU03 & Consultar el panel táctico & T & RF09, RF11, RF13, RF17 \\ \addlinespace
+CU04 & Consultar el panel operativo & O & RF07, RF09, RF11--RF14, RF18 \\ \addlinespace
+CU05 & Filtrar los resultados & Usuario del CMI & RF06, RF10, RF11, RF14 \\ \addlinespace
+CU06 & Consultar la evolución temporal & Usuario del CMI & RF08, RF14, RF15 \\ \addlinespace
+CU07 & Comparar con Cataluña & Incluido en CU03 y CU04 & RF09, RF13, RF14 \\ \addlinespace
+CU08 & Desglosar por subcompetencias & Incluido en CU04 & RF07, RF14 \\ \addlinespace
+CU09 & Consultar la distribución por nivel de logro & Incluido en CU04 & RF04, RF12, RF14 \\ \addlinespace
+CU10 & Cambiar de panel & Usuario del CMI & RF10 \\ \bottomrule
+\end{tabularx}
+\caption{Casos de uso, actores y requisitos funcionales que cubren.}
+\label{tab:casos_uso}
+\end{table}
+
+\subsection{Descripción de los casos de uso}
+Cada caso de uso se describe con una ficha (Tablas~\ref{tab:cu01} a \ref{tab:cu10}) que indica el actor, la precondición, el flujo principal y las extensiones, que son los caminos que se apartan del flujo principal. Las extensiones se numeran con el paso del que salen; por ejemplo, 3a es una alternativa al paso 3. En los casos incluidos (CU07, CU08 y CU09), el actor es el del caso que los incluye.
+
+\begin{table}[H]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{2.8cm} X @{}}
+\toprule
+\textbf{CU01} & \textbf{Cargar y depurar las convocatorias} \\ \midrule
+Actor principal & Desarrolladora. \\ \addlinespace
+Actor secundario & Portal de Datos Abiertos. \\ \addlinespace
+Precondición & El Portal publica el fichero con una convocatoria nueva o con correcciones de las anteriores. \\ \addlinespace
+Flujo principal & 1. La desarrolladora descarga el fichero CSV del Portal y sustituye el fichero de origen.\newline 2. La desarrolladora inicia la actualización del modelo.\newline 3. El sistema comprueba la estructura del fichero, los códigos y el rango de las puntuaciones.\newline 4. El sistema unifica los códigos y literales de cada convocatoria y corrige los errores estructurales conocidos.\newline 5. El sistema marca la calidad de cada puntuación sin eliminar ningún registro.\newline 6. El sistema recalcula los indicadores y los paneles muestran los datos actualizados. \\ \addlinespace
+Extensiones & 1a. El fichero solo corrige convocatorias ya cargadas: el flujo es el mismo, porque cada carga lee el fichero completo y sustituye los datos anteriores.\newline 3a. El fichero tiene una estructura, un código o una puntuación no previstos: el sistema detiene la carga, indica la regla incumplida y conserva los datos de la carga anterior. \\ \addlinespace
+Postcondición & El modelo contiene todas las convocatorias del fichero, con la calidad de cada puntuación marcada. \\ \addlinespace
+Requisitos & RF01--RF05, RNF07, RNF09. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha del caso de uso CU01.}
+\label{tab:cu01}
+\end{table}
+
+\begin{table}[!tbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{2.8cm} X @{}}
+\toprule
+\textbf{CU02} & \textbf{Consultar el panel estratégico} \\ \midrule
+Actor principal & Departamento de Educación (E). \\ \addlinespace
+Precondición & El modelo tiene al menos una convocatoria cargada (CU01). \\ \addlinespace
+Flujo principal & 1. El usuario abre el panel estratégico.\newline 2. El sistema muestra, para la última convocatoria, la puntuación media, el alumnado en nivel bajo, la dispersión, la variación respecto a la convocatoria anterior, el porcentaje de competencias que mejoran y el alumnado evaluado. La puntuación media, el alumnado en nivel bajo y la variación llevan semáforo.\newline 3. El sistema muestra la evolución de la puntuación media de cada competencia en todas las convocatorias.\newline 4. El sistema muestra una tabla con los indicadores de cada competencia en la convocatoria elegida. \\ \addlinespace
+Extensiones & 2a. La convocatoria elegida es la primera de la serie: la variación respecto a la anterior queda en blanco.\newline 2b. El usuario cambia la convocatoria o la competencia: se aplica CU05 y el panel se actualiza. \\ \addlinespace
+Postcondición & Ninguna: la consulta no modifica los datos. \\ \addlinespace
+Requisitos & RF08, RF11, RF13, RF16. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha del caso de uso CU02.}
+\label{tab:cu02}
+\end{table}
+
+\begin{table}[!tbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{2.8cm} X @{}}
+\toprule
+\textbf{CU03} & \textbf{Consultar el panel táctico} \\ \midrule
+Actor principal & Inspección y coordinación territorial (T). \\ \addlinespace
+Precondición & El modelo tiene al menos una convocatoria cargada (CU01). \\ \addlinespace
+Flujo principal & 1. El usuario abre el panel táctico.\newline 2. El sistema muestra, para la última convocatoria, la brecha de género, la brecha entre centros públicos y privados, la diferencia entre municipios urbanos y rurales y la desviación de cada área respecto a Cataluña.\newline 3. El usuario selecciona un área territorial.\newline 4. El sistema muestra la posición del área entre todas las áreas y compara sus resultados con Cataluña (CU07). El gráfico de desviaciones sigue mostrando todas las áreas.\newline 5. El sistema muestra la evolución de la puntuación media, con las áreas agrupadas en series comparables entre convocatorias. \\ \addlinespace
+Extensiones & 3a. El usuario no selecciona ningún área: los indicadores se calculan para el total de Cataluña y la posición del área queda en blanco.\newline 3b. El usuario cambia la convocatoria, la competencia u otro filtro: se aplica CU05 y el panel se actualiza. \\ \addlinespace
+Postcondición & Ninguna: la consulta no modifica los datos. \\ \addlinespace
+Requisitos & RF09, RF11, RF13, RF17. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha del caso de uso CU03.}
+\label{tab:cu03}
+\end{table}
+
+\begin{table}[!tbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{2.8cm} X @{}}
+\toprule
+\textbf{CU04} & \textbf{Consultar el panel operativo} \\ \midrule
+Actor principal & Dirección de centro (O). \\ \addlinespace
+Precondición & El modelo tiene al menos una convocatoria cargada (CU01). \\ \addlinespace
+Flujo principal & 1. El usuario abre el panel operativo.\newline 2. El usuario define el contexto de su centro con el área territorial, la titularidad y el hábitat.\newline 3. El sistema muestra la puntuación media del contexto, su desviación respecto a Cataluña y su estado con semáforo (CU07).\newline 4. El sistema muestra la puntuación de cada subcompetencia (CU08) y la distribución del alumnado por nivel de logro (CU09).\newline 5. El sistema muestra la evolución del contexto frente a la de Cataluña, con el aviso sobre la comparabilidad entre convocatorias. \\ \addlinespace
+Extensiones & 2a. El usuario solo define una parte del contexto: el sistema calcula los indicadores con los filtros elegidos.\newline 3a. Algún indicador del contexto se calcula sobre menos de 30 puntuaciones: el sistema lo deja en blanco y el usuario puede ampliar el contexto quitando un filtro. \\ \addlinespace
+Postcondición & Ninguna: la consulta no modifica los datos. \\ \addlinespace
+Requisitos & RF07, RF09, RF11--RF14, RF18. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha del caso de uso CU04.}
+\label{tab:cu04}
+\end{table}
+
+\begin{table}[!tbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{2.8cm} X @{}}
+\toprule
+\textbf{CU05} & \textbf{Filtrar los resultados} \\ \midrule
+Actor principal & Usuario del CMI (E, T u O). \\ \addlinespace
+Precondición & El usuario tiene abierto uno de los tres paneles. \\ \addlinespace
+Flujo principal & 1. El usuario elige valores en los filtros del panel: convocatoria, competencia, área territorial, titularidad, hábitat o género.\newline 2. El sistema recalcula los indicadores y los gráficos de la página con la selección.\newline 3. El usuario selecciona un elemento de un gráfico, por ejemplo una barra o una fila.\newline 4. El sistema filtra el resto de elementos de la página con ese elemento. \\ \addlinespace
+Extensiones & 2a. Algún indicador queda calculado sobre menos de 30 puntuaciones: el sistema lo deja en blanco.\newline 4a. El usuario vuelve a seleccionar el mismo elemento: el sistema quita ese filtro. \\ \addlinespace
+Postcondición & La selección de año, competencia y área se mantiene al cambiar de panel (CU10). \\ \addlinespace
+Requisitos & RF06, RF10, RF11, RF14, RNF01. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha del caso de uso CU05.}
+\label{tab:cu05}
+\end{table}
+
+\begin{table}[!tbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{2.8cm} X @{}}
+\toprule
+\textbf{CU06} & \textbf{Consultar la evolución temporal} \\ \midrule
+Actor principal & Usuario del CMI (E, T u O). \\ \addlinespace
+Precondición & El usuario tiene abierto uno de los tres paneles. \\ \addlinespace
+Flujo principal & 1. El usuario consulta el gráfico de evolución del panel.\newline 2. El sistema muestra el indicador en todas las convocatorias disponibles, sea cual sea la convocatoria seleccionada en los filtros.\newline 3. El sistema marca 2020 como un hueco, porque ese año no hubo prueba, y muestra junto al gráfico el aviso de que las puntuaciones no están equiparadas entre convocatorias. \\ \addlinespace
+Extensiones & 2a. El usuario ha filtrado un área o un contexto: la evolución se calcula para esa selección y las convocatorias con menos de 30 puntuaciones quedan en blanco.\newline 2b. El gráfico compara áreas territoriales: las áreas que cambiaron con la reorganización de 2024 se muestran agrupadas en series comparables. \\ \addlinespace
+Postcondición & Ninguna: la consulta no modifica los datos. \\ \addlinespace
+Requisitos & RF08, RF14, RF15. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha del caso de uso CU06.}
+\label{tab:cu06}
+\end{table}
+
+\begin{table}[!tbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{2.8cm} X @{}}
+\toprule
+\textbf{CU07} & \textbf{Comparar con Cataluña} \\ \midrule
+Actor principal & El del caso que lo incluye: inspección (CU03) o dirección de centro (CU04). \\ \addlinespace
+Precondición & El usuario ha seleccionado un área territorial o ha definido un contexto. \\ \addlinespace
+Flujo principal & 1. El sistema calcula la puntuación media de la selección y la de Cataluña con la misma convocatoria y competencia.\newline 2. El sistema muestra la desviación entre las dos y su estado con semáforo. \\ \addlinespace
+Extensiones & 1a. No hay ningún área ni contexto seleccionado: la desviación queda en blanco.\newline 1b. La selección tiene menos de 30 puntuaciones: el sistema deja la comparación en blanco. \\ \addlinespace
+Postcondición & Ninguna: la consulta no modifica los datos. \\ \addlinespace
+Requisitos & RF09, RF13, RF14. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha del caso de uso CU07.}
+\label{tab:cu07}
+\end{table}
+
+\begin{table}[!tbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{2.8cm} X @{}}
+\toprule
+\textbf{CU08} & \textbf{Desglosar por subcompetencias} \\ \midrule
+Actor principal & Dirección de centro (O), desde CU04. \\ \addlinespace
+Precondición & El usuario ha definido el contexto de su centro (CU04). \\ \addlinespace
+Flujo principal & 1. El sistema muestra la puntuación media de cada subcompetencia del contexto, agrupada por competencia.\newline 2. El usuario selecciona una competencia.\newline 3. El sistema muestra solo las subcompetencias de esa competencia. \\ \addlinespace
+Extensiones & 1a. Una subcompetencia no tiene puntuaciones en la convocatoria elegida: no aparece en el gráfico.\newline 1b. Una subcompetencia tiene menos de 30 puntuaciones en el contexto: su valor queda en blanco. \\ \addlinespace
+Postcondición & Ninguna: la consulta no modifica los datos. \\ \addlinespace
+Requisitos & RF07, RF14. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha del caso de uso CU08.}
+\label{tab:cu08}
+\end{table}
+
+\begin{table}[!tbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{2.8cm} X @{}}
+\toprule
+\textbf{CU09} & \textbf{Consultar la distribución por nivel de logro} \\ \midrule
+Actor principal & Dirección de centro (O), desde CU04. \\ \addlinespace
+Precondición & El usuario ha definido el contexto de su centro (CU04). \\ \addlinespace
+Flujo principal & 1. El sistema muestra, para cada competencia, el porcentaje del alumnado del contexto en cada nivel de logro: bajo, medio-bajo, medio-alto y alto. \\ \addlinespace
+Extensiones & 1a. Hay puntuaciones marcadas como no válidas: no se cuentan en ningún nivel.\newline 1b. La competencia tiene menos de 30 puntuaciones en el contexto: su distribución queda en blanco. \\ \addlinespace
+Postcondición & Ninguna: la consulta no modifica los datos. \\ \addlinespace
+Requisitos & RF04, RF12, RF14. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha del caso de uso CU09.}
+\label{tab:cu09}
+\end{table}
+
+\begin{table}[!tbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{2.8cm} X @{}}
+\toprule
+\textbf{CU10} & \textbf{Cambiar de panel} \\ \midrule
+Actor principal & Usuario del CMI (E, T u O). \\ \addlinespace
+Precondición & El usuario tiene abierto uno de los tres paneles. \\ \addlinespace
+Flujo principal & 1. El usuario pulsa la pestaña de otro panel.\newline 2. El sistema abre el panel elegido con la misma selección de año, competencia y área.\newline 3. El sistema calcula los indicadores del nuevo panel con esa selección. \\ \addlinespace
+Extensiones & 2a. El panel elegido no tiene alguno de esos filtros, como el área en el panel estratégico: ese filtro no se aplica y se recupera al volver a un panel que lo tenga. \\ \addlinespace
+Postcondición & Ninguna: la consulta no modifica los datos. \\ \addlinespace
+Requisitos & RF10. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha del caso de uso CU10.}
+\label{tab:cu10}
+\end{table}
+
+% ------------------------------------------
+% CAPÍTULO 8: SOSTENIBILIDAD
 % ------------------------------------------
 \chapter{Sostenibilidad y compromiso social}
 
