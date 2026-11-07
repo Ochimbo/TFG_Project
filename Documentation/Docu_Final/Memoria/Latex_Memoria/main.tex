@@ -27,6 +27,7 @@
 \usepackage{array}    % Personalización de columnas
 \usepackage{multirow} % Celdas combinadas
 \usepackage{float}    % Posición exacta de tablas con [H]
+\usepackage{longtable} % Tablas que continúan en la página siguiente
 \usepackage{placeins} % \FloatBarrier: las fichas de casos de uso no pasan del apartado siguiente
 \usepackage{amsmath, amssymb} % Símbolos matemáticos
 \usepackage{csquotes}
@@ -570,6 +571,7 @@ R6 & Desviación de la planificación por un alcance excesivo & Media (30\%) & A
 \chapter{Metodología y rigor}
 
 \section{Metodología de trabajo}
+\label{sec:metodologia}
 Se adopta un enfoque híbrido que combina el ciclo de vida de Kimball para proyectos de \textit{Data Warehouse} \cite{kimball2008lifecycle} con prácticas de Scrum \cite{schwaber2020scrum}, estudiados en asignaturas de la especialidad. El ciclo de Kimball aporta la secuencia técnica (requisitos, modelo dimensional, ETL, aplicación BI y despliegue), mientras que Scrum aporta iteraciones cortas y la adaptación continua a lo que se descubra sobre los datos.
 
 La adaptación al proyecto es la siguiente: al haber una sola desarrolladora, se trabaja en \textbf{\textit{sprints} de dos semanas} con un \textit{backlog} priorizado según el alcance mínimo de la Tabla~\ref{tab:alcance}. Cada \textit{sprint} empieza con una planificación y termina con una revisión con las directoras (que actúan como \textit{product owner}) en la que se validan los incrementos: perfilado de datos, modelo, ETL, medidas y paneles.
@@ -986,7 +988,7 @@ Las desviaciones negativas se cubren primero con la partida de imprevistos, si l
 % ------------------------------------------
 \chapter{Especificación}
 \label{cap:especificacion}
-La especificación describe qué hará el sistema desde el punto de vista de quien lo usa, sin entrar todavía en cómo se construye. Parte de los requisitos de la Sección~\ref{sec:requisitos} y los describe desde tres puntos de vista: qué hace cada usuario con el sistema (casos de uso), qué información maneja (modelo conceptual) y cómo se reparten las funciones entre sus partes (arquitectura general).
+La especificación describe qué hará el sistema desde el punto de vista de quien lo usa, sin entrar todavía en cómo se construye. Parte de los requisitos de la Sección~\ref{sec:requisitos} y los describe desde tres puntos de vista: qué hace cada usuario con el sistema (casos de uso), qué información maneja (modelo conceptual) y cómo se reparten las funciones entre sus partes (arquitectura general). Termina con las historias de usuario, que traducen todo lo anterior al \textit{backlog} del desarrollo.
 
 \section{Modelo de casos de uso}
 \label{sec:casos_uso}
@@ -1269,8 +1271,53 @@ Las etapas de la ETL a la presentación forman un único proyecto de Power BI De
 
 Fuera de Power BI hay una validación independiente escrita en Python con DuckDB. Lee el mismo fichero, repite la depuración y el cálculo de los KPIs y compara sus resultados con los del modelo y con los informes oficiales \cite{csase_resultats}. Así se comprueba la exactitud de los cálculos (RNF06) con un método distinto al que se quiere validar (Sección~\ref{sec:validacion}).
 
+\section{Historias de usuario}
+\label{sec:historias}
+Las historias de usuario recogen los requisitos como necesidades concretas de quien usa el sistema y forman el \textit{backlog} del desarrollo (Sección~\ref{sec:metodologia}). Siguen el formato \guillemotleft{}Como [perfil], quiero [acción] para [objetivo]\guillemotright{} y cada una tiene criterios de aceptación, que permiten decidir en la revisión de cada \textit{sprint} si la historia está terminada. Un caso de uso describe una interacción completa con el sistema, y una historia, una sola necesidad, así que un mismo caso de uso puede dar lugar a varias historias.
+
+La Tabla~\ref{tab:historias} agrupa las historias por perfil. La columna de trazabilidad indica el caso de uso, los requisitos y la prioridad. La prioridad sigue el alcance de la Tabla~\ref{tab:alcance}: las historias imprescindibles forman el alcance mínimo y la única opcional (HU15) corresponde a una de las extensiones.
+
+{\small\setstretch{1.0}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{} p{1cm} p{10.6cm} >{\raggedright\arraybackslash}p{2.7cm} @{}}
+\toprule
+\textbf{ID} & \textbf{Historia y criterios de aceptación} & \textbf{Trazabilidad} \\ \midrule
+\endfirsthead
+\toprule
+\textbf{ID} & \textbf{Historia y criterios de aceptación} & \textbf{Trazabilidad} \\ \midrule
+\endhead
+\bottomrule
+\caption{Historias de usuario.}\label{tab:historias}
+\endlastfoot
+\multicolumn{3}{@{}l}{\textit{Perfil estratégico (Departamento de Educación)}} \\
+HU01 & \textit{Como responsable del Departamento de Educación, quiero ver de un vistazo la puntuación media de Cataluña y el porcentaje de alumnado con nivel bajo para saber si las competencias básicas mejoran.}\newline \textbullet{} Al abrir el panel aparecen K01 y K03 de la última convocatoria.\newline \textbullet{} Cada tarjeta lleva un semáforo favorable, neutro o desfavorable.\newline \textbullet{} Las medias de Cataluña difieren menos de 0,5 puntos de las oficiales. & CU02\newline RF11, RF13, RF16\newline Imprescindible \\ \addlinespace
+HU02 & \textit{Como responsable del Departamento de Educación, quiero ver la evolución de cada competencia en todas las convocatorias para detectar tendencias.}\newline \textbullet{} El gráfico muestra de 2009 a 2025 aunque se filtre un año.\newline \textbullet{} 2020 aparece como un hueco señalado.\newline \textbullet{} El aviso sobre la comparabilidad entre convocatorias está a la vista. & CU06\newline RF08, RF15\newline Imprescindible \\ \addlinespace
+HU03 & \textit{Como responsable del Departamento de Educación, quiero saber qué competencias empeoran respecto a la convocatoria anterior para decidir dónde intervenir.}\newline \textbullet{} Una tabla muestra la variación (K10) de cada competencia.\newline \textbullet{} Una tarjeta indica el porcentaje de competencias que mejoran (K12).\newline \textbullet{} En la primera convocatoria la variación queda en blanco. & CU02\newline RF11, RF16\newline Imprescindible \\ \addlinespace
+\multicolumn{3}{@{}l}{\textit{Perfil táctico (inspección y coordinación territorial)}} \\
+HU04 & \textit{Como inspector o inspectora, quiero comparar cada área territorial con la media de Cataluña para detectar las que se alejan.}\newline \textbullet{} Un gráfico muestra la desviación (K07) de todas las áreas.\newline \textbullet{} Al seleccionar un área se siguen viendo las demás y la elegida queda destacada. & CU03, CU07\newline RF09, RF17\newline Imprescindible \\ \addlinespace
+HU05 & \textit{Como inspector o inspectora, quiero conocer las brechas de género, titularidad y hábitat para detectar problemas de equidad.}\newline \textbullet{} El panel muestra K04, K05 y K08 con el filtro activo.\newline \textbullet{} El signo de cada brecha indica a favor de qué grupo es.\newline \textbullet{} Una brecha calculada sobre menos de 30 puntuaciones queda en blanco. & CU03\newline RF11, RF14, RF17\newline Imprescindible \\ \addlinespace
+HU06 & \textit{Como inspector o inspectora, quiero ver la posición de mi área entre todas para decidir dónde priorizar el refuerzo.}\newline \textbullet{} Al seleccionar un área aparece su posición (K09) sobre el total de áreas.\newline \textbullet{} Sin área seleccionada, la posición queda en blanco. & CU03\newline RF17\newline Imprescindible \\ \addlinespace
+HU07 & \textit{Como inspector o inspectora, quiero seguir la evolución de las áreas aunque haya cambiado la organización territorial para comparar convocatorias.}\newline \textbullet{} Las áreas se agrupan en series comparables entre convocatorias.\newline \textbullet{} Las áreas afectadas por la reorganización de 2024 están señaladas. & CU06\newline RF08, RF15\newline Imprescindible \\ \addlinespace
+\multicolumn{3}{@{}l}{\textit{Perfil operativo (dirección de centro)}} \\
+HU08 & \textit{Como director o directora de un centro, quiero definir el contexto de mi centro para compararme con centros parecidos.}\newline \textbullet{} El panel tiene filtros de área, titularidad y hábitat.\newline \textbullet{} Los indicadores se actualizan en menos de 3 segundos.\newline \textbullet{} Si el contexto tiene menos de 30 puntuaciones, los indicadores quedan en blanco. & CU04, CU05\newline RF06, RF14, RF18\newline Imprescindible \\ \addlinespace
+HU09 & \textit{Como director o directora de un centro, quiero ver la desviación de mi contexto respecto a Cataluña para saber si estamos por encima o por debajo.}\newline \textbullet{} Una tarjeta muestra la desviación (K07) con semáforo.\newline \textbullet{} La media de Cataluña aparece al lado como referencia. & CU07\newline RF09, RF13\newline Imprescindible \\ \addlinespace
+HU10 & \textit{Como director o directora de un centro, quiero ver la puntuación de cada subcompetencia para saber en qué aspectos concretos hay más carencias.}\newline \textbullet{} Las subcompetencias (K02) se agrupan por competencia.\newline \textbullet{} Al seleccionar una competencia solo se ven sus subcompetencias. & CU08\newline RF07\newline Imprescindible \\ \addlinespace
+HU11 & \textit{Como director o directora de un centro, quiero ver cómo se reparte el alumnado por niveles de logro para estimar cuántos alumnos necesitan refuerzo.}\newline \textbullet{} Cada competencia muestra los cuatro niveles y entre todos suman el 100\%.\newline \textbullet{} Las puntuaciones marcadas como no válidas no se cuentan. & CU09\newline RF04, RF12\newline Imprescindible \\ \addlinespace
+\multicolumn{3}{@{}l}{\textit{Comunes, de la desarrolladora y opcionales}} \\
+HU12 & \textit{Como usuario del CMI, quiero que se mantenga la selección de año, competencia y área al cambiar de panel para no tener que repetir los filtros.}\newline \textbullet{} Al cambiar de panel, los filtros de año, competencia y área conservan su valor.\newline \textbullet{} Cada panel cabe en una pantalla sin desplazamiento. & CU05, CU10\newline RF10, RNF03\newline Imprescindible \\ \addlinespace
+HU13 & \textit{Como desarrolladora, quiero incorporar una convocatoria nueva sustituyendo el fichero para no tener que rediseñar el modelo cada año.}\newline \textbullet{} La actualización solo requiere cambiar el fichero y, si acaso, parámetros documentados.\newline \textbullet{} El número de registros por convocatoria coincide con el del fichero. & CU01\newline RF01, RNF09\newline Imprescindible \\ \addlinespace
+HU14 & \textit{Como desarrolladora, quiero que la carga se detenga cuando el fichero tenga algo no previsto para no publicar datos erróneos.}\newline \textbullet{} Una puntuación fuera de 0--100 o un código desconocido detienen la carga.\newline \textbullet{} El mensaje indica la regla incumplida.\newline \textbullet{} Se conservan los datos de la carga anterior. & CU01\newline RF02--RF05\newline Imprescindible \\ \addlinespace
+HU15 & \textit{Como inspector o inspectora, quiero consultar el CMI desde el navegador y ver solo mi territorio para no tener que instalar Power BI Desktop.}\newline \textbullet{} El informe está publicado en Power BI Service.\newline \textbullet{} La seguridad a nivel de fila limita los datos al área del usuario. & Extensión\newline Tabla~\ref{tab:alcance}\newline Opcional \\ \addlinespace
+\end{longtable}}
+
 % ------------------------------------------
-% CAPÍTULO 8: SOSTENIBILIDAD
+% CAPÍTULO 8: DISEÑO
+% ------------------------------------------
+\chapter{Diseño}
+\label{cap:diseno}
+\textit{Apartado en preparación.}
+
+% ------------------------------------------
+% CAPÍTULO 9: SOSTENIBILIDAD
 % ------------------------------------------
 \chapter{Sostenibilidad y compromiso social}
 
