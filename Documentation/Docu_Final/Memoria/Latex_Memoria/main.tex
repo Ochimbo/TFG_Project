@@ -248,6 +248,8 @@ Rompho \cite{rompho2020balanced} construyó un CMI para las escuelas públicas d
 
 El CMI también se usa fuera de la investigación. En Suecia, cuyo alumnado obtuvo en PISA 2022 resultados por encima de la media de la OCDE \cite{oecd2023pisa_sweden}, el \textit{Balanced Scorecard} figura entre las herramientas de autoevaluación que utilizan las escuelas \cite[p.~166]{oecd2015sweden}.
 
+En la propia UPC, el Gabinet de Planificació, Avaluació i Qualitat publica en Power BI una aplicación de rendimiento académico con la evolución del acceso, las calificaciones y el abandono de primer curso del estudiantado de grado y máster. Las tasas de rendimiento y de éxito se pueden desglosar por curso, centro, titulación y asignatura, con filtros sincronizados entre informes \cite{gpaq2021rendiment}. Es un cuadro de mando de indicadores, sin perspectivas ni objetivos estratégicos, y se centra en la universidad. Este TFG retoma la misma herramienta y la lleva a primaria, con los indicadores organizados como un CMI.
+
 La mayor parte de la investigación, sin embargo, trata de la universidad. Co\c{s}kun y Nizaeva \cite{coskun2023strategic} revisaron 267 documentos indexados en Scopus sobre el CMI en instituciones educativas y encontraron muchos menos estudios en primaria y secundaria que en educación superior. Este TFG se sitúa en ese hueco: aplica el modelo a la evaluación de 6.\textordmasculine{} de primaria de todo el sistema educativo catalán, a partir de los datos abiertos que publica la Generalitat.
 
 \subsection{Soluciones existentes para los datos de Cataluña}
@@ -282,7 +284,7 @@ Las puntuaciones se justifican así: Power BI Desktop es gratuito \cite{ms_power
 
 \section{Justificación del enfoque y de las herramientas seleccionadas}
 \label{sec:justificacion}
-Con estos criterios y pesos, Power BI es la alternativa que mejor se ajusta al proyecto ($S = 4{,}60$), con más de un punto de ventaja sobre Tableau, la segunda opción. Power Query permite que la limpieza de los datos sea un proceso repetible y DAX calcula los indicadores en función de los filtros que aplica cada usuario \cite{ferrari2019definitive}.
+Con estos criterios y pesos, Power BI es la alternativa que mejor se ajusta al proyecto ($S = 4{,}60$), con más de un punto de ventaja sobre Tableau, la segunda opción. Power Query permite que la limpieza de los datos sea un proceso repetible y DAX calcula los indicadores en función de los filtros que aplica cada usuario \cite{ferrari2019definitive}. Además, es la herramienta que usa la propia UPC para publicar los datos de rendimiento de su estudiantado \cite{gpaq2021rendiment}.
 
 Power BI resuelve la parte técnica. Para quien toma decisiones, lo útil depende de cómo se organizan los datos y los indicadores, y esa parte del enfoque se podría trasladar a otra plataforma. Se apoya en tres decisiones.
 
