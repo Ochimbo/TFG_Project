@@ -1317,6 +1317,50 @@ HU15 & \textit{Como inspector o inspectora, quiero consultar el CMI desde el nav
 \label{cap:diseno}
 \textit{Apartado en preparación.}
 
+\section{Modelo dimensional}
+\label{sec:modelo_dimensional}
+% Traducción del modelo conceptual (Sección 7.2) al esquema en estrella. Diagrama en imagenes/diseno/.
+
+\subsection{Granularidad y tablas de hechos}
+% Grano de FactEvaluacion y FactPuntuacion, medidas que contienen y por qué hay dos tablas de hechos.
+
+\subsection{Dimensiones}
+% Año, contexto del centro, perfil del alumno, competencia, nivel de logro y calidad del dato; claves y jerarquías.
+
+\subsection{Diccionario de datos}
+% Tablas, columnas, tipos y descripción.
+
+\section{Diseño de la ETL}
+\label{sec:diseno_etl}
+
+\subsection{Flujo de consultas}
+% Orden de las consultas de Power Query: lectura, tabla intermedia, dimensiones y hechos.
+
+\subsection{Reglas de limpieza y validación}
+% Reglas de la auditoría que aplica la ETL, en qué orden y qué hace la carga cuando una regla falla (RF01--RF05).
+
+\section{Lógica analítica}
+\label{sec:diseno_dax}
+
+\subsection{Fichas de los KPIs}
+% Una ficha por KPI: definición, fórmula DAX, filtros que respeta y perspectiva.
+
+\subsection{Semáforos y referencias}
+% Umbrales del semáforo, referencia de cada KPI y regla de las 30 puntuaciones (RF13, RF14).
+
+\section{Diseño de la interfaz}
+\label{sec:diseno_interfaz}
+
+\subsection{Estructura común y navegación}
+% Distribución común de los paneles, filtros sincronizados, paleta y accesibilidad (RF10, RNF02--RNF05).
+
+\subsection{Diseño final de los paneles}
+% Diseño definitivo de cada panel y cambios respecto a los bocetos de la Sección 3.5.
+
+\section{Organización del proyecto}
+\label{sec:organizacion_proyecto}
+% Estructura del proyecto .pbip, control de versiones y validación independiente en Python (RNF10).
+
 % ------------------------------------------
 % CAPÍTULO 9: SOSTENIBILIDAD
 % ------------------------------------------
