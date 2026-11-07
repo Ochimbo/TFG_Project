@@ -201,6 +201,7 @@ El entorno institucional de referencia es el Departamento de Educación de la Ge
 \end{itemize}
 
 \section{Descripción del problema a resolver}
+\label{sec:problema}
 El conjunto de datos de las evaluaciones de 6.\textordmasculine{} de primaria se publica como una única tabla plana de 32 columnas y más de un millón de filas \cite{transparencia_catalunya_2024}, mientras que los resultados oficiales se difunden mediante informes estáticos en PDF \cite{csase_resultats}. Esta situación presenta cuatro problemas:
 \begin{enumerate}
     \item \textbf{Falta de accesibilidad analítica:} el fichero en bruto (240 MB) es inmanejable para perfiles no técnicos como directores, inspectores o docentes.
@@ -277,18 +278,28 @@ C6. Mantenibilidad y escalabilidad & 15\% & 4 & 4 & 3 & 2 \\ \midrule
 
 Las puntuaciones se justifican así: Power BI Desktop es gratuito \cite{ms_powerbi_pricing} e integra Power Query y el motor columnar VertiPaq, optimizado para agregaciones masivas \cite{ferrari2019definitive}. Tableau requiere licencias comerciales y una herramienta aparte (Tableau Prep) para la ETL \cite{tableau_pricing}. Apache Superset es libre, pero depende de una base de datos externa y de SQL para preparar los datos \cite{apache_superset}. Dash o Streamlit exigen programar a medida toda la interfaz y la lógica de negocio, lo que aumenta el coste de mantenimiento.
 
-\section{Justificación de la solución propuesta}
-\textbf{Dados estos criterios y esta ponderación, Power BI es la alternativa que mejor se adapta a las necesidades del proyecto} ($S = 4{,}60$), con más de un punto de ventaja sobre la segunda opción. La solución se apoya en tres pilares:
-\begin{enumerate}
-    \item \textbf{Modelo dimensional en estrella (Kimball)} \cite{kimball2013data}: frente a un modelo relacional normalizado (3FN), orientado a transacciones, el modelo dimensional reduce los \textit{joins}, maximiza la compresión en VertiPaq y usa conceptos del negocio (alumno, centro, año, competencia) comprensibles para el usuario.
-    \item \textbf{Ecosistema Power BI}: Power Query para una ETL repetible y DAX para los KPIs dinámicos \cite{ferrari2019definitive}.
-    \item \textbf{CMI adaptado al sector público} \cite{niven2008balanced}: los KPIs se organizan en cuatro perspectivas alineadas con la misión del sistema educativo (Sección~\ref{sec:alcance_min}).
-\end{enumerate}
+\section{Justificación del enfoque y de las herramientas seleccionadas}
+\label{sec:justificacion}
+Con estos criterios y pesos, Power BI es la alternativa que mejor se ajusta al proyecto ($S = 4{,}60$), con más de un punto de ventaja sobre Tableau, la segunda opción. Power Query permite que la limpieza de los datos sea un proceso repetible y DAX calcula los indicadores en función de los filtros que aplica cada usuario \cite{ferrari2019definitive}.
+
+Power BI resuelve la parte técnica. Para quien toma decisiones, lo útil depende de cómo se organizan los datos y los indicadores, y esa parte del enfoque se podría trasladar a otra plataforma. Se apoya en tres decisiones.
+
+La primera es usar un CMI adaptado al sector público \cite{niven2008balanced}. Los indicadores se agrupan en cuatro perspectivas ligadas a la misión del sistema educativo, y cada uno responde a una pregunta concreta de un perfil de usuario (Tabla~\ref{tab:preguntas}). Así, quien consulta el cuadro de mando ve si un objetivo va bien o se desvía, con semáforos y evolución temporal, en lugar de una tabla de cifras que debe interpretar por su cuenta. Este planteamiento está validado empíricamente en escuelas públicas \cite{rompho2020balanced}.
+
+La segunda es el modelo dimensional en estrella \cite{kimball2013data}. Frente a un modelo relacional normalizado, pensado para transacciones, reduce las uniones entre tablas, se comprime mejor en el motor de Power BI y usa conceptos que el usuario reconoce: alumno, centro, año y competencia. Esto permite cruzar cada competencia con el territorio, la titularidad, el hábitat o el género, algo que los informes oficiales no permiten (Sección~\ref{sec:problema}).
+
+La tercera es auditar la calidad de los datos antes de calcular nada. Si los datos tienen errores, los indicadores los heredan, y la auditoría encontró problemas que alteran los resultados si no se tratan, como columnas de puntuación intercambiadas en algunos años. Las reglas de limpieza son explícitas, los datos dudosos se marcan en lugar de borrarse y las medias calculadas se contrastan con las oficiales, de modo que el usuario puede confiar en lo que ve.
+
+El resultado es distinto para cada perfil. El Departamento puede seguir la evolución de las competencias y del alumnado con nivel bajo en toda Cataluña. La inspección puede detectar qué áreas se alejan de la media y dónde hay brechas, para priorizar el refuerzo. La dirección de un centro puede comparar los resultados de centros de su mismo contexto con los de Cataluña.
+
+El capítulo~\ref{cap:alcance} concreta, a partir de estas decisiones, la solución propuesta: sus objetivos, su alcance y sus requisitos.
 
 % ------------------------------------------
 % CAPÍTULO 3: ALCANCE
 % ------------------------------------------
 \chapter{Alcance del proyecto}
+\label{cap:alcance}
+La solución propuesta es un Cuadro de Mando Integral en Power BI construido sobre los datos abiertos de la evaluación de 6.\textordmasculine{} de primaria. Tiene tres partes: una ETL que audita y depura los datos, un modelo dimensional que los organiza para el análisis y tres cuadros de mando, uno por cada nivel de decisión. Este capítulo fija sus objetivos, lo que entra en el alcance y los requisitos que debe cumplir.
 
 \section{Objetivo general y subobjetivos}
 \textbf{Objetivo general:} diseñar e implementar un Cuadro de Mando Integral interactivo en Power BI, alimentado por los datos abiertos de la evaluación de 6.\textordmasculine{} de primaria de Cataluña, que dé soporte a la toma de decisiones basada en evidencias del Departamento de Educación, la inspección y las direcciones de centro.
@@ -297,7 +308,7 @@ Las puntuaciones se justifican así: Power BI Desktop es gratuito \cite{ms_power
 \begin{enumerate}
     \item \textbf{SO1 -- Auditoría de calidad de los datos:} caracterizar y depurar el dataset (32 columnas, 1,1 M de registros, 16 convocatorias).
     \item \textbf{SO2 -- Catálogo de KPIs:} definir formalmente los indicadores agrupados en las cuatro perspectivas del CMI.
-    \item \textbf{SO3 -- Modelo dimensional:} diseñar un esquema en estrella con una tabla de hechos de resultados y las dimensiones Tiempo, Alumno, Contexto del centro y Competencia.
+    \item \textbf{SO3 -- Modelo dimensional:} diseñar un esquema en estrella con las dimensiones de tiempo, alumno, contexto del centro y competencia.
     \item \textbf{SO4 -- ETL y lógica DAX:} implementar la ETL en Power Query y las medidas en DAX.
     \item \textbf{SO5 -- Cuadros de mando por perfil:} construir paneles para los niveles estratégico, táctico y operativo.
     \item \textbf{SO6 -- Validación:} verificar el rendimiento, la exactitud de los KPIs y la usabilidad.
@@ -316,7 +327,7 @@ Dado que el proyecto es ambicioso, se explicita qué quedará \textbf{implementa
 \textbf{Tipo} & \textbf{Entregable} \\ \midrule
 \multirow{5}{3.2cm}{\textbf{Mínimo garantizado (implementado y validado)}}
  & ETL completa en Power Query de las 16 convocatorias (2009--2025) con reglas de calidad documentadas. \\
- & Modelo en estrella con 1 tabla de hechos y 4 dimensiones, documentado. \\
+ & Modelo dimensional en estrella, documentado. \\
  & Catálogo de 12 KPIs (3 por perspectiva) implementados en DAX. \\
  & 3 cuadros de mando: estratégico (Departamento), táctico (Inspección) y operativo (Dirección de centro). \\
  & Informe de validación: tiempos de respuesta, contraste con los informes oficiales y prueba de usabilidad. \\ \midrule
