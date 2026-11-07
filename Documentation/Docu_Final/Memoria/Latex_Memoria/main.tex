@@ -187,9 +187,11 @@ On top of this model, a catalogue of 12 key performance indicators (KPIs) is def
 \chapter{Contextualización}
 
 \section{Introducción y contexto}
-El presente Trabajo de Final de Grado (TFG) se enmarca en la especialidad de Sistemas de Información del Grado en Ingeniería Informática de la Facultad de Informática de Barcelona (FIB) de la Universitat Politècnica de Catalunya (UPC). Se trata de un TFG de modalidad académica, dirigido por Carme Martín Escofet y Maria Hitz Martinez (Departamento de Ingeniería de Servicios y Sistemas de Información, ESSI), que trabaja de forma central la competencia de sistemas de soporte a la decisión y \textit{Business Intelligence} (CSI2.6), junto con la concepción y gestión de sistemas de información (CSI2.2, CSI3.2) y su especificación, diseño e implementación (CSI4.1--CSI4.3).
+Este Trabajo de Final de Grado (TFG) pertenece a la especialidad de Sistemas de Información del Grado en Ingeniería Informática de la Facultad de Informática de Barcelona (FIB), de la Universitat Politècnica de Catalunya (UPC). Es un TFG de modalidad académica, dirigido por Carme Martín Escofet y Maria Hitz Martinez, del Departamento de Ingeniería de Servicios y Sistemas de Información (ESSI). La competencia que más trabaja es la de sistemas de soporte a la decisión y \textit{Business Intelligence} (CSI2.6). También trabaja la concepción y gestión de sistemas de información (CSI2.2 y CSI3.2) y su especificación, diseño e implementación (CSI4.1--CSI4.3).
 
-El entorno institucional de referencia es el Departamento de Educación de la Generalitat de Cataluña, responsable de la planificación, gestión y evaluación del sistema educativo no universitario. Cada curso, el Departamento y el \textit{Consell Superior d'Avaluació del Sistema Educatiu} realizan la evaluación diagnóstica de 6.\textordmasculine{} de educación primaria para medir el grado de adquisición de las competencias básicas al finalizar la etapa \cite{csase_resultats}. Los microdatos anonimizados de estas pruebas se publican en el Portal de Datos Abiertos de la Generalitat \cite{transparencia_catalunya_2024}: más de 1,1 millones de registros (convocatorias 2009--2025) con las puntuaciones por competencia y subcompetencia y variables demográficas y de contexto del centro.
+El proyecto parte de los datos del Departamento de Educación de la Generalitat de Cataluña, que planifica, gestiona y evalúa la enseñanza no universitaria. Cada curso, el Departamento y el \textit{Consell Superior d'Avaluació del Sistema Educatiu} hacen una prueba diagnóstica al alumnado de 6.\textordmasculine{} de primaria para saber qué dominio tiene de las competencias básicas al terminar la etapa \cite{csase_resultats}. Los resultados anonimizados de cada alumno se publican en el Portal de Datos Abiertos de la Generalitat \cite{transparencia_catalunya_2024}. Son más de 1,1 millones de registros de las convocatorias de 2009 a 2025, con las puntuaciones por competencia y subcompetencia y datos del alumno y del centro.
+
+Con estos datos, el TFG construye un Cuadro de Mando Integral en Power BI pensado para tres niveles de decisión: el Departamento de Educación, la inspección territorial y la dirección de los centros.
 
 \section{Definición de términos y conceptos clave}
 \begin{itemize}
@@ -206,10 +208,10 @@ El entorno institucional de referencia es el Departamento de Educación de la Ge
 \label{sec:problema}
 El conjunto de datos de las evaluaciones de 6.\textordmasculine{} de primaria se publica como una única tabla plana de 32 columnas y más de un millón de filas \cite{transparencia_catalunya_2024}, mientras que los resultados oficiales se difunden mediante informes estáticos en PDF \cite{csase_resultats}. Esta situación presenta cuatro problemas:
 \begin{enumerate}
-    \item \textbf{Falta de accesibilidad analítica:} el fichero en bruto (240 MB) es inmanejable para perfiles no técnicos como directores, inspectores o docentes.
-    \item \textbf{Ausencia de análisis multidimensional:} no es inmediato cruzar el rendimiento en cada competencia con la naturaleza del centro, el hábitat, el área territorial o el género.
-    \item \textbf{Ocultación de carencias específicas:} las puntuaciones globales esconden diferencias entre subcompetencias (p.\,ej., comprensión lectora frente a expresión escrita).
-    \item \textbf{Inexistencia de un sistema de soporte a la decisión orientado a objetivos:} no existe una herramienta que relacione los indicadores con objetivos estratégicos ni que permita seguir su evolución temporal y detectar desviaciones.
+    \item \textbf{Difícil de usar sin conocimientos técnicos:} el fichero en bruto ocupa 240 MB y es muy difícil de manejar para directores, inspectores o docentes.
+    \item \textbf{No permite cruzar variables:} no es inmediato cruzar el rendimiento en cada competencia con la naturaleza del centro, el hábitat, el área territorial o el género.
+    \item \textbf{Las medias esconden carencias:} las puntuaciones globales esconden diferencias entre subcompetencias (p.\,ej., comprensión lectora frente a expresión escrita).
+    \item \textbf{No hay seguimiento de objetivos:} ninguna herramienta relaciona los indicadores con objetivos estratégicos ni permite seguir su evolución y detectar desviaciones.
 \end{enumerate}
 
 \section{Agentes implicados}
@@ -258,7 +260,7 @@ Hoy los resultados de 6.\textordmasculine{} de primaria se pueden consultar de t
 El sector educativo tiende a apoyar sus decisiones en datos \cite{mandinach2012data}. En el ámbito académico, la analítica educativa (\textit{Educational Data Mining} y \textit{Learning Analytics}) se ha centrado sobre todo en modelos predictivos y en plataformas de aprendizaje en línea \cite{romero2010educational}, y no ofrece un modelo de gestión estratégica para la administración educativa como el CMI. Ninguna de las soluciones existentes se puede reutilizar ni adaptar directamente, así que está justificado diseñar una nueva que aproveche los datos abiertos y una herramienta BI de mercado en lugar de desarrollar software a medida.
 
 \section{Comparativa de alternativas con criterios ponderados}
-Para pasar de una comparación descriptiva a una decisión de ingeniería, se han fijado seis criterios objetivos con un peso proporcional a su importancia para el proyecto. Cada alternativa se puntúa de 1 (muy deficiente) a 5 (excelente) y se calcula la puntuación ponderada $S = \sum_i w_i \cdot p_i$ (Tabla~\ref{tab:matriz_decision}).
+Para elegir la plataforma se han fijado seis criterios, cada uno con un peso según su importancia para el proyecto. Cada alternativa se puntúa de 1 (muy deficiente) a 5 (excelente) y se calcula la puntuación ponderada $S = \sum_i w_i \cdot p_i$ (Tabla~\ref{tab:matriz_decision}).
 
 \begin{table}[H]
 \centering
@@ -576,7 +578,7 @@ R6 & Desviación de la planificación por un alcance excesivo & Media (30\%) & A
 \label{sec:metodologia}
 Se adopta un enfoque híbrido que combina el ciclo de vida de Kimball para proyectos de \textit{Data Warehouse} \cite{kimball2008lifecycle} con prácticas de Scrum \cite{schwaber2020scrum}, estudiados en asignaturas de la especialidad. El ciclo de Kimball aporta la secuencia técnica (requisitos, modelo dimensional, ETL, aplicación BI y despliegue), mientras que Scrum aporta iteraciones cortas y la adaptación continua a lo que se descubra sobre los datos.
 
-La adaptación al proyecto es la siguiente: al haber una sola desarrolladora, se trabaja en \textbf{\textit{sprints} de dos semanas} con un \textit{backlog} priorizado según el alcance mínimo de la Tabla~\ref{tab:alcance}. Cada \textit{sprint} empieza con una planificación y termina con una revisión con las directoras (que actúan como \textit{product owner}) en la que se validan los incrementos: perfilado de datos, modelo, ETL, medidas y paneles.
+La adaptación al proyecto es la siguiente: al haber una sola desarrolladora, se trabaja en \textit{sprints} de dos semanas con un \textit{backlog} priorizado según el alcance mínimo de la Tabla~\ref{tab:alcance}. Cada \textit{sprint} empieza con una planificación y termina con una revisión con las directoras (que actúan como \textit{product owner}) en la que se validan los incrementos: perfilado de datos, modelo, ETL, medidas y paneles.
 
 \section{Herramientas de seguimiento}
 \begin{itemize}
@@ -623,7 +625,7 @@ Fase III & 7 dic 2026 -- 25 ene 2027 & 13--19 & 226 h & Cuadros de mando, valida
 \end{table}
 
 \section{Descripción de las tareas}
-El trabajo se descompone en 23 tareas codificadas como T1--T23 y agrupadas en siete paquetes. Ninguna supera las 50 horas. Las horas se han estimado de forma ascendente (\textit{bottom-up}) a partir de los entregables de cada tarea. Las tareas de seguimiento (T5) y de redacción de la memoria (T6) son \textbf{concurrentes} con el resto durante todo el proyecto. Las dependencias de precedencia se expresan como $T_i < T_j$ (T$_j$ no puede empezar hasta que termina T$_i$).
+El trabajo se descompone en 23 tareas codificadas como T1--T23 y agrupadas en siete paquetes. Ninguna supera las 50 horas. Las horas se han estimado de forma ascendente (\textit{bottom-up}) a partir de los entregables de cada tarea. Las tareas de seguimiento (T5) y de redacción de la memoria (T6) se hacen en paralelo con el resto durante todo el proyecto. Las dependencias de precedencia se expresan como $T_i < T_j$ (T$_j$ no puede empezar hasta que termina T$_i$).
 
 \subsection{Gestión del proyecto (T1--T6)}
 \begin{itemize}
@@ -794,7 +796,7 @@ La Figura~\ref{fig:gantt} muestra el calendario en semanas. La concurrencia es e
 
 \section{Gestión del riesgo: planes alternativos}
 \label{sec:planesB}
-Las tareas de los planes B \textbf{no forman parte de la planificación estándar ni aparecen en el Gantt}: solo se activan si el riesgo se materializa. En cada reunión de seguimiento (T5) se revisa si aparece alguno de los riesgos definidos, o uno nuevo, y se reajusta la planificación. La Tabla~\ref{tab:planesB} detalla las tareas alternativas, su efecto en la duración y los recursos adicionales.
+Las tareas de los planes B no forman parte de la planificación ni aparecen en el Gantt: solo se activan si el riesgo llega a producirse. En cada reunión de seguimiento (T5) se revisa si aparece alguno de los riesgos definidos, o uno nuevo, y se reajusta la planificación. La Tabla~\ref{tab:planesB} detalla las tareas alternativas, su efecto en la duración y los recursos adicionales.
 
 \begin{table}[H]
 \centering
@@ -848,7 +850,7 @@ Redactora técnica (RT) & 26.000 & 19,20 & 70 & 1.344,00 \\ \midrule
 \label{tab:tarifas}
 \end{table}
 
-Para asegurar la trazabilidad con la planificación, la Tabla~\ref{tab:cpa} asigna el coste de personal a cada tarea del Gantt.
+La Tabla~\ref{tab:cpa} reparte el coste de personal entre las tareas del Gantt.
 
 \begin{table}[H]
 \centering
@@ -915,8 +917,6 @@ Electricidad (0,085 kWh $\times$ 0,20 \texteuro{}) & 0,0170 & 9,18 \texteuro{} \
 \label{tab:cg}
 \end{table}
 
-El resultado sin hardware (1,54 \texteuro{}/h) justifica cuantitativamente la tasa aproximada de 1,50 \texteuro{}/h que se había supuesto en entregas anteriores.
-
 \section{Contingencia (C)}
 La contingencia cubre errores de estimación no anticipados y se calcula como un porcentaje del coste del proyecto. Según la asignatura, ese porcentaje depende del sector y del nivel de detalle del presupuesto: cuanto más detallado, menor \cite{fib_costos}. Se fija en un \textbf{10\%} por las siguientes razones:
 \begin{itemize}
@@ -973,8 +973,7 @@ IVA (21\%) & 3.634,38 \\ \midrule
 
 \section{Control de gestión}
 \label{sec:control}
-Las horas reales dedicadas a cada tarea se registran a diario en GitHub Projects. Al cerrar cada tarea, y de forma agregada al final de cada \textit{sprint} (cada dos semanas) y en cada hito del Gantt, se calculan los siguientes indicadores \cite{fib_costos, pmi2021pmbok}:
-Siendo $t_e$ y $t_r$ las tarifas estimada y real, $h_e$ y $h_r$ las horas estimadas y reales, y $C_e$ y $C_r$ los costes estimado y real de una tarea:
+Las horas reales dedicadas a cada tarea se registran a diario en GitHub Projects. Al cerrar cada tarea, y de forma agregada al final de cada \textit{sprint} (cada dos semanas) y en cada hito del Gantt, se calculan los indicadores siguientes \cite{fib_costos, pmi2021pmbok}, donde $t_e$ y $t_r$ son las tarifas estimada y real, $h_e$ y $h_r$ las horas estimadas y reales, y $C_e$ y $C_r$ los costes estimado y real de una tarea:
 \begin{itemize}
     \item \textbf{Desviación en tarifa:} $D_t = (t_e - t_r) \times h_r$.
     \item \textbf{Desviación en eficiencia (consumo):} $D_h = (h_e - h_r) \times t_e$.
@@ -1324,7 +1323,7 @@ HU15 & \textit{Como inspector o inspectora, quiero consultar el CMI desde el nav
 \chapter{Sostenibilidad y compromiso social}
 
 \section{Autoevaluación}
-Tras responder la encuesta de autoevaluación de la competencia de sostenibilidad, he valorado todas las cuestiones con la respuesta \textit{\guillemotleft{}Bastante\guillemotright{}}. El resultado indica un nivel intermedio-alto y homogéneo en las tres dimensiones: tengo una base sólida y consciente, pero aún no un dominio experto en ninguna de ellas.
+Tras responder la encuesta de autoevaluación de la competencia de sostenibilidad, he valorado todas las cuestiones con la respuesta \textit{\guillemotleft{}Bastante\guillemotright{}}. El resultado indica un nivel intermedio-alto y homogéneo en las tres dimensiones: tengo una base sólida, pero aún no domino ninguna de ellas a nivel experto.
 
 En la \textbf{dimensión económica}, el grado me ha dado herramientas para estimar costes, analizar la viabilidad y gestionar proyectos, y este TFG me ha obligado a construir un presupuesto por actividades con indicadores de control. Mi margen de mejora está en valorar los costes y beneficios a lo largo de toda la vida útil de un sistema, más allá de su desarrollo.
 
@@ -1332,7 +1331,7 @@ En la \textbf{dimensión social} conozco los principios de privacidad y protecci
 
 En la \textbf{dimensión ambiental} entiendo los conceptos de consumo energético, huella de carbono y ciclo de vida del hardware, pero hasta este proyecto no los había cuantificado en un desarrollo de software ni había considerado el coste ambiental de procesar datos en la nube.
 
-Como \textbf{puntos fuertes} destaco el conocimiento equilibrado de las tres dimensiones, la capacidad de análisis económico y la sensibilidad hacia la ética de los datos. Como \textbf{puntos débiles}, que ninguna respuesta alcance el nivel máximo refleja que mis conocimientos son más teóricos que aplicados: me cuesta traducirlos en indicadores medibles, especialmente en las dimensiones ambiental y social. Me propongo aprovechar el TFG para pasar del \guillemotleft{}bastante\guillemotright{} a un dominio práctico, incorporando criterios de sostenibilidad en cada decisión de diseño y documentando sus efectos.
+Como \textbf{puntos fuertes} destaco que conozco las tres dimensiones por igual, que sé hacer un análisis económico y que tengo en cuenta la ética de los datos. Como \textbf{puntos débiles}, que ninguna respuesta alcance el nivel máximo refleja que mis conocimientos son más teóricos que aplicados: me cuesta traducirlos en indicadores medibles, especialmente en las dimensiones ambiental y social. En el TFG quiero aplicar estos conocimientos: tener en cuenta la sostenibilidad en las decisiones de diseño y documentar sus efectos.
 
 \section{Matriz de sostenibilidad}
 La Tabla~\ref{tab:matriz_sost} resume el análisis según la matriz de la FIB \cite{fib_sostenibilitat}, que cruza las tres dimensiones con el proyecto puesto en producción (PPP), la vida útil y los riesgos. Los apartados siguientes la desarrollan.
@@ -1368,9 +1367,9 @@ La Tabla~\ref{tab:matriz_sost} resume el análisis según la matriz de la FIB \c
 \textbf{Vida útil -- Situación actual y mejora:} actualmente cada analista descarga el fichero completo (240 MB) y lo procesa en su equipo, repitiendo el mismo cálculo muchas veces. Con el CMI los datos se transforman una sola vez y los usuarios consumen agregados comprimidos, lo que reduce el tráfico de datos y el procesamiento redundante. Además, los paneles interactivos sustituyen la impresión de informes.
 
 \section{Dimensión social}
-\textbf{PPP -- Aportación personal:} el proyecto me permitirá consolidar competencias de ingeniería de datos, modelado dimensional y diseño de cuadros de mando, muy demandadas en el mercado laboral, y desarrollar una conciencia crítica sobre el uso ético de los datos públicos.
+\textbf{PPP -- Aportación personal:} el proyecto me permitirá consolidar competencias de ingeniería de datos, modelado dimensional y diseño de cuadros de mando, muy demandadas en el mercado laboral, y aprender a usar los datos públicos de forma ética.
 
-\textbf{Vida útil -- Situación actual y mejora:} hoy la información sobre los resultados educativos llega en formatos poco accesibles para perfiles no técnicos. El CMI democratiza su acceso y permite identificar brechas de género, de titularidad y territoriales, para orientar los recursos de refuerzo de manera más justa. Para evitar la estigmatización, los paneles mostrarán siempre los datos en su contexto (hábitat, naturaleza) y no permitirán identificar a centros ni a alumnos (RGPD).
+\textbf{Vida útil -- Situación actual y mejora:} hoy la información sobre los resultados educativos llega en formatos poco accesibles para perfiles no técnicos. El CMI facilita el acceso a esa información y permite identificar brechas de género, de titularidad y territoriales, para orientar los recursos de refuerzo de manera más justa. Para evitar la estigmatización, los paneles mostrarán siempre los datos en su contexto (hábitat, naturaleza) y no permitirán identificar a centros ni a alumnos (RGPD).
 
 \textbf{Necesidad real:} sí existe. La administración educativa promueve la toma de decisiones basada en datos \cite{mandinach2012data}, publica los microdatos como datos abiertos y, sin embargo, no dispone de una herramienta interactiva orientada a objetivos para explotarlos.
 
