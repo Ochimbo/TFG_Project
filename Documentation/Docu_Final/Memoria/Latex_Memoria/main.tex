@@ -304,7 +304,7 @@ La solución propuesta es un Cuadro de Mando Integral en Power BI construido sob
 \section{Objetivo general y subobjetivos}
 \textbf{Objetivo general:} diseñar e implementar un Cuadro de Mando Integral interactivo en Power BI, alimentado por los datos abiertos de la evaluación de 6.\textordmasculine{} de primaria de Cataluña, que dé soporte a la toma de decisiones basada en evidencias del Departamento de Educación, la inspección y las direcciones de centro.
 
-\textbf{Subobjetivos:}
+Subobjetivos:
 \begin{enumerate}
     \item \textbf{SO1 -- Auditoría de calidad de los datos:} caracterizar y depurar el dataset (32 columnas, 1,1 M de registros, 16 convocatorias).
     \item \textbf{SO2 -- Catálogo de KPIs:} definir formalmente los indicadores agrupados en las cuatro perspectivas del CMI.
@@ -316,7 +316,7 @@ La solución propuesta es un Cuadro de Mando Integral en Power BI construido sob
 
 \section{Alcance mínimo garantizado y extensiones opcionales}
 \label{sec:alcance_min}
-Dado que el proyecto es ambicioso, se explicita qué quedará \textbf{implementado y validado} al finalizar el TFG (Tabla~\ref{tab:alcance}) y qué se considera una extensión que solo se abordará si hay holgura. Las extensiones no forman parte de la planificación ni del presupuesto.
+La Tabla~\ref{tab:alcance} separa lo que quedará implementado y validado al final del TFG de las extensiones, que solo se abordarán si sobra tiempo. Las extensiones no forman parte de la planificación ni del presupuesto.
 
 \begin{table}[H]
 \centering
@@ -340,7 +340,9 @@ Dado que el proyecto es ambicioso, se explicita qué quedará \textbf{implementa
 \label{tab:alcance}
 \end{table}
 
-La Tabla~\ref{tab:kpis} concreta las cuatro perspectivas del CMI y los KPIs previstos. Como el dataset no contiene información económica, la perspectiva financiera clásica se sustituye por la de eficiencia y progreso, siguiendo la adaptación del BSC al sector público \cite{niven2008balanced}.
+\section{Perspectivas del CMI y catálogo de KPIs}
+\label{sec:kpis}
+La Tabla~\ref{tab:kpis} recoge las cuatro perspectivas del CMI, el objetivo de cada una y sus KPIs. Como el dataset no contiene información económica, la perspectiva financiera clásica se sustituye por la de eficiencia y progreso, siguiendo la adaptación del BSC al sector público \cite{niven2008balanced}.
 
 \begin{table}[H]
 \centering
@@ -351,8 +353,8 @@ La Tabla~\ref{tab:kpis} concreta las cuatro perspectivas del CMI y los KPIs prev
 \textbf{Perspectiva} & \textbf{Objetivo} & \textbf{KPIs previstos} \\ \midrule
 Rendimiento académico (usuarios) & Mejorar el dominio de las competencias básicas & Puntuación media por competencia; puntuación por subcompetencia; \% de alumnado en nivel bajo. \\ \addlinespace
 Equidad e inclusión (procesos internos) & Reducir las brechas & Brecha de género; brecha pública--privada; dispersión de resultados. \\ \addlinespace
-Territorio y entorno (procesos internos) & Equilibrio territorial & Desviación de cada área respecto a Cataluña; diferencia por hábitat; posición relativa del área. \\ \addlinespace
-Eficiencia y progreso (aprendizaje y crecimiento) & Mejora continua & Variación interanual; tendencia de 5 años; \% de competencias que mejoran. \\ \bottomrule
+Territorio y entorno (procesos internos) & Equilibrio territorial & Desviación de cada área respecto a Cataluña; diferencia entre municipios urbanos y rurales; posición relativa del área. \\ \addlinespace
+Eficiencia y progreso (aprendizaje y crecimiento) & Mejora continua & Variación interanual; tendencia de 5 convocatorias; \% de competencias que mejoran. \\ \bottomrule
 \end{tabularx}
 \caption{Perspectivas del CMI y catálogo previsto de KPIs.}
 \label{tab:kpis}
@@ -363,6 +365,7 @@ Eficiencia y progreso (aprendizaje y crecimiento) & Mejora continua & Variación
 Los requisitos salen de tres fuentes: las necesidades de los agentes implicados (Tabla~\ref{tab:stakeholders}), las preguntas que cada nivel de decisión necesita responder y los problemas de calidad encontrados al auditar los datos. Cada requisito tiene un identificador que se usa en la especificación, en el diseño y en la validación. Los perfiles se abrevian como E (estratégico, Departamento de Educación), T (táctico, inspección y coordinación territorial) y O (operativo, dirección de centro).
 
 \subsection{Preguntas de decisión por perfil}
+\label{sec:preguntas}
 Antes de fijar los requisitos se acotaron las preguntas que el cuadro de mando debe ayudar a responder (Tabla~\ref{tab:preguntas}). Solo se incluyen preguntas que el dataset permite contestar: no contiene el código del centro ni variables socioeconómicas, así que no se plantean preguntas sobre un centro concreto ni sobre el nivel socioeconómico del alumnado.
 
 \begin{table}[H]
@@ -481,9 +484,66 @@ RNF11 & Funcionar sin licencias de pago. & Uso completo con Power BI Desktop gra
 \label{tab:rnf}
 \end{table}
 
+\section{Prototipo de la interfaz}
+\label{sec:mockups}
+Antes de construir los cuadros de mando se ha dibujado un boceto (\textit{mockup}) de cada panel. Los bocetos fijan qué información verá cada perfil y dónde aparecerá, de modo que se pueda comprobar con las directoras que la interfaz responde a las preguntas de decisión (Tabla~\ref{tab:preguntas}) antes de implementarla. Las cifras y la forma de los gráficos son ficticias: indican el tipo de elemento, no un resultado.
+
+Los tres paneles compartirán la misma estructura para que el usuario no tenga que aprender una disposición nueva en cada uno. Arriba irán los filtros y, debajo, una fila de tarjetas con los indicadores principales. Los gráficos ocuparán el centro, y al pie habrá un aviso fijo sobre las limitaciones de los datos (RF15) y las pestañas para cambiar de panel. Cada panel cabrá en un lienzo de 1280 $\times$ 720 píxeles sin desplazamiento (RNF03).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{imagenes/mockup_estrategico.png}
+\caption{Mockup del panel estratégico (Departamento de Educación).}
+\label{fig:mockup_estrategico}
+\end{figure}
+
+El panel estratégico (Figura~\ref{fig:mockup_estrategico}) dará al Departamento de Educación una visión global de Cataluña (RF16):
+\begin{enumerate}
+    \item Filtros de año y competencia. El año será de selección única y se abrirá en la última convocatoria.
+    \item Tarjetas con la puntuación media (K01), el alumnado en nivel bajo (K03), la dispersión (K06), la variación respecto a la convocatoria anterior (K10), el porcentaje de competencias que mejoran (K12) y el alumnado evaluado. K01, K03 y K10 llevarán un semáforo que indica si el valor es favorable, neutro o desfavorable (RF13).
+    \item Evolución de K01 por competencia en todas las convocatorias, sea cual sea el año elegido (RF08). El año 2020, sin prueba, aparecerá como un hueco señalado.
+    \item Tabla del año elegido con K01, K10, K11 y K03 de cada competencia, para ver de un vistazo cuáles empeoran.
+    \item Aviso fijo sobre las limitaciones de los datos (RF15).
+    \item Pestañas de navegación. La selección de año y competencia se mantendrá al cambiar de panel (RF10).
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{imagenes/mockup_tactico.png}
+\caption{Mockup del panel táctico (inspección y coordinación territorial).}
+\label{fig:mockup_tactico}
+\end{figure}
+
+El panel táctico (Figura~\ref{fig:mockup_tactico}) servirá a la inspección para comparar territorios y detectar brechas (RF17):
+\begin{enumerate}
+    \item Filtros de año, competencia y área territorial.
+    \item Tarjetas con la brecha de género (K04), la brecha entre centros públicos y privados (K05), la diferencia entre municipios urbanos y rurales (K08) y la posición del área seleccionada (K09).
+    \item Barras con la desviación de cada área respecto a Cataluña (K07). Mostrarán siempre todas las áreas, aunque se filtre una, para no perder la comparación (RF09).
+    \item Tabla de K01 por área y titularidad del centro.
+    \item Evolución de K01 con las áreas agrupadas en series comparables, ya que la reorganización territorial de 2024 cambió el perímetro de algunas.
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{imagenes/mockup_operativo.png}
+\caption{Mockup del panel operativo (dirección de centro).}
+\label{fig:mockup_operativo}
+\end{figure}
+
+El panel operativo (Figura~\ref{fig:mockup_operativo}) permitirá a una dirección de centro situar su contexto frente a Cataluña (RF18):
+\begin{enumerate}
+    \item Filtros de área, titularidad y hábitat para definir el contexto del centro, además del año y la competencia. El panel compara un contexto y no un centro concreto (Sección~\ref{sec:preguntas}).
+    \item Tarjetas con K01 del contexto, su desviación respecto a Cataluña (K07), la media de Cataluña como referencia y el estado con semáforo.
+    \item Puntuación media por subcompetencia (K02), agrupada por competencia (RF07).
+    \item Distribución del alumnado por nivel de logro en cada competencia (RF12).
+    \item Evolución de K01 del contexto frente a la de Cataluña.
+\end{enumerate}
+
+Estos bocetos se revisarán con las directoras y servirán de punto de partida para el diseño de la interfaz.
+
 \section{Obstáculos y riesgos}
 \label{sec:riesgos}
-Una primera exploración del dataset ya ha revelado problemas concretos de calidad: códigos que cambian entre convocatorias (\textit{Públic/Pública}, \textit{H/Home}, \textit{D/Dona}), 13.357 registros de 2024 con valores de hábitat corruptos (\textit{Fins a 10001}, \textit{Fins a 10002}\ldots, típicos de un arrastre en una hoja de cálculo), la ausencia de la convocatoria 2020 y competencias que solo existen en algunos años (inglés desde 2010; conocimiento del medio y expresión oral desde 2018). Además, \textbf{el dataset no incluye un identificador de centro}, por lo que el panel operativo ofrecerá una comparación de referencia por contexto y no los resultados de un centro concreto. La Tabla~\ref{tab:riesgos} resume los riesgos identificados; sus planes alternativos se detallan en la Sección~\ref{sec:planesB}.
+Una primera exploración del dataset ya ha revelado problemas concretos de calidad: códigos que cambian entre convocatorias (\textit{Públic/Pública}, \textit{H/Home}, \textit{D/Dona}), 13.357 registros de 2024 con valores de hábitat corruptos (\textit{Fins a 10001}, \textit{Fins a 10002}\ldots, típicos de un arrastre en una hoja de cálculo), la ausencia de la convocatoria 2020 y competencias que solo existen en algunos años (inglés desde 2010; conocimiento del medio y expresión oral desde 2018). Además, el dataset no incluye un identificador de centro, por lo que el panel operativo ofrecerá una comparación de referencia por contexto y no los resultados de un centro concreto. La Tabla~\ref{tab:riesgos} resume los riesgos identificados; sus planes alternativos se detallan en la Sección~\ref{sec:planesB}.
 
 \begin{table}[H]
 \centering
