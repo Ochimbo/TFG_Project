@@ -11,21 +11,26 @@ TECTONIC="${TECTONIC:-$(command -v tectonic || echo "$HOME/.local/bin/tectonic")
 mv main.pdf "$NOMBRE.pdf"
 
 # Pandoc no dibuja TikZ/pgfgantt: el diagrama de Gantt solo aparece en el PDF.
-# Tampoco conoce algunos comandos de símbolos, así que se cambian por el carácter antes de exportar.
+# Tampoco conoce algunos comandos de símbolos ni las columnas @{} dentro de \multicolumn, así que se adaptan antes.
+# El aspecto del .docx lo dan docx/plantilla.docx (estilos, márgenes, pie) y docx/memoria.lua (portada, índice,
+# saltos de página, numeración de tablas y figuras, ancho de columnas).
 sed -e 's/\\texteuro{}/€/g' -e 's/\\textordmasculine{}/º/g' -e 's/\\textordfeminine{}/ª/g' \
     -e 's/\\guillemotleft{}/«/g' -e 's/\\guillemotright{}/»/g' \
-    -e 's/\\textquestiondown{}/¿/g' -e 's/\\textexclamdown{}/¡/g' main.tex \
+    -e 's/\\textquestiondown{}/¿/g' -e 's/\\textexclamdown{}/¡/g' \
+    -e 's/\\multicolumn{\([0-9]*\)}{@{}l}/\\multicolumn{\1}{l}/g' -e 's/\\addlinespace//g' main.tex \
 | pandoc \
     --from=latex \
     --to=docx \
     --citeproc \
     --bibliography=bibliografia.bib \
     --csl=ieee.csl \
+    --lua-filter=docx/memoria.lua \
+    --reference-doc=docx/plantilla.docx \
     --resource-path=. \
     --number-sections \
-    --toc \
+    --table-caption-position=below \
     --metadata lang=es-ES \
-    --metadata toc-title="Índice" \
+    --metadata reference-section-title="Bibliografía" \
     -o "$NOMBRE.docx"
 
 echo "Generados: $NOMBRE.pdf y $NOMBRE.docx"
