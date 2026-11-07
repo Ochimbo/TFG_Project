@@ -27,6 +27,7 @@
 \usepackage{array}    % Personalización de columnas
 \usepackage{multirow} % Celdas combinadas
 \usepackage{float}    % Posición exacta de tablas con [H]
+\usepackage{placeins} % \FloatBarrier: las fichas de casos de uso no pasan del apartado siguiente
 \usepackage{amsmath, amssymb} % Símbolos matemáticos
 \usepackage{csquotes}
 \usepackage{pdflscape} % Páginas apaisadas (Diagrama de Gantt)
@@ -985,7 +986,7 @@ Las desviaciones negativas se cubren primero con la partida de imprevistos, si l
 % ------------------------------------------
 \chapter{Especificación}
 \label{cap:especificacion}
-La especificación describe qué hará el sistema desde el punto de vista de quien lo usa, sin entrar todavía en cómo se construye. Parte de los requisitos de la Sección~\ref{sec:requisitos} y empieza por el modelo de casos de uso.
+La especificación describe qué hará el sistema desde el punto de vista de quien lo usa, sin entrar todavía en cómo se construye. Parte de los requisitos de la Sección~\ref{sec:requisitos} y los describe desde tres puntos de vista: qué hace cada usuario con el sistema (casos de uso), qué información maneja (modelo conceptual) y cómo se reparten las funciones entre sus partes (arquitectura general).
 
 \section{Modelo de casos de uso}
 \label{sec:casos_uso}
@@ -1207,6 +1208,66 @@ Requisitos & RF10. \\ \bottomrule
 \caption{Ficha del caso de uso CU10.}
 \label{tab:cu10}
 \end{table}
+
+\FloatBarrier
+\section{Modelo conceptual}
+\label{sec:modelo_conceptual}
+El modelo conceptual (Figura~\ref{fig:modelo_conceptual}) recoge la información que maneja el sistema y cómo se relaciona, sin tener en cuenta la herramienta. En el diseño se traducirá a un modelo en estrella.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{imagenes/especificacion/modelo_conceptual.png}
+\caption{Modelo conceptual (diagrama de clases UML).}
+\label{fig:modelo_conceptual}
+\end{figure}
+
+La clase central es \textit{Evaluación}, que representa la participación anónima de un alumno en una convocatoria. El conjunto de datos no tiene un identificador estable del alumnado ni el código del centro, así que el modelo no incluye las clases alumno ni centro. Cada evaluación se asocia a un \textit{ContextoDeCentro}, definido por el área territorial, la titularidad y el hábitat, que es lo que el cuadro de mando puede comparar (Sección~\ref{sec:preguntas}).
+
+Lo que se evalúa es un \textit{ElementoEvaluado}, que puede ser una competencia, como la lengua catalana, o una de sus subcompetencias, como la comprensión lectora. Cada elemento tiene un periodo de vigencia, porque algunas subcompetencias aparecen o desaparecen entre convocatorias. La \textit{Puntuación} es una clase asociativa entre la evaluación y el elemento evaluado: guarda el valor y las marcas de calidad que asigna la depuración (RF04). Las puntuaciones de las competencias se clasifican además en un \textit{NivelDeLogro} (RF12).
+
+\textit{Indicador} y \textit{Perspectiva} representan el catálogo del CMI (Tabla~\ref{tab:kpis}). Los indicadores no guardan ningún valor: se calculan a partir de las puntuaciones cada vez que el usuario consulta un panel o cambia un filtro.
+
+El diagrama no puede expresar algunas condiciones, que se recogen como restricciones de integridad en la Tabla~\ref{tab:restricciones}.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} p{1.1cm} X @{}}
+\toprule
+\textbf{ID} & \textbf{Restricción} \\ \midrule
+RI1 & Claves: una convocatoria se identifica por el año; un área territorial, un elemento evaluado, un nivel de logro y una perspectiva, por el nombre; un indicador, por el código; y un contexto de centro, por la combinación de área, titularidad y hábitat. \\ \addlinespace
+RI2 & Una evaluación solo tiene puntuaciones de elementos vigentes en su convocatoria, es decir, con un año de inicio anterior o igual al de la convocatoria y sin año de fin o con uno posterior o igual. \\ \addlinespace
+RI3 & Una puntuación tiene nivel de logro si y solo si es de una competencia. Ese nivel es el único cuyo intervalo contiene el valor de la puntuación. \\ \addlinespace
+RI4 & Los intervalos de los niveles de logro no se solapan y entre todos cubren de 0 a 100. \\ \addlinespace
+RI5 & Una convocatoria sin prueba (2020) no tiene evaluaciones. \\ \addlinespace
+RI6 & La edad de una evaluación, si se conoce, está entre 10 y 14 años. \\ \bottomrule
+\end{tabularx}
+\caption{Restricciones de integridad del modelo conceptual.}
+\label{tab:restricciones}
+\end{table}
+
+\section{Arquitectura general}
+\label{sec:arquitectura}
+La Figura~\ref{fig:arquitectura} muestra el recorrido de los datos desde el fichero publicado hasta los paneles. El sistema es una cadena de etapas en la que cada una usa el resultado de la anterior:
+\begin{enumerate}
+    \item \textbf{Fuente.} El fichero CSV del Portal de Datos Abiertos, que se usa tal como se publica \cite{transparencia_catalunya_2024}.
+    \item \textbf{ETL.} Power Query lee el fichero, comprueba que cumple las reglas de la auditoría, unifica los códigos, corrige los errores estructurales y marca la calidad de cada puntuación (RF01--RF05).
+    \item \textbf{Modelo en estrella.} Los datos depurados se cargan en el motor en memoria de Power BI, con dos tablas de hechos y seis dimensiones. Su detalle se fijará en el diseño.
+    \item \textbf{Lógica analítica.} Las medidas DAX calculan los 12 KPIs, los semáforos y la regla de las 30 puntuaciones según los filtros activos en cada momento (RF11, RF13, RF14).
+    \item \textbf{Presentación.} El informe contiene los tres paneles, uno por perfil (RF16--RF18), con los filtros sincronizados entre ellos (RF10).
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{imagenes/especificacion/arquitectura.png}
+\caption{Arquitectura general del sistema.}
+\label{fig:arquitectura}
+\end{figure}
+
+Las etapas de la ETL a la presentación forman un único proyecto de Power BI Desktop en formato \texttt{.pbip}, que guarda cada parte como texto y se versiona en Git (RNF10). Todo funciona con la versión gratuita de la herramienta (RNF11). La figura sitúa también los casos de uso: la desarrolladora actúa sobre la carga (CU01) y los tres perfiles, sobre los paneles (CU02--CU10).
+
+Fuera de Power BI hay una validación independiente escrita en Python con DuckDB. Lee el mismo fichero, repite la depuración y el cálculo de los KPIs y compara sus resultados con los del modelo y con los informes oficiales \cite{csase_resultats}. Así se comprueba la exactitud de los cálculos (RNF06) con un método distinto al que se quiere validar (Sección~\ref{sec:validacion}).
 
 % ------------------------------------------
 % CAPÍTULO 8: SOSTENIBILIDAD
