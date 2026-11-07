@@ -1,0 +1,1 @@
+Origen: https://github.com/Microck/ordinary-claude-skills/tree/main/skills_all/claude-scientific-skills/scientific-skills/scientific-writing (commit 1056d29), copia de K-Dense claude-scientific-skills. Licencia MIT.
