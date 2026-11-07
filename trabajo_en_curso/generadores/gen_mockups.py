@@ -10,7 +10,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 RAIZ = Path(__file__).resolve().parents[2]
-SALIDA = RAIZ / "Documentation/Docu_Final/Memoria/Latex_Memoria/imagenes"
+SALIDA = RAIZ / "Documentation/Docu_Final/Memoria/Latex_Memoria/imagenes/mockups"
 
 E = 2  # escala: lienzo lógico 1280 x 720 (el de Power BI), imagen a 2560 x 1440
 ANCHO, ALTO = 1280, 720
