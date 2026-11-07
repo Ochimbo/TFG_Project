@@ -36,11 +36,17 @@
 \usepackage{pgfgantt}  % Diagrama de Gantt nativo
 \usetikzlibrary{arrows.meta, positioning}
 
-% Marcas de apartados terminados para la revisión de las directoras.
-% Se pone \terminado debajo del título de cada apartado acabado. 1 = se muestran, 0 = se ocultan (PDF y .docx).
+% Apartados revisados por las directoras: el contenido entre \begin{revisado} y \end{revisado} sale con fondo verde
+% y una franja inicial que indica que no hace falta revisarlo. 1 = se muestran, 0 = se ocultan (PDF y .docx).
 \newcommand{\mostrarterminados}{1}
+\usepackage[breakable]{tcolorbox}
 \definecolor{verdeterminado}{RGB}{226,239,218}
-\newcommand{\terminado}{\ifnum\mostrarterminados=1\par\noindent\colorbox{verdeterminado}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{\small$\checkmark$\ \textbf{Apartado terminado:} no hace falta revisarlo.}}\par\medskip\fi}
+\definecolor{verderevisado}{RGB}{233,245,227}
+\newtcolorbox{cajarevisada}{breakable, colback=verderevisado, colframe=verderevisado, boxrule=0pt, arc=0pt,
+  boxsep=0pt, left=6pt, right=6pt, top=6pt, bottom=6pt, grow to left by=6pt, grow to right by=6pt}
+\newenvironment{revisado}
+  {\ifnum\mostrarterminados=1\relax\begin{cajarevisada}\noindent\colorbox{verdeterminado}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{\small$\checkmark$\ \textbf{Apartado terminado:} no hace falta revisarlo.}}\par\medskip\fi}
+  {\ifnum\mostrarterminados=1\relax\end{cajarevisada}\fi}
 
 % Leyendas de tablas y figuras debajo del elemento
 \usepackage{caption}
@@ -829,7 +835,7 @@ Con estas medidas, ninguno de los riesgos compromete la defensa en el periodo or
 % CAPÍTULO 6: GESTIÓN ECONÓMICA
 % ------------------------------------------
 \chapter{Gestión económica}
-\terminado
+\begin{revisado}
 El presupuesto sigue la estructura propuesta en la asignatura \cite{fib_costos}: costes de personal por actividad (CPA), costes genéricos (CG), contingencia (C) e imprevistos (I). Se valora como si fuera un encargo profesional.
 
 \section{Costes de personal por actividad (CPA)}
@@ -990,6 +996,8 @@ Las horas reales dedicadas a cada tarea se registran a diario en GitHub Projects
 \end{itemize}
 
 Las desviaciones negativas se cubren primero con la partida de imprevistos, si las causa un riesgo identificado, y después con la de contingencia. Como los imprevistos funcionan como un sistema de compensación, lo reservado para los riesgos que no se materialicen puede cubrir a los que sí lo hagan. Si la desviación acumulada supera el 10\% del coste previsto o el CPI o el SPI bajan de 0,9 durante dos \textit{sprints} consecutivos, se revisa el proyecto con las directoras: según la naturaleza del problema, se ajusta el alcance (renunciando primero a las extensiones opcionales) y se replanifica.
+
+\end{revisado}
 
 % ------------------------------------------
 % CAPÍTULO 7: ESPECIFICACIÓN
@@ -1372,7 +1380,7 @@ HU15 & \textit{Como inspector o inspectora, quiero consultar el CMI desde el nav
 % CAPÍTULO 9: SOSTENIBILIDAD
 % ------------------------------------------
 \chapter{Sostenibilidad y compromiso social}
-\terminado
+\begin{revisado}
 
 \section{Autoevaluación}
 Tras responder la encuesta de autoevaluación de la competencia de sostenibilidad, he valorado todas las cuestiones con la respuesta \textit{\guillemotleft{}Bastante\guillemotright{}}. El resultado indica un nivel intermedio-alto y homogéneo en las tres dimensiones: tengo una base sólida, pero aún no domino ninguna de ellas a nivel experto.
@@ -1424,6 +1432,8 @@ La Tabla~\ref{tab:matriz_sost} resume el análisis según la matriz de la FIB \c
 \textbf{Vida útil -- Situación actual y mejora:} hoy la información sobre los resultados educativos llega en formatos poco accesibles para perfiles no técnicos. El CMI facilita el acceso a esa información y permite identificar brechas de género, de titularidad y territoriales, para orientar los recursos de refuerzo de manera más justa. Para evitar la estigmatización, los paneles mostrarán siempre los datos en su contexto (hábitat, naturaleza) y no permitirán identificar a centros ni a alumnos (RGPD).
 
 \textbf{Necesidad real:} sí existe. La administración educativa promueve la toma de decisiones basada en datos \cite{mandinach2012data}, publica los microdatos como datos abiertos y, sin embargo, no dispone de una herramienta interactiva orientada a objetivos para explotarlos.
+
+\end{revisado}
 
 % ------------------------------------------
 % BIBLIOGRAFÍA (ESTILO IEEE)

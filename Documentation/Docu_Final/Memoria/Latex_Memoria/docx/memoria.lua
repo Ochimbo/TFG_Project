@@ -1,11 +1,33 @@
 -- Filtro de Pandoc para exportar la memoria a .docx con un aspecto parecido al PDF.
 -- Rehace la portada, inserta el índice tras los resúmenes, añade saltos de página antes de cada capítulo,
 -- numera tablas y figuras por capítulo (Tabla 3.2), reparte el ancho de las columnas según su contenido
--- y convierte las marcas de apartado terminado en una franja verde.
+-- y resalta en verde los apartados revisados.
 
 local capitulo = 0
 local n_tabla, n_figura = 0, 0
 local indice_puesto = false
+
+-- Dentro de un apartado revisado, el texto se resalta en verde con el estilo de carácter «Revisado»
+local revisado = false
+local function resaltar(bloque)
+  if not revisado or #bloque.content == 0 then return nil end
+  local nuevo, tramo = {}, {}
+  local function cerrar()
+    if #tramo > 0 then table.insert(nuevo, pandoc.Span(tramo, { ["custom-style"] = "Revisado" })) end
+    tramo = {}
+  end
+  for _, el in ipairs(bloque.content) do
+    if el.t == "Math" and el.mathtype == "DisplayMath" then
+      cerrar()
+      table.insert(nuevo, el)
+    else
+      table.insert(tramo, el)
+    end
+  end
+  cerrar()
+  bloque.content = nuevo
+  return bloque
+end
 
 local function salto_pagina()
   return pandoc.RawBlock("openxml", '<w:p><w:r><w:br w:type="page"/></w:r></w:p>')
@@ -175,18 +197,26 @@ end
 local principal = {
   traverse = "topdown",
   Para = function(p)
-    if pandoc.utils.stringify(p) == "MARCATERMINADO" then
+    local texto = pandoc.utils.stringify(p)
+    if texto == "MARCATERMINADO" then
+      revisado = true
       return con_estilo("Terminado", { pandoc.Str("✓"), pandoc.Space(), pandoc.Strong(pandoc.Str("Apartado terminado:")),
         pandoc.Space(), pandoc.Str("no hace falta revisarlo.") })
+    elseif texto == "FINREVISADO" then
+      revisado = false
+      return {}
     end
+    return resaltar(p)
   end,
+  Plain = resaltar,
   Div = function(div)
     if div.classes:includes("titlepage") then
       return portada(div), false
     end
   end,
   Header = function(h)
-    if h.level ~= 1 then return nil end
+    resaltar(h)
+    if h.level ~= 1 then return h end
     local bloques = { salto_pagina() }
     if not h.classes:includes("unnumbered") then
       if not indice_puesto then
