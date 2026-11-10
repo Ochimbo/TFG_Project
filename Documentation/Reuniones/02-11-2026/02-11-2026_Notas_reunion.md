@@ -57,6 +57,6 @@
 ## 5. Cuestiones abiertas del proyecto
 
 Las reuniones se centrarán en la redacción de la memoria, no en cómo se implementa el CMI. Las cuestiones abiertas 1–11 del
-guion (umbrales, evolución temporal, series territoriales, 2021 frente a 2019, etc.) las decido yo según lo que sea mejor
+guion (umbrales, evolución temporal, series territoriales, 2021 frente a 2019, etc.) las decido según lo que sea mejor
 para el proyecto. Por ahora se mantienen las opciones por defecto descritas en el §7.2 del
 [informe de calidad de datos](../../Docu_Final/Docu_Parcial/01_Informe_calidad_datos.md).
