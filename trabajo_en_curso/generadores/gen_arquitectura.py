@@ -14,7 +14,10 @@ SALIDA = RAIZ / "Documentation/Docu_Final/Memoria/Latex_Memoria/imagenes/especif
 
 E = 2
 ANCHO, ALTO = 1280, 730
-FUENTES = "/usr/share/fonts/truetype/lato/"
+# Lato: carpeta de Linux (paquete fonts-lato) o de Windows; se usa la primera que exista
+FUENTES = next((c for c in ("/usr/share/fonts/truetype/lato/", "C:/Windows/Fonts/",
+                            str(Path.home() / "AppData/Local/Microsoft/Windows/Fonts") + "/")
+                if (Path(c) / "Lato-Regular.ttf").exists()), "/usr/share/fonts/truetype/lato/")
 TINTA = (40, 40, 40)
 GRIS = (110, 110, 110)
 CABECERA = (232, 232, 232)
@@ -94,13 +97,13 @@ X = [20, 270, 520, 770, 1010]
 bloque(X[0], Y, 210, H, "Fuente", "Portal de Datos Abiertos",
        ["Fichero CSV", "32 columnas", "1,1 millones de filas", "16 convocatorias\n(2009–2025)"])
 bloque(X[1], Y, W, H, "ETL", "Power Query (M)",
-       ["Lectura y validación", "Unificación de códigos", "Corrección de errores", "Marcas de calidad",
+       ["Lectura y comprobación", "Unificación de códigos", "Corrección de errores", "Marcas de calidad",
         "Despivotado de las\n24 puntuaciones"])
-bloque(X[2], Y, W, H, "Modelo en estrella", "Motor VertiPaq",
+bloque(X[2], Y, W, H, "Modelo dimensional", "Motor VertiPaq",
        ["2 tablas de hechos:\nevaluaciones y\npuntuaciones", "6 dimensiones: año,\ncontexto, perfil,\ncompetencia, nivel\ny calidad del dato"])
 bloque(X[3], Y, 220, H, "Lógica analítica", "Medidas DAX",
        ["12 KPIs", "Semáforos", "Regla de las\n30 puntuaciones", "Comparación con\nCataluña"])
-bloque(X[4], Y, 220, H, "Presentación", "Informe de Power BI",
+bloque(X[4], Y, 220, H, "Interfaz", "Informe de Power BI",
        ["Panel estratégico", "Panel táctico", "Panel operativo", "Filtros sincronizados", "Aviso de\nlimitaciones"])
 
 YF = Y + H / 2

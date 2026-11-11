@@ -1,6 +1,6 @@
 """Genera el modelo conceptual (diagrama de clases UML) del capítulo de especificación de la memoria.
 
-Describe los conceptos del dominio con independencia de Power BI; el diseño lo traduce a un modelo en estrella.
+Describe los conceptos del dominio con independencia de Power BI; el diseño lo traduce al modelo dimensional.
 Uso: python3 trabajo_en_curso/generadores/gen_modelo_conceptual.py
 """
 
@@ -13,7 +13,10 @@ SALIDA = RAIZ / "Documentation/Docu_Final/Memoria/Latex_Memoria/imagenes/especif
 
 E = 2
 ANCHO, ALTO = 1280, 900
-FUENTES = "/usr/share/fonts/truetype/lato/"
+# Lato: carpeta de Linux (paquete fonts-lato) o de Windows; se usa la primera que exista
+FUENTES = next((c for c in ("/usr/share/fonts/truetype/lato/", "C:/Windows/Fonts/",
+                            str(Path.home() / "AppData/Local/Microsoft/Windows/Fonts") + "/")
+                if (Path(c) / "Lato-Regular.ttf").exists()), "/usr/share/fonts/truetype/lato/")
 TINTA = (40, 40, 40)
 GRIS = (110, 110, 110)
 CABECERA = (232, 232, 232)
@@ -94,7 +97,7 @@ evaluacion = Clase(480, 40, 300, "Evaluación", ["género: {niña, niño}", "eda
 contexto = Clase(950, 40, 290, "ContextoDeCentro", ["titularidad: {pública, privada}", "hábitat: Texto"])
 area = Clase(950, 270, 290, "ÁreaTerritorial", ["nombre: Texto", "serieComparable: Texto",
                                                 "conRupturaDeSerie: Booleano"])
-puntuacion = Clase(40, 300, 270, "Puntuación", ["valor: Real [0..100]", "noVálida: Booleano", "censurada: Booleano",
+puntuacion = Clase(40, 300, 270, "Puntuación", ["valor: Real", "noVálida: Booleano", "censurada: Booleano",
                                                  "noComparable: Booleano"])
 nivel = Clase(40, 600, 270, "NivelDeLogro", ["nombre: Texto", "límiteInferior: Real", "límiteSuperior: Real"])
 elemento = Clase(480, 430, 300, "ElementoEvaluado", ["nombre: Texto", "añoInicio: Entero",

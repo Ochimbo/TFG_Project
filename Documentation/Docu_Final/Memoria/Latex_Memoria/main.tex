@@ -471,7 +471,7 @@ RF18 & Ofrecer un panel operativo que permita definir un contexto de centro (ár
 \end{table}
 
 \subsection{Requisitos no funcionales}
-Los requisitos no funcionales se clasifican según las características de calidad del producto de la norma ISO/IEC 25010 \cite{iso25010_2011}. Cada uno tiene un criterio que permite comprobar si se cumple (Tabla~\ref{tab:rnf}); los métodos de validación se describen en la Sección~\ref{sec:validacion}.
+Los requisitos no funcionales se clasifican según las características de calidad del producto de la norma ISO/IEC 25010 \cite{iso25010_2011}. Cada uno tiene un criterio de aceptación que permite comprobar si se cumple (Tabla~\ref{tab:rnf}). La Sección~\ref{sec:rnf_volere} los especifica uno a uno con la plantilla Volere, que añade la justificación y el método de evaluación, y la Sección~\ref{sec:validacion} describe los métodos de validación.
 
 \begin{table}[H]
 \centering
@@ -479,7 +479,7 @@ Los requisitos no funcionales se clasifican según las características de calid
 \renewcommand{\arraystretch}{1.05}
 \begin{tabularx}{\textwidth}{@{} p{1.3cm} X p{4.6cm} @{}}
 \toprule
-\textbf{ID} & \textbf{Requisito} & \textbf{Criterio de verificación} \\ \midrule
+\textbf{ID} & \textbf{Requisito} & \textbf{Criterio de aceptación} \\ \midrule
 \multicolumn{3}{@{}l}{\textit{Eficiencia de desempeño}} \\
 RNF01 & Responder con rapidez al aplicar filtros sobre el volumen completo de datos. & Menos de 3 s por interacción, medido con el analizador de rendimiento. \\ \addlinespace
 \multicolumn{3}{@{}l}{\textit{Usabilidad}} \\
@@ -1004,7 +1004,7 @@ Las desviaciones negativas se cubren primero con la partida de imprevistos, si l
 % ------------------------------------------
 \chapter{Especificación}
 \label{cap:especificacion}
-La especificación describe qué hará el sistema desde el punto de vista de quien lo usa, sin entrar todavía en cómo se construye. Parte de los requisitos de la Sección~\ref{sec:requisitos} y los describe desde tres puntos de vista: qué hace cada usuario con el sistema (casos de uso), qué información maneja (modelo conceptual) y cómo se reparten las funciones entre sus partes (arquitectura general). Termina con las historias de usuario, que traducen todo lo anterior al \textit{backlog} del desarrollo.
+La especificación describe qué hará el sistema desde el punto de vista de quien lo usa, sin entrar todavía en cómo se construye. Parte de los requisitos de la Sección~\ref{sec:requisitos} y los describe desde tres puntos de vista: qué hace cada usuario con el sistema (casos de uso), qué información maneja (modelo conceptual) y cómo se reparten las funciones entre sus partes (arquitectura general). Después detalla los requisitos no funcionales con una ficha para cada uno y termina con las historias de usuario, que traducen todo lo anterior al \textit{backlog} del desarrollo.
 
 \section{Modelo de casos de uso}
 \label{sec:casos_uso}
@@ -1230,7 +1230,7 @@ Requisitos & RF10. \\ \bottomrule
 \FloatBarrier
 \section{Modelo conceptual}
 \label{sec:modelo_conceptual}
-El modelo conceptual (Figura~\ref{fig:modelo_conceptual}) recoge la información que maneja el sistema y cómo se relaciona, sin tener en cuenta la herramienta. En el diseño se traducirá a un modelo en estrella.
+El modelo conceptual (Figura~\ref{fig:modelo_conceptual}) recoge la información que maneja el sistema y cómo se relaciona, sin tener en cuenta la herramienta. En el diseño se traduce a las tablas del modelo dimensional (Sección~\ref{sec:modelo_dimensional}).
 
 \begin{figure}[H]
 \centering
@@ -1245,6 +1245,8 @@ Lo que se evalúa es un \textit{ElementoEvaluado}, que puede ser una competencia
 
 \textit{Indicador} y \textit{Perspectiva} representan el catálogo del CMI (Tabla~\ref{tab:kpis}). Los indicadores no guardan ningún valor: se calculan a partir de las puntuaciones cada vez que el usuario consulta un panel o cambia un filtro.
 
+\subsection{Restricciones de integridad}
+\label{sec:restricciones}
 El diagrama no puede expresar algunas condiciones, que se recogen como restricciones de integridad en la Tabla~\ref{tab:restricciones}.
 
 \begin{table}[H]
@@ -1257,13 +1259,53 @@ El diagrama no puede expresar algunas condiciones, que se recogen como restricci
 RI1 & Claves: una convocatoria se identifica por el año; un área territorial, un elemento evaluado, un nivel de logro y una perspectiva, por el nombre; un indicador, por el código; y un contexto de centro, por la combinación de área, titularidad y hábitat. \\ \addlinespace
 RI2 & Una evaluación solo tiene puntuaciones de elementos vigentes en su convocatoria, es decir, con un año de inicio anterior o igual al de la convocatoria y sin año de fin o con uno posterior o igual. \\ \addlinespace
 RI3 & Una puntuación tiene nivel de logro si y solo si es de una competencia. Ese nivel es el único cuyo intervalo contiene el valor de la puntuación. \\ \addlinespace
-RI4 & Los intervalos de los niveles de logro no se solapan y entre todos cubren de 0 a 100. \\ \addlinespace
+RI4 & Los intervalos de los niveles de logro no se solapan y entre todos cubren de 0 a 100. Cada intervalo incluye su límite inferior y excluye el superior, salvo el del nivel más alto, que incluye el 100. \\ \addlinespace
 RI5 & Una convocatoria sin prueba (2020) no tiene evaluaciones. \\ \addlinespace
-RI6 & La edad de una evaluación, si se conoce, está entre 10 y 14 años. \\ \bottomrule
+RI6 & La edad de una evaluación, si se conoce, está entre 10 y 14 años. \\ \addlinespace
+RI7 & El valor de una puntuación está entre 0 y 100. \\ \bottomrule
 \end{tabularx}
 \caption{Restricciones de integridad del modelo conceptual.}
 \label{tab:restricciones}
 \end{table}
+
+Las restricciones RI2, RI3 y RI5 se escriben además en OCL (\textit{Object Constraint Language}) \cite{omg_ocl24}, el lenguaje de restricciones de UML. Son las que relacionan varias clases, y en ellas el lenguaje natural deja más margen a la interpretación. Las claves, los intervalos de los niveles y los rangos de valores (RI1, RI4, RI6 y RI7) se quedan en lenguaje natural, porque formalizarlos alargaría el capítulo sin aclarar nada. Las expresiones usan los nombres del diagrama, con sus tildes, y recorren cada asociación con el nombre de la clase de destino con la inicial en minúscula, que es el nombre de rol que OCL asigna cuando el diagrama no indica otro.
+
+RI2 se define sobre la puntuación, porque desde ella se llega a los dos extremos de la asociación a la que pertenece: la evaluación, que da el año de la convocatoria, y el elemento evaluado, que da el periodo de vigencia.
+
+\par\vspace{2ex}\noindent\begin{minipage}{\textwidth}\small\setstretch{1.0}
+\begin{verbatim}
+context Puntuación inv elementoVigente:
+  let añoConvocatoria = self.evaluación.convocatoria.año in
+  self.elementoEvaluado.añoInicio <= añoConvocatoria and
+  (self.elementoEvaluado.añoFin->isEmpty() or
+   self.elementoEvaluado.añoFin >= añoConvocatoria)
+\end{verbatim}
+\end{minipage}\par\vspace{2.5ex}
+
+RI3 se divide en dos invariantes. El primero exige que una puntuación tenga nivel de logro exactamente cuando su elemento evaluado es una competencia. El segundo exige que el valor esté dentro del intervalo de ese nivel, con los límites que fija RI4; como los intervalos no se solapan, ese nivel es único.
+
+\par\vspace{2ex}\noindent\begin{minipage}{\textwidth}\small\setstretch{1.0}
+\begin{verbatim}
+context Puntuación inv nivelSoloEnCompetencias:
+  self.nivelDeLogro->notEmpty() =
+    self.elementoEvaluado.oclIsKindOf(Competencia)
+
+context Puntuación inv nivelSegúnValor:
+  self.nivelDeLogro->notEmpty() implies
+    (self.nivelDeLogro.límiteInferior <= self.valor and
+     (self.valor < self.nivelDeLogro.límiteSuperior or
+      self.nivelDeLogro.límiteSuperior = 100))
+\end{verbatim}
+\end{minipage}\par\vspace{2.5ex}
+
+RI5 se define sobre la convocatoria: si no hubo prueba, el conjunto de sus evaluaciones está vacío.
+
+\par\vspace{2ex}\noindent\begin{minipage}{\textwidth}\small\setstretch{1.0}
+\begin{verbatim}
+context Convocatoria inv sinPruebaSinEvaluaciones:
+  not self.hayPrueba implies self.evaluación->isEmpty()
+\end{verbatim}
+\end{minipage}\par\vspace{2.5ex}
 
 \section{Arquitectura general}
 \label{sec:arquitectura}
@@ -1271,9 +1313,9 @@ La Figura~\ref{fig:arquitectura} muestra el recorrido de los datos desde el fich
 \begin{enumerate}
     \item \textbf{Fuente.} El fichero CSV del Portal de Datos Abiertos, que se usa tal como se publica \cite{transparencia_catalunya_2024}.
     \item \textbf{ETL.} Power Query lee el fichero, comprueba que cumple las reglas de la auditoría, unifica los códigos, corrige los errores estructurales y marca la calidad de cada puntuación (RF01--RF05).
-    \item \textbf{Modelo en estrella.} Los datos depurados se cargan en el motor en memoria de Power BI, con dos tablas de hechos y seis dimensiones. Su detalle se fijará en el diseño.
+    \item \textbf{Modelo dimensional.} Los datos depurados se cargan en el motor en memoria de Power BI, en un esquema en estrella con dos tablas de hechos y seis dimensiones (Sección~\ref{sec:modelo_dimensional}).
     \item \textbf{Lógica analítica.} Las medidas DAX calculan los 12 KPIs, los semáforos y la regla de las 30 puntuaciones según los filtros activos en cada momento (RF11, RF13, RF14).
-    \item \textbf{Presentación.} El informe contiene los tres paneles, uno por perfil (RF16--RF18), con los filtros sincronizados entre ellos (RF10).
+    \item \textbf{Interfaz.} El informe de Power BI contiene los tres paneles, uno por perfil (RF16--RF18), con los filtros sincronizados entre ellos (RF10).
 \end{enumerate}
 
 \begin{figure}[H]
@@ -1283,10 +1325,204 @@ La Figura~\ref{fig:arquitectura} muestra el recorrido de los datos desde el fich
 \label{fig:arquitectura}
 \end{figure}
 
-Las etapas de la ETL a la presentación forman un único proyecto de Power BI Desktop en formato \texttt{.pbip}, que guarda cada parte como texto y se versiona en Git (RNF10). Todo funciona con la versión gratuita de la herramienta (RNF11). La figura sitúa también los casos de uso: la desarrolladora actúa sobre la carga (CU01) y los tres perfiles, sobre los paneles (CU02--CU10).
+Las etapas de la ETL a la interfaz forman un único proyecto de Power BI Desktop en formato \texttt{.pbip}, que guarda cada parte como texto y se versiona en Git (RNF10). Todo funciona con la versión gratuita de la herramienta (RNF11). La figura sitúa también los casos de uso: la desarrolladora actúa sobre la carga (CU01) y los tres perfiles, sobre los paneles (CU02--CU10).
 
 Fuera de Power BI hay una validación independiente escrita en Python con DuckDB. Lee el mismo fichero, repite la depuración y el cálculo de los KPIs y compara sus resultados con los del modelo y con los informes oficiales \cite{csase_resultats}. Así se comprueba la exactitud de los cálculos (RNF06) con un método distinto al que se quiere validar (Sección~\ref{sec:validacion}).
 
+\section{Especificación de los requisitos no funcionales}
+\label{sec:rnf_volere}
+Los requisitos no funcionales de la Tabla~\ref{tab:rnf} se especifican con la plantilla Volere \cite{robertson2012mastering}, que describe cada requisito en una ficha. Se usa una versión reducida, con los cinco campos que hacen falta en este proyecto: el tipo de requisito, la descripción, la justificación, el criterio de aceptación y el método de evaluación. El tipo es la característica de calidad de la norma ISO/IEC 25010 \cite{iso25010_2011} a la que pertenece el requisito, con la subcaracterística entre paréntesis. El criterio de aceptación fija el valor que debe alcanzarse y es el mismo de la Tabla~\ref{tab:rnf}. El método de evaluación indica cómo se comprobará, de acuerdo con los métodos de validación de la Sección~\ref{sec:validacion}.
+
+La plantilla se aplica solo a los requisitos no funcionales (Tablas~\ref{tab:rnf01} a \ref{tab:rnf11}). Los funcionales se especifican con los casos de uso de la Sección~\ref{sec:casos_uso}.
+
+\begin{table}[H]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.0}\setlength{\defaultaddspace}{3pt}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{3.4cm} X @{}}
+\toprule
+\textbf{RNF01} & \textbf{Tiempo de respuesta} \\ \midrule
+Requisito de & Eficiencia de desempeño (comportamiento temporal). \\ \addlinespace
+Descripción & Los paneles responden con rapidez cuando el usuario aplica un filtro o cambia de panel, con todas las convocatorias cargadas. \\ \addlinespace
+Justificación & El modelo contiene 1,1 millones de evaluaciones y 17,7 millones de puntuaciones. Si cada filtro tarda en aplicarse, el usuario deja de explorar los datos y se queda con la vista inicial. \\ \addlinespace
+Criterio de aceptación & Cada interacción tarda menos de 3 s desde la acción del usuario hasta que se actualiza el último elemento visual del panel. \\ \addlinespace
+Método de evaluación & Medición con el analizador de rendimiento de Power BI Desktop en el equipo de desarrollo: se cambia cada filtro y se pasa de un panel a otro en los tres paneles, tres veces, y se toma el peor tiempo. Las consultas más lentas se analizan con DAX Studio \cite{dax_studio}. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha Volere del requisito RNF01.}
+\label{tab:rnf01}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.0}\setlength{\defaultaddspace}{3pt}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{3.4cm} X @{}}
+\toprule
+\textbf{RNF02} & \textbf{Facilidad de uso} \\ \midrule
+Requisito de & Usabilidad (capacidad de aprendizaje y operabilidad). \\ \addlinespace
+Descripción & Una persona sin formación técnica entiende los paneles y encuentra en ellos la información que busca sin ayuda. \\ \addlinespace
+Justificación & Los tres perfiles son responsables educativos, inspectores y directores de centro, no analistas de datos. Un cuadro de mando que exige formación previa se deja de usar. \\ \addlinespace
+Criterio de aceptación & Puntuación media igual o superior a 68 en el cuestionario SUS \cite{brooke1996sus}, con al menos 5 participantes. \\ \addlinespace
+Método de evaluación & Prueba con usuarios de perfiles representativos: tareas guiadas en los tres paneles y cuestionario SUS al terminar. Se complementa con una evaluación heurística \cite{nielsen1993usability}. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha Volere del requisito RNF02.}
+\label{tab:rnf02}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.0}\setlength{\defaultaddspace}{3pt}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{3.4cm} X @{}}
+\toprule
+\textbf{RNF03} & \textbf{Panel en una sola pantalla} \\ \midrule
+Requisito de & Usabilidad (operabilidad). \\ \addlinespace
+Descripción & Cada panel muestra todo su contenido en una pantalla, sin desplazamiento vertical ni horizontal. \\ \addlinespace
+Justificación & Un cuadro de mando se lee de un vistazo \cite{few2006information}. Lo que queda fuera de la pantalla no se compara con lo demás y obliga al usuario a recordarlo. \\ \addlinespace
+Criterio de aceptación & Las tres páginas del informe tienen un lienzo de 1280 $\times$ 720 píxeles, ningún elemento visual sobresale de él y la página no tiene barras de desplazamiento. \\ \addlinespace
+Método de evaluación & Comprobación del tamaño de cada página y de la posición de cada elemento en los ficheros del informe, e inspección de los tres paneles en Power BI Desktop con la vista ajustada a la página. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha Volere del requisito RNF03.}
+\label{tab:rnf03}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.0}\setlength{\defaultaddspace}{3pt}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{3.4cm} X @{}}
+\toprule
+\textbf{RNF04} & \textbf{Idioma y terminología} \\ \midrule
+Requisito de & Usabilidad (capacidad para reconocer su adecuación). \\ \addlinespace
+Descripción & Toda la interfaz está en castellano y nombra las competencias y las áreas territoriales como los informes oficiales. \\ \addlinespace
+Justificación & El usuario contrasta el cuadro de mando con los informes del Consell Superior d'Avaluació \cite{csase_resultats}. Si los nombres no coinciden, duda de que las cifras se refieran a lo mismo. \\ \addlinespace
+Criterio de aceptación & Ningún título, etiqueta, aviso o descripción emergente está en otro idioma. Los nombres de las competencias son la traducción al castellano de los oficiales, y los de las áreas territoriales, que son nombres propios, se mantienen como en la fuente. \\ \addlinespace
+Método de evaluación & Revisión de todos los textos de los tres paneles con una lista de comprobación y contraste de los nombres con los de los informes oficiales. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha Volere del requisito RNF04.}
+\label{tab:rnf04}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.0}\setlength{\defaultaddspace}{3pt}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{3.4cm} X @{}}
+\toprule
+\textbf{RNF05} & \textbf{Accesibilidad visual} \\ \midrule
+Requisito de & Usabilidad (accesibilidad). \\ \addlinespace
+Descripción & Los paneles se pueden leer con daltonismo o con baja visión. \\ \addlinespace
+Justificación & Los semáforos y las series de los gráficos se distinguen por el color. Quien no diferencia el rojo del verde, o no lee un texto con poco contraste, perdería esa información. \\ \addlinespace
+Criterio de aceptación & Contraste entre el texto y su fondo de al menos 4,5:1 (nivel AA de WCAG 2.1 \cite{w3c_wcag21}) y paletas cuyos colores se distinguen con deuteranopía y con protanopía. \\ \addlinespace
+Método de evaluación & Cálculo de la razón de contraste de cada combinación de color de texto y de fondo con la fórmula de WCAG 2.1, y revisión de capturas de los tres paneles con un simulador de daltonismo. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha Volere del requisito RNF05.}
+\label{tab:rnf05}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.0}\setlength{\defaultaddspace}{3pt}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{3.4cm} X @{}}
+\toprule
+\textbf{RNF06} & \textbf{Exactitud de los resultados} \\ \midrule
+Requisito de & Adecuación funcional (corrección funcional). \\ \addlinespace
+Descripción & Los indicadores se calculan con exactitud a partir de los datos publicados. \\ \addlinespace
+Justificación & Las decisiones se toman a partir de estas cifras. Los informes oficiales son la única referencia externa disponible, así que una diferencia con ellos apunta a un error en la ETL o en las medidas. \\ \addlinespace
+Criterio de aceptación & La puntuación media de Cataluña de cada competencia y convocatoria difiere menos de 0,5 puntos de la publicada en los informes oficiales \cite{csase_resultats}. \\ \addlinespace
+Método de evaluación & Validación independiente en Python (Sección~\ref{sec:arquitectura}): repite la ETL y el cálculo de los KPIs, compara cada media con la oficial y sirve de referencia para contrastar los valores que muestra Power BI. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha Volere del requisito RNF06.}
+\label{tab:rnf06}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.0}\setlength{\defaultaddspace}{3pt}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{3.4cm} X @{}}
+\toprule
+\textbf{RNF07} & \textbf{Trazabilidad de la limpieza} \\ \midrule
+Requisito de & Adecuación funcional (corrección funcional). \\ \addlinespace
+Descripción & Cada regla de limpieza está documentada y su efecto sobre los datos se puede reproducir. \\ \addlinespace
+Justificación & La limpieza cambia los datos publicados; por ejemplo, recoloca las columnas de puntuación rotadas. Quien revise el cuadro de mando debe poder saber qué se cambió y comprobarlo. \\ \addlinespace
+Criterio de aceptación & Todas las reglas que aplica la ETL figuran en el informe de calidad de los datos con su identificador y con las filas afectadas, y la validación independiente obtiene los mismos recuentos. \\ \addlinespace
+Método de evaluación & Revisión cruzada de las reglas de la ETL y del informe de calidad, y ejecución de las pruebas de integridad de la validación independiente, que repite la limpieza y comprueba los recuentos. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha Volere del requisito RNF07.}
+\label{tab:rnf07}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.0}\setlength{\defaultaddspace}{3pt}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{3.4cm} X @{}}
+\toprule
+\textbf{RNF08} & \textbf{Protección de datos} \\ \midrule
+Requisito de & Seguridad (confidencialidad). \\ \addlinespace
+Descripción & El sistema trabaja solo con datos anonimizados y no expone ningún identificador del alumnado, como exige el RGPD. \\ \addlinespace
+Justificación & Los datos son de menores. El fichero publicado es anónimo, pero incluye un código de alumno que el cuadro de mando no necesita para calcular ningún indicador. \\ \addlinespace
+Criterio de aceptación & Ninguna tabla del modelo contiene el código de alumno ni otro campo identificador, y ningún panel muestra registros individuales. \\ \addlinespace
+Método de evaluación & Inspección de las columnas del modelo en los ficheros del proyecto y revisión de los elementos visuales de los tres paneles. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha Volere del requisito RNF08.}
+\label{tab:rnf08}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.0}\setlength{\defaultaddspace}{3pt}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{3.4cm} X @{}}
+\toprule
+\textbf{RNF09} & \textbf{Incorporación de convocatorias} \\ \midrule
+Requisito de & Mantenibilidad (capacidad para ser modificado). \\ \addlinespace
+Descripción & Una convocatoria nueva se incorpora sin rediseñar el modelo. \\ \addlinespace
+Justificación & El Portal de Datos Abiertos publica una convocatoria cada año. Si cada una obligara a cambiar tablas o medidas, el cuadro de mando quedaría desactualizado al terminar el TFG. \\ \addlinespace
+Criterio de aceptación & Para cargar una convocatoria nueva basta con sustituir el fichero de origen y actualizar. Como mucho cambian parámetros documentados, y no se modifica ninguna tabla, relación ni medida. \\ \addlinespace
+Método de evaluación & Prueba de carga en dos pasos: primero con un fichero sin la última convocatoria y después con el fichero completo. Se comprueba que la convocatoria aparece en los paneles y que el número de registros de cada convocatoria coincide con el del fichero. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha Volere del requisito RNF09.}
+\label{tab:rnf09}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.0}\setlength{\defaultaddspace}{3pt}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{3.4cm} X @{}}
+\toprule
+\textbf{RNF10} & \textbf{Artefactos en texto y versionados} \\ \midrule
+Requisito de & Mantenibilidad (analizabilidad). \\ \addlinespace
+Descripción & Todos los artefactos del proyecto se guardan en formato de texto y bajo control de versiones. \\ \addlinespace
+Justificación & Un fichero binario de Power BI no deja ver qué ha cambiado entre dos versiones. Con ficheros de texto, cada cambio en la ETL, en el modelo o en las medidas queda registrado y se puede revisar o deshacer. \\ \addlinespace
+Criterio de aceptación & El proyecto de Power BI está en formato \texttt{.pbip} y el repositorio de Git contiene el modelo, las consultas, las medidas, el informe y los scripts como ficheros de texto, sin ningún fichero \texttt{.pbix}. \\ \addlinespace
+Método de evaluación & Inspección del contenido del repositorio y de su historial de cambios. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha Volere del requisito RNF10.}
+\label{tab:rnf10}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.0}\setlength{\defaultaddspace}{3pt}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{3.4cm} X @{}}
+\toprule
+\textbf{RNF11} & \textbf{Uso sin licencias de pago} \\ \midrule
+Requisito de & Portabilidad (capacidad para ser instalado). \\ \addlinespace
+Descripción & El cuadro de mando funciona sin licencias de pago. \\ \addlinespace
+Justificación & No se puede dar por hecho que los centros y la inspección tengan licencias de Power BI. Si el uso dependiera de ellas, parte de los destinatarios no podría abrir el cuadro de mando. \\ \addlinespace
+Criterio de aceptación & El proyecto se abre, se actualiza y se usa completo con Power BI Desktop, que es gratuito \cite{ms_powerbi_pricing}, sin iniciar sesión y sin elementos visuales ni funciones de pago. \\ \addlinespace
+Método de evaluación & Prueba en un equipo distinto del de desarrollo, con Power BI Desktop recién instalado y sin cuenta: se abre el proyecto, se actualizan los datos y se recorren los tres paneles. \\ \bottomrule
+\end{tabularx}
+\caption{Ficha Volere del requisito RNF11.}
+\label{tab:rnf11}
+\end{table}
+
+\FloatBarrier
 \section{Historias de usuario}
 \label{sec:historias}
 Las historias de usuario recogen los requisitos como necesidades concretas de quien usa el sistema y forman el \textit{backlog} del desarrollo (Sección~\ref{sec:metodologia}). Siguen el formato \guillemotleft{}Como [perfil], quiero [acción] para [objetivo]\guillemotright{} y cada una tiene criterios de aceptación, que permiten decidir en la revisión de cada \textit{sprint} si la historia está terminada. Un caso de uso describe una interacción completa con el sistema, y una historia, una sola necesidad, así que un mismo caso de uso puede dar lugar a varias historias.
@@ -1331,50 +1567,78 @@ HU15 & \textit{Como inspector o inspectora, quiero consultar el CMI desde el nav
 \chapter{Diseño}
 \label{cap:diseno}
 \textit{Apartado en preparación.}
+% Introducción del capítulo: qué contiene y de dónde parte. Hay un apartado por cada etapa de la arquitectura
+% general (Sección 7.3): modelo dimensional, ETL, lógica analítica e interfaz, más la organización del repositorio.
+% El modelo dimensional va antes que la ETL porque la ETL se diseña para cargarlo.
+% Nombres vinculantes: trabajo_en_curso/week2/DECISIONES.md, sección «Nombres».
 
-\section{Modelo dimensional}
+\section{Diseño del modelo dimensional}
 \label{sec:modelo_dimensional}
-% Traducción del modelo conceptual (Sección 7.2) al esquema en estrella. Diagrama en imagenes/diseno/.
+% Es el modelo de la base de datos del sistema. El diseño conceptual ya está hecho: es el modelo conceptual de la
+% Sección 7.2 (sec:modelo_conceptual). Aquí no se repite ni se abre un apartado de «diseño conceptual»: se remite
+% a él en la primera frase y se parte de sus clases y de sus restricciones de integridad (Tabla tab:restricciones).
 
-\subsection{Granularidad y tablas de hechos}
-% Grano de FactEvaluacion y FactPuntuacion, medidas que contienen y por qué hay dos tablas de hechos.
+\subsection{Diseño lógico: esquema en estrella}
+\label{sec:diseno_logico}
+% Traducción del modelo conceptual a tablas. Contenido: tabla de correspondencia (clase o asociación del modelo
+% conceptual -> tabla de hechos o dimensión), decisiones de la traducción (qué clases se funden o se dividen y
+% por qué; Indicador y Perspectiva no son tablas, se resuelven en la lógica analítica), figura del esquema en
+% estrella (diagrama en estrella, en imagenes/diseno/) con las relaciones y su cardinalidad, y cómo garantiza el
+% diseño cada restricción de integridad (RI1--RI7).
+
+\subsection{Tablas de hechos}
+\label{sec:tablas_hechos}
+% Granularidad de FactEvaluacion y FactPuntuacion, columnas que contienen y por qué hay dos tablas de hechos.
 
 \subsection{Dimensiones}
+\label{sec:dimensiones}
 % Año, contexto del centro, perfil del alumno, competencia, nivel de logro y calidad del dato; claves y jerarquías.
 
 \subsection{Diccionario de datos}
-% Tablas, columnas, tipos y descripción.
+\label{sec:diccionario_datos}
+% Tablas, columnas, tipos y descripción. Incluye las decisiones físicas en Power BI (modo de almacenamiento, tipos,
+% columnas ocultas y de ordenación).
 
 \section{Diseño de la ETL}
 \label{sec:diseno_etl}
 
 \subsection{Flujo de consultas}
+\label{sec:flujo_consultas}
 % Orden de las consultas de Power Query: lectura, tabla intermedia, dimensiones y hechos.
 
-\subsection{Reglas de limpieza y validación}
-% Reglas de la auditoría que aplica la ETL, en qué orden y qué hace la carga cuando una regla falla (RF01--RF05).
+\subsection{Reglas de limpieza}
+\label{sec:reglas_limpieza}
+% Reglas de limpieza de la auditoría que aplica la ETL, en qué orden, qué comprobaciones detienen la carga y qué
+% hace el sistema cuando una falla (RF01--RF05). «Validación» se reserva para la comprobación del sistema
+% construido (Sección 4.3 y validación independiente en Python).
 
-\section{Lógica analítica}
+\section{Diseño de la lógica analítica}
 \label{sec:diseno_dax}
 
 \subsection{Fichas de los KPIs}
+\label{sec:fichas_kpis}
 % Una ficha por KPI: definición, fórmula DAX, filtros que respeta y perspectiva.
 
 \subsection{Semáforos y referencias}
+\label{sec:semaforos}
 % Umbrales del semáforo, referencia de cada KPI y regla de las 30 puntuaciones (RF13, RF14).
 
 \section{Diseño de la interfaz}
 \label{sec:diseno_interfaz}
 
 \subsection{Estructura común y navegación}
+\label{sec:estructura_comun}
 % Distribución común de los paneles, filtros sincronizados, paleta y accesibilidad (RF10, RNF02--RNF05).
 
 \subsection{Diseño final de los paneles}
-% Diseño definitivo de cada panel y cambios respecto a los bocetos de la Sección 3.5.
+\label{sec:paneles}
+% Diseño definitivo de cada panel y cambios respecto al prototipo de la Sección 3.5.
 
-\section{Organización del proyecto}
+\section{Organización del repositorio}
 \label{sec:organizacion_proyecto}
-% Estructura del proyecto .pbip, control de versiones y validación independiente en Python (RNF10).
+% Estructura de carpetas del repositorio: proyecto .pbip, generadores, validación independiente en Python y
+% memoria; control de versiones (RNF10). No repite la arquitectura general (Sección 7.3), que describe las etapas
+% del sistema y no sus ficheros.
 
 % ------------------------------------------
 % CAPÍTULO 9: SOSTENIBILIDAD
