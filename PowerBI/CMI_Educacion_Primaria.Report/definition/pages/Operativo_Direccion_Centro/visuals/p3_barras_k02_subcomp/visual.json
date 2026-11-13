@@ -4,10 +4,10 @@
   "position": {
     "x": 16,
     "y": 228,
-    "z": 11000,
+    "z": 12000,
     "height": 480,
     "width": 410,
-    "tabOrder": 11000
+    "tabOrder": 12000
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -47,8 +47,8 @@
                 }
               },
               "queryRef": "DimCompetencia.Materia",
-              "nativeQueryRef": "Materia",
-              "displayName": "Materia"
+              "nativeQueryRef": "Competencia",
+              "displayName": "Competencia"
             }
           ]
         },
@@ -172,7 +172,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Gráfico de barras con la puntuación media de cada subcompetencia, coloreado por materia'"
+                  "Value": "'Gráfico de barras con la puntuación media de cada subcompetencia, coloreado por competencia'"
                 }
               }
             }

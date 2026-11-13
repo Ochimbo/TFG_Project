@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "p2_seg_materia",
   "position": {
-    "x": 880,
+    "x": 696,
     "y": 8,
     "z": 3000,
     "height": 60,
-    "width": 188,
+    "width": 184,
     "tabOrder": 3000
   },
   "visual": {
@@ -27,9 +27,9 @@
                 }
               },
               "queryRef": "DimCompetencia.Materia",
-              "nativeQueryRef": "Materia",
-              "active": true,
-              "displayName": "Materia"
+              "nativeQueryRef": "Competencia",
+              "displayName": "Competencia",
+              "active": true
             }
           ]
         }
@@ -61,11 +61,6 @@
             }
           }
         }
-      ],
-      "general": [
-        {
-          "properties": {}
-        }
       ]
     },
     "visualContainerObjects": {
@@ -82,7 +77,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Materia'"
+                  "Value": "'Competencia'"
                 }
               }
             }
@@ -95,7 +90,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segmentador de materia'"
+                  "Value": "'Segmentador de competencia'"
                 }
               }
             }

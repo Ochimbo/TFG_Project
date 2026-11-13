@@ -5,16 +5,6 @@
     "tipo": "Column"
   },
   {
-    "Entity": "DimCalidadDato",
-    "Property": "Censurada",
-    "tipo": "Column"
-  },
-  {
-    "Entity": "DimCalidadDato",
-    "Property": "NivelNoComparable",
-    "tipo": "Column"
-  },
-  {
     "Entity": "DimCompetencia",
     "Property": "Materia",
     "tipo": "Column"
@@ -50,6 +40,11 @@
     "tipo": "Column"
   },
   {
+    "Entity": "DimPerfilAlumno",
+    "Property": "Genero",
+    "tipo": "Column"
+  },
+  {
     "Entity": "_Medidas",
     "Property": "Alumnos evaluados",
     "tipo": "Measure"
@@ -57,6 +52,16 @@
   {
     "Entity": "_Medidas",
     "Property": "Estado K01",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "Estado K03",
+    "tipo": "Measure"
+  },
+  {
+    "Entity": "_Medidas",
+    "Property": "Estado K10",
     "tipo": "Measure"
   },
   {
@@ -121,7 +126,7 @@
   },
   {
     "Entity": "_Medidas",
-    "Property": "Puntuaciones globales",
+    "Property": "Puntuaciones por nivel de logro",
     "tipo": "Measure"
   },
   {

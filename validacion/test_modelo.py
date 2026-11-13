@@ -228,6 +228,17 @@ def test_area_barcelona_comarques_por_anio():
                    WHERE (AreaCodigo = 3 AND Anio > 2023) OR (AreaCodigo = 4 AND Anio <> 2024)
                    GROUP BY ALL""", c)
     assert not mal, f"R14: Barcelona Comarques debe ser código 3 hasta 2023 y 4 en 2024: {mal}"
+    # D-05: el código 4 (perímetro del Barcelonès, publicado en 2024 como «Barcelona Comarques») se muestra
+    # como «Barcelonès», con el mismo orden que el código 5; el 3 conserva «Barcelona Comarques».
+    nombres = dict(filas("SELECT DISTINCT AreaCodigo, AreaTerritorial FROM DimContextoCentro WHERE AreaCodigo IN (3, 4, 5)"))
+    assert nombres == {3: "Barcelona Comarques", 4: "Barcelonès", 5: "Barcelonès"}, f"D-05: nombres de área {nombres}"
+    ordenes = dict(filas("SELECT DISTINCT AreaCodigo, AreaOrden FROM DimContextoCentro WHERE AreaCodigo IN (3, 4, 5)"))
+    assert ordenes == {3: 3, 4: 5, 5: 5}, f"D-05: AreaOrden {ordenes}"
+    anios = filas("""SELECT x.AreaTerritorial, list(DISTINCT f.AnioKey ORDER BY f.AnioKey) FROM FactEvaluacion f
+                     JOIN DimContextoCentro x USING (ContextoKey)
+                     WHERE x.AreaTerritorial IN ('Barcelona Comarques', 'Barcelonès') GROUP BY 1 ORDER BY 1""")
+    assert dict(anios) == {"Barcelona Comarques": list(range(2009, 2020)) + [2021, 2022, 2023],
+                           "Barcelonès": [2024, 2025]}, f"D-05: años por nombre de área {anios}"
     mal = filas("""SELECT s.Anio, s.AreaCodigo, count(*) FROM crudo r JOIN stg_evaluaciones s USING (EvaluacionID)
                    WHERE trim(r.AREA_TERRITORIAL) = 'Barcelona Comarques'
                      AND s.AreaCodigo IS DISTINCT FROM CASE WHEN s.Anio = 2024 THEN 4 WHEN s.Anio <= 2023 THEN 3 END
@@ -331,6 +342,7 @@ def _sort_by_column_declarados() -> list[tuple[str, str, str]]:
 
 
 def test_sort_by_column_uno_a_uno():
+    """Cada atributo con sortByColumn tiene un único orden (D-05: «Barcelonès» en los códigos 4 y 5 -> orden 5)."""
     pares = _sort_by_column_declarados()
     esperados = {("DimContextoCentro", "AreaTerritorial", "AreaOrden"),
                  ("DimCompetencia", "Subcompetencia", "SubcompetenciaOrden")}
@@ -420,6 +432,56 @@ def test_nivel_coherente_con_limites_en_todas_las_filas():
     assert not mal, f"NivelKey incoherente con DimNivelLogro (EsGlobal, NivelKey, filas): {mal}"
 
 
+def test_distribucion_por_nivel_coincide_con_k03():
+    """D-13: la medida «Puntuaciones por nivel de logro» aplica las exclusiones de K03 y el mínimo de 30 por
+    competencia; su tramo Bajo debe ser exactamente K03 en todo contexto con K03 calculable."""
+    m = kpis.construir_modelo(SALIDA)
+    comprobadas = 0
+    for anio in m.indice_de_anio:
+        for codigo in m.dim_comp[m.dim_comp["EsGlobal"]]["CodigoMateria"]:
+            ctx = {"Anio": anio, "CodigoMateria": codigo}
+            por_nivel = [m.puntuaciones_por_nivel(ctx, k) for k in (1, 2, 3, 4)]
+            k03 = m.k03(ctx)
+            if k03 is None:
+                assert all(v is None for v in por_nivel), f"{ctx}: K03 en blanco pero hay puntuaciones por nivel"
+                continue
+            total = sum(por_nivel)
+            assert total >= 30 and abs(por_nivel[0] / total - k03) < 1e-12, (
+                f"{ctx}: % Bajo del gráfico {por_nivel[0] / total:.6f} != K03 {k03:.6f}")
+            comprobadas += 1
+    assert comprobadas >= 60, f"Pocas combinaciones comprobadas: {comprobadas}"
+    # Las subcompetencias nunca entran: ninguna global tiene NivelKey 0.
+    assert uno("""SELECT count(*) FROM FactPuntuacion f JOIN DimCompetencia c USING (CompetenciaKey)
+                  WHERE c.EsGlobal AND f.NivelKey = 0""") == 0, "Hay globales con nivel 0 «No aplica»"
+
+
+# =======================================================================================
+# 5b. Vigencia de las competencias (RI2 del modelo conceptual; D-17) y periodos de diseño (D-10)
+# =======================================================================================
+def test_vigencia_competencias_ri2():
+    """RI2: toda puntuación pertenece a una convocatoria dentro del periodo de vigencia de su competencia
+    (AnioInicio..AnioFin). Además AnioInicio debe ser el primer año real con datos de cada columna."""
+    fuera = filas("""SELECT c.CampoOrigen, f.AnioKey, count(*) FROM FactPuntuacion f
+                     JOIN DimCompetencia c USING (CompetenciaKey)
+                     WHERE f.AnioKey < c.AnioInicio OR (c.AnioFin IS NOT NULL AND f.AnioKey > c.AnioFin)
+                     GROUP BY ALL ORDER BY ALL""")
+    assert not fuera, f"RI2: puntuaciones fuera de la vigencia de su competencia (campo, año, filas): {fuera}"
+    inicio = filas("""SELECT c.CampoOrigen, c.AnioInicio, min(f.AnioKey) FROM FactPuntuacion f
+                      JOIN DimCompetencia c USING (CompetenciaKey) GROUP BY ALL HAVING c.AnioInicio <> min(f.AnioKey)""")
+    assert not inicio, f"AnioInicio no coincide con el primer año con datos (campo, AnioInicio, primer año): {inicio}"
+
+
+def test_periodo_diseno_coherente_por_materia():
+    """D-10: el periodo de diseño de la global de cada materia es el de sus subcompetencias (2017 en matemáticas,
+    inglés y francés; 2018 en catalán, castellano y ciencias) y nunca anterior al inicio de la competencia."""
+    esperado = {"PCAT": 2018, "PCAST": 2018, "PMAT": 2017, "PANG": 2017, "PFRAN": 2017, "PMED": 2018}
+    datos = filas("SELECT CodigoMateria, list(DISTINCT PeriodoDisenoInicio) FROM DimCompetencia GROUP BY 1")
+    for materia, periodos in datos:
+        assert periodos == [esperado[materia]], f"{materia}: PeriodoDisenoInicio {periodos}, se esperaba {esperado[materia]}"
+    mal = filas("SELECT CampoOrigen FROM DimCompetencia WHERE PeriodoDisenoInicio < AnioInicio")
+    assert not mal, f"PeriodoDisenoInicio anterior a AnioInicio: {mal}"
+
+
 # =======================================================================================
 # 6. Máscara de DimCalidadDato (R25-R28)
 # =======================================================================================
@@ -500,6 +562,20 @@ def test_medias_cataluna_frente_a_oficiales():
     assert not fallos, f"Medias fuera de ±{kpis.TOLERANCIA_OFICIAL} no documentadas (clave, CSV, oficial, dif): {fallos}"
     obsoletas = set(FUERA_TOLERANCIA_PENDIENTES_DE_DOCUMENTAR) - {c for c, _ in pendientes}
     assert not obsoletas, f"Ya están dentro de tolerancia; quítalas de la lista de pendientes: {obsoletas}"
+
+
+def test_criterio_aceptacion_rnf06():
+    """RNF06 (memoria, tabla de requisitos no funcionales; D-01): TODAS las medias de Cataluña deben quedar a
+    0,5 puntos o menos de la oficial, sin excepciones documentadas."""
+    medias = {(a, m): float(v) for a, m, v in filas("""
+        SELECT f.AnioKey, c.CodigoMateria, avg(f.Puntuacion) FROM FactPuntuacion f
+        JOIN DimCompetencia c USING (CompetenciaKey) WHERE c.EsGlobal GROUP BY ALL""")}
+    fuera = [(clave, round(medias[clave], 2), oficial) for clave, oficial in sorted(kpis.MEDIAS_OFICIALES.items())
+             if abs(medias[clave] - oficial) > kpis.TOLERANCIA_RNF06 + 1e-9]
+    maxima = max(abs(medias[c] - o) for c, o in kpis.MEDIAS_OFICIALES.items())
+    print(f"    {len(kpis.MEDIAS_OFICIALES) - len(fuera)} de {len(kpis.MEDIAS_OFICIALES)} dentro de "
+          f"±{kpis.TOLERANCIA_RNF06} (RNF06); diferencia máxima {maxima:.2f}")
+    assert not fuera, f"RNF06 incumplido (clave, CSV, oficial): {fuera}"
 
 
 # =======================================================================================

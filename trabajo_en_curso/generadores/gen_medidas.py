@@ -15,6 +15,9 @@ FMT_PCT = "0.0%"
 FMT_VAR = "+0.0;-0.0;0.0"
 FMT_POS = "0"
 FMT_CNT = "#,0"
+# Semáforos (D-12): las medidas devuelven 1, 0 o -1 y la cadena de formato muestra símbolo y palabra
+# (secciones positivo;negativo;cero), de modo que el estado no depende solo del color (RNF05).
+FMT_SEMAFORO = '"▲ Favorable";"▼ Desfavorable";"● Neutro"'
 
 NO_EQ = (
     "ATENCIÓN: las puntuaciones no están equiparadas entre convocatorias (no hay ítems "
@@ -175,6 +178,37 @@ VAR _bajo =
     )
 RETURN
     IF ( _globales >= 30, DIVIDE ( COALESCE ( _bajo, 0 ), _globales ) )""",
+    ),
+    dict(
+        name="Puntuaciones por nivel de logro",
+        guid="58ea587f-4ba5-5009-8f0d-29ea7fd32148",
+        folder=F_REND,
+        fmt=FMT_CNT,
+        desc=[
+            "Número de puntuaciones globales en el nivel de logro del contexto (DimNivelLogro en el eje o la leyenda), "
+            "con las mismas exclusiones que K03: celdas censuradas (DimCalidadDato[Censurada]) y convocatorias con "
+            "nivel no comparable (DimCalidadDato[NivelNoComparable]). BLANK si la competencia tiene menos de 30 "
+            "puntuaciones globales en total, sumando todos los niveles (RF14). Es la base del gráfico de distribución "
+            "por nivel: su tramo Bajo coincide con K03 por construcción. Niveles internos del TFG (cortes 55/70/85), "
+            "no los niveles oficiales."
+        ],
+        expr="""VAR _total =
+    CALCULATE (
+        COUNTROWS ( FactPuntuacion ),
+        KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () ),
+        KEEPFILTERS ( DimCalidadDato[Censurada] = FALSE () ),
+        KEEPFILTERS ( DimCalidadDato[NivelNoComparable] = FALSE () ),
+        REMOVEFILTERS ( DimNivelLogro )
+    )
+VAR _nivel =
+    CALCULATE (
+        COUNTROWS ( FactPuntuacion ),
+        KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () ),
+        KEEPFILTERS ( DimCalidadDato[Censurada] = FALSE () ),
+        KEEPFILTERS ( DimCalidadDato[NivelNoComparable] = FALSE () )
+    )
+RETURN
+    IF ( _total >= 30, _nivel )""",
     ),
     dict(
         name="K04 Brecha de género (Niños - Niñas)",
@@ -459,10 +493,11 @@ RETURN
         name="Estado K01",
         guid="d56c3a0e-0cbf-5720-a976-fa9ec60fb86b",
         folder=F_SEMA,
-        fmt=FMT_POS,
+        fmt=FMT_SEMAFORO,
         desc=[
-            "Semáforo de K01: 1 favorable, 0 neutro, -1 desfavorable. Con algún filtro de DimContextoCentro "
-            "usa K07 (>= 1 -> 1; <= -1 -> -1; resto 0). Sin filtro de contexto de centro usa K10 "
+            "Semáforo de K01: 1 favorable, 0 neutro, -1 desfavorable; el formato lo muestra como ▲ Favorable, "
+            "● Neutro o ▼ Desfavorable. Con algún filtro de DimContextoCentro (área, naturaleza o hábitat) compara "
+            "con Cataluña mediante K07 (>= 1 -> 1; <= -1 -> -1; resto 0). Sin filtro de contexto de centro usa K10 "
             "(>= 0,5 -> 1; <= -0,5 -> -1; resto 0), que exige un solo año con convocatoria. BLANK si el "
             "indicador usado está en blanco. Cuando usa K10, las puntuaciones no están equiparadas entre "
             "convocatorias y el semáforo es orientativo."
@@ -488,11 +523,13 @@ RETURN
         name="Estado K03",
         guid="0339044c-c7d8-5eab-9a87-de7c77a3ec82",
         folder=F_SEMA,
-        fmt=FMT_POS,
+        fmt=FMT_SEMAFORO,
         desc=[
             "Semáforo de K03: compara el % en nivel bajo del contexto con el de Cataluña (sin filtros de "
-            "DimContextoCentro). Diferencia <= -2 puntos porcentuales -> 1 (favorable); >= +2 puntos "
-            "porcentuales -> -1 (desfavorable); resto 0. BLANK si alguno de los dos K03 está en blanco."
+            "DimContextoCentro). Diferencia <= -2 puntos porcentuales -> 1 (▲ Favorable); >= +2 puntos "
+            "porcentuales -> -1 (▼ Desfavorable); resto 0 (● Neutro). Sin ningún filtro de contexto de centro "
+            "compara Cataluña consigo misma y vale 0: tiene sentido en los paneles táctico y operativo, no en el "
+            "estratégico. BLANK si alguno de los dos K03 está en blanco."
         ],
         expr="""VAR _k03 = [K03 % alumnado nivel bajo]
 VAR _k03Cataluna =
@@ -517,10 +554,10 @@ RETURN
         name="Estado K10",
         guid="aa48fe15-95f5-5051-a862-3e6b6d073aa7",
         folder=F_SEMA,
-        fmt=FMT_POS,
+        fmt=FMT_SEMAFORO,
         desc=[
-            "Semáforo de K10: >= 0,5 puntos -> 1 (favorable); <= -0,5 -> -1 (desfavorable); resto 0. "
-            "BLANK si K10 está en blanco.",
+            "Semáforo de K10: >= 0,5 puntos -> 1 (▲ Favorable); <= -0,5 -> -1 (▼ Desfavorable); resto 0 "
+            "(● Neutro). BLANK si K10 está en blanco.",
             NO_EQ,
         ],
         expr="""VAR _k10 = [K10 Variación interanual]
@@ -542,6 +579,14 @@ def tmdl_name(name):
     return name
 
 
+def tmdl_value(value):
+    """Valor de propiedad TMDL. Si contiene comillas dobles, TOM exige la forma entrecomillada con las
+    comillas interiores duplicadas (comprobado con TmdlSerializer: la forma sin escapar da InvalidValueFormat)."""
+    if '"' in value:
+        return '"' + value.replace('"', '""') + '"'
+    return value
+
+
 lines = []
 lines.append("table _Medidas")
 lines.append("\tlineageTag: 2b4181cc-7c15-597e-9968-0f42fabc57d0")
@@ -556,7 +601,7 @@ for m in MEASURES:
             lines.append("\t\t\t" + el if el.strip() else "")
     else:
         lines.append(f"\tmeasure {tmdl_name(m['name'])} = {expr}")
-    lines.append(f"\t\tformatString: {m['fmt']}")
+    lines.append(f"\t\tformatString: {tmdl_value(m['fmt'])}")
     lines.append(f"\t\tdisplayFolder: {m['folder']}")
     lines.append(f"\t\tlineageTag: {m['guid']}")
     lines.append("")

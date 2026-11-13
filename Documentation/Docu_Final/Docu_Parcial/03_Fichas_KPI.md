@@ -30,7 +30,7 @@ El dataset de la evaluación de sexto no contiene información económica (ni pr
 | Territorio y entorno | Procesos internos | Equilibrio territorial de los resultados | K07, K08, K09 | `3. Territorio y entorno` |
 | Eficiencia y progreso | Aprendizaje y crecimiento (sustituye además a la financiera) | Mejora continua entre convocatorias | K10, K11, K12 | `4. Eficiencia y progreso` |
 
-Además, el modelo incluye cuatro medidas auxiliares (carpeta `0. Base`: `Alumnos evaluados`, `Puntuaciones globales`, `Puntuación media` y `Puntuación media Cataluña`) y tres semáforos (carpeta `5. Semáforos`: `Estado K01`, `Estado K03` y `Estado K10`).
+Además, el modelo incluye cuatro medidas auxiliares (carpeta `0. Base`: `Alumnos evaluados`, `Puntuaciones globales`, `Puntuación media` y `Puntuación media Cataluña`), la medida de apoyo `Puntuaciones por nivel de logro` (carpeta `1. Rendimiento académico`, base del gráfico de distribución por nivel; ficha en la sección 3.1) y tres semáforos (carpeta `5. Semáforos`: `Estado K01`, `Estado K03` y `Estado K10`): 20 medidas en total.
 
 ### 1.3. Mapa estratégico
 
@@ -70,12 +70,14 @@ El informe Power BI (`PowerBI/CMI_Educacion_Primaria.Report/`) tiene tres págin
 | K06 Dispersión de resultados | ✓ | | |
 | K07 Desviación respecto a Cataluña | | ✓ | ✓ |
 | K10 Variación interanual, K11 Tendencia 5 convocatorias, K12 % competencias que mejoran | ✓ | | |
-| Estado K01 | | | ✓ |
+| Estado K01 (área o contexto frente a Cataluña) | | ✓ | ✓ |
+| Estado K03 (área o contexto frente a Cataluña) | | ✓ | ✓ |
+| Estado K10 (tarjeta y columna de la tabla por competencia) | ✓ | | |
 | Alumnos evaluados | ✓ | | |
-| Puntuaciones globales (barras 100 % por nivel de logro) | | | ✓ |
+| Puntuaciones por nivel de logro (barras 100 % por nivel de logro) | | | ✓ |
 | Puntuación media Cataluña | | | ✓ |
 
-`Estado K03` y `Estado K10` están definidos en el modelo, pero en esta versión del informe ningún visual los utiliza.
+Cada semáforo se muestra donde su referencia tiene sentido (decisión D-12 de `trabajo_en_curso/week2/DECISIONES.md`): en el panel estratégico no hay territorio de referencia, así que solo K10 lleva semáforo (`Estado K03` valdría siempre 0, Cataluña frente a sí misma, y `Estado K01` coincidiría con `Estado K10`); en los paneles táctico y operativo, `Estado K01` y `Estado K03` comparan el área o el contexto seleccionado con Cataluña.
 
 ---
 
@@ -89,7 +91,7 @@ El informe Power BI (`PowerBI/CMI_Educacion_Primaria.Report/`) tiene tres págin
 
 **Mínimo muestral.** K01, K02, K03 y K06 devuelven `BLANK()` si el contexto tiene menos de 30 puntuaciones; los KPI que se construyen a partir de ellos heredan esa condición.
 
-**Comparaciones temporales.** Se navega por `DimAnio[IndiceConvocatoria]` (índice 1..16 de las convocatorias con datos), nunca por `Anio - 1`: así 2021 se compara con 2019, porque 2020 no tuvo prueba por la COVID-19. Solo intervienen las competencias cuyo periodo de diseño estable (`DimCompetencia[PeriodoDisenoInicio]`) empieza como tarde en el año de la convocatoria de referencia: 2016 en inglés y francés, 2017 en matemáticas y 2018 en catalán, castellano y ciencias (contrato §5.2).
+**Comparaciones temporales.** Se navega por `DimAnio[IndiceConvocatoria]` (índice 1..16 de las convocatorias con datos), nunca por `Anio - 1`: así 2021 se compara con 2019, porque 2020 no tuvo prueba por la COVID-19. Solo intervienen las competencias cuyo periodo de diseño estable (`DimCompetencia[PeriodoDisenoInicio]`) empieza como tarde en el año de la convocatoria de referencia: 2017 en matemáticas, inglés y francés y 2018 en catalán, castellano y ciencias (contrato §5.2; decisión D-10: la global de inglés y francés de 2016 se calculó con subcompetencias de escala comprimida y no se compara con la de 2017). En consecuencia, K10 existe desde 2018 (ese año solo para matemáticas, inglés y francés; desde 2019 para todas las materias), K11 desde 2022 y K12 desde 2018.
 
 **Limitaciones generales.**
 
@@ -221,7 +223,7 @@ En 2025 la expresión escrita es la subcompetencia más baja en catalán y caste
 | Objetivo estratégico | Mejorar el dominio de las competencias básicas (reducir el alumnado que no alcanza el nivel mínimo) |
 | Definición | Porcentaje de puntuaciones globales en el nivel Bajo (menos de 55 puntos, `DimNivelLogro[NivelKey] = 1`) sobre el total de puntuaciones globales del contexto. |
 | Unidad y formato | Porcentaje · `0.0%` |
-| Interpretación | Cuanto más bajo, mejor. |
+| Interpretación | Cuanto más bajo, mejor. La medida cuenta puntuaciones globales; con una competencia seleccionada equivale al porcentaje de alumnado, porque cada alumno tiene una sola global por competencia (decisión D-16). |
 | Filtros y exclusiones de calidad | Numerador y denominador excluyen las celdas censuradas (`Censurada`, R26; entre las globales, inglés 2015, con suelos artificiales) y las convocatorias con nivel no comparable (`NivelNoComparable`, R28: inglés 2015 y 2016, matemáticas 2015 y 2019, catalán 2018 y francés 2022). Ignora los filtros de `DimNivelLogro`. |
 | Mínimo muestral | 30 puntuaciones en el denominador ya filtrado. |
 | Limitaciones | Los cortes 55/70/85 son internos del TFG: aproximan los % oficiales por nivel con un error medio de 2,70 pp en el nivel bajo, pero no los reproducen en cada año (informe de calidad, §6.3). En las convocatorias marcadas con `NivelNoComparable` la medida queda en blanco si el contexto solo contiene esas convocatorias. |
@@ -262,6 +264,43 @@ RETURN
 | **Todas las materias** | **17,80 %** |
 
 **Ejemplo por área (2025, `semaforos_2025.csv`).** En ciencias, el Barcelonès tiene un 35,07 % de puntuaciones en nivel bajo (8,14 pp por encima de Cataluña); en castellano, Maresme - Vallès Oriental tiene un 7,70 % (2,12 pp por debajo).
+
+#### Puntuaciones por nivel de logro — medida de apoyo de la distribución por nivel
+
+| Campo | Contenido |
+|---|---|
+| Código y nombre | `Puntuaciones por nivel de logro` (carpeta `1. Rendimiento académico`) |
+| Perspectiva | Rendimiento académico |
+| Objetivo estratégico | Mostrar cómo se reparte el alumnado entre los cuatro niveles, no solo el nivel bajo (CU09, RF12) |
+| Definición | Número de puntuaciones globales en el nivel de logro del contexto (`DimNivelLogro[Nivel]` en la leyenda del gráfico), con las mismas exclusiones que K03. `BLANK()` si la competencia tiene menos de 30 puntuaciones globales sumando todos los niveles (RF14). |
+| Unidad y formato | Recuento · `#,0` (el gráfico lo muestra como barras apiladas al 100 %) |
+| Interpretación | El tramo «Bajo» del gráfico es K03 por construcción; la réplica lo comprueba en todas las combinaciones año-materia (`test_distribucion_por_nivel_coincide_con_k03`). |
+| Filtros y exclusiones de calidad | Excluye `Censurada` y `NivelNoComparable`, como K03. El visual quita además de la leyenda el nivel 0 «No aplica (subcompetencia)», que las globales nunca usan. |
+| Mínimo muestral | 30 puntuaciones globales por competencia (total de los cuatro niveles), no por nivel. |
+| Limitaciones | Niveles internos del TFG. Decisión D-13: antes el gráfico usaba `Puntuaciones globales` con filtros de calidad en el visual, sin mínimo muestral. |
+
+```dax
+Puntuaciones por nivel de logro =
+VAR _total =
+    CALCULATE (
+        COUNTROWS ( FactPuntuacion ),
+        KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () ),
+        KEEPFILTERS ( DimCalidadDato[Censurada] = FALSE () ),
+        KEEPFILTERS ( DimCalidadDato[NivelNoComparable] = FALSE () ),
+        REMOVEFILTERS ( DimNivelLogro )
+    )
+VAR _nivel =
+    CALCULATE (
+        COUNTROWS ( FactPuntuacion ),
+        KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () ),
+        KEEPFILTERS ( DimCalidadDato[Censurada] = FALSE () ),
+        KEEPFILTERS ( DimCalidadDato[NivelNoComparable] = FALSE () )
+    )
+RETURN
+    IF ( _total >= 30, _nivel )
+```
+
+**Valores de referencia (Cataluña, 2025, `kpi_niveles_2025.csv`).** Matemáticas: Bajo 15.179 (22,66 %, igual que K03), Medio-bajo 14.331 (21,39 %), Medio-alto 18.620 (27,79 %), Alto 18.865 (28,16 %). Ciencias: 17.912 (26,93 %), 18.138 (27,27 %), 19.547 (29,39 %) y 10.912 (16,41 %). Francés: 53, 98, 64 y 28 puntuaciones (243 en total, por encima del mínimo).
 
 ### 3.2. Perspectiva de equidad e inclusión
 
@@ -367,7 +406,7 @@ La privada supera a la pública en todas las materias calculables; la brecha may
 | Interpretación | Cuanto más baja, más homogéneos son los resultados (más equidad). |
 | Filtros y exclusiones de calidad | Solo globales; excluye las celdas censuradas (`Censurada`, R26). |
 | Mínimo muestral | 30 puntuaciones globales no censuradas. |
-| Limitaciones | Sin filtro de materia mezcla las distribuciones de varias materias. Debe interpretarse con cautela en catalán 2018, inglés 2011 (techo en la comprensión oral) y matemáticas 2015 y 2019 (escala y compresión), según el informe de calidad (§6.4). Francés solo informativo. |
+| Limitaciones | Sin filtro de materia mezcla las distribuciones de varias materias. Debe interpretarse con cautela en catalán 2018, inglés 2011 (techo en la comprensión oral) y matemáticas 2015 y 2019 (escala y compresión), según el informe de calidad (§6.4). Francés solo informativo. Criterio (decisión D-09): K06 excluye `Censurada` (masa de puntos en un suelo: en inglés 2015 el 12,9 % de las globales vale exactamente 48,79, y una desviación típica sobre esa masa es un artefacto) pero no `NivelNoComparable` (distribución comprimida sin masa: catalán 2018 no tiene ningún valor con más del 0,86 % de las globales y su desviación típica, 13,01, es la dispersión real de las puntuaciones publicadas). |
 
 ```dax
 K06 Dispersión de resultados =
@@ -415,7 +454,7 @@ La serie sin filtro de materia sube de 15,40 en 2009 a 18,00 en 2025 (`kpi_globa
 | Interpretación | Positivo: el contexto (área, naturaleza, hábitat o su combinación) supera la media catalana; negativo: queda por debajo. Vale 0 si no hay ningún filtro de `DimContextoCentro`. |
 | Filtros y exclusiones de calidad | Las del K01. La media de Cataluña incluye el área «Desconocida». |
 | Mínimo muestral | Heredado: `BLANK()` si alguna de las dos medias está en blanco. |
-| Limitaciones | Comparación válida dentro de cada año. Las áreas cambian de perímetro (Decret 120/2023; regla R14): «Barcelona Comarques» existe hasta 2024 y el «Barcelonès» aparece en 2025. Francés solo informativo. |
+| Limitaciones | Comparación válida dentro de cada año. Las áreas cambian de perímetro (Decret 120/2023; regla R14): «Barcelona Comarques» existe hasta 2023 y el «Barcelonès» desde 2024 (el CSV de 2024 aún la llama Barcelona Comarques, pero el modelo la muestra con el nombre del informe oficial; decisión D-05). Francés solo informativo. |
 
 ```dax
 Puntuación media Cataluña =
@@ -589,7 +628,7 @@ RETURN
 | Interpretación | Positivo: mejora respecto a la convocatoria anterior; negativo: empeora. |
 | Filtros y exclusiones de calidad | Las del K01, más la restricción de periodo de diseño comparable. `BLANK()` si el contexto no tiene exactamente un año con convocatoria, si es la primera convocatoria o si no queda ninguna competencia comparable. |
 | Mínimo muestral | Heredado: K01 de las dos convocatorias con al menos 30 puntuaciones. |
-| Limitaciones | **Puntuaciones no equiparadas:** la diferencia mezcla la dificultad de cada prueba con el rendimiento real y solo es orientativa. Antes de que empiecen los periodos de diseño estables, la medida solo cubre algunas materias (en 2017, solo inglés y francés). Por área, las series se rompen con los cambios de perímetro: el Barcelonès no tiene K10 en 2025 porque en 2024 ese perímetro figuraba como «Barcelona Comarques». |
+| Limitaciones | **Puntuaciones no equiparadas:** la diferencia mezcla la dificultad de cada prueba con el rendimiento real y solo es orientativa. Antes de que empiecen los periodos de diseño estables la medida queda en blanco (hasta 2017) o solo cubre algunas materias (en 2018, matemáticas, inglés y francés). Por área, las series se rompen con los cambios de perímetro de 2024 (Penedès, Alt Pirineu i Aran y las áreas que ceden territorio); el Barcelonès sí tiene K10 en 2025 porque el área de 2024 publicada como «Barcelona Comarques» tiene su mismo perímetro y se muestra con su nombre (decisión D-05). Girona pierde en 2024 en torno al 1 % de su alumnado (Cerdanya), efecto de una o dos décimas en su media (decisión D-06). |
 
 ```dax
 K10 Variación interanual =
@@ -636,7 +675,7 @@ RETURN
 | Ciencias | −8,16 |
 | **Todas las materias** | **−1,66** |
 
-**Ejemplo por área (2025, `semaforos_2025.csv`).** Alt Pirineu i Aran: −7,18 en matemáticas y +0,77 en inglés. Barcelonès: en blanco en todas las materias.
+**Ejemplo por área (2025, `semaforos_2025.csv`).** Alt Pirineu i Aran: −7,18 en matemáticas y +0,77 en inglés. Barcelonès: −1,03 en catalán, +2,20 en castellano, −4,05 en matemáticas, +1,76 en inglés y −8,27 en ciencias.
 
 #### K11 — Tendencia 5 convocatorias
 
@@ -650,7 +689,7 @@ RETURN
 | Interpretación | Positivo: tendencia de mejora; negativo: tendencia de empeoramiento. |
 | Filtros y exclusiones de calidad | Las del K10. `BLANK()` si el contexto no tiene exactamente un año con convocatoria, si no hay cuatro convocatorias anteriores o si no queda ninguna competencia comparable. |
 | Mínimo muestral | Heredado: K01 de las convocatorias *i* e *i*−4 con al menos 30 puntuaciones. |
-| Limitaciones | **Puntuaciones no equiparadas** (orientativo). Solo usa los extremos de la ventana, no las convocatorias intermedias. Para 2025 la ventana es 2021–2025; antes de 2023 solo cubre algunas materias (por ejemplo, en 2021 solo inglés y francés). |
+| Limitaciones | **Puntuaciones no equiparadas** (orientativo). Solo usa los extremos de la ventana, no las convocatorias intermedias. Para 2025 la ventana es 2021–2025. La primera convocatoria con K11 es 2022 (ventana 2018–2022, ya dentro de todos los periodos de diseño); antes queda en blanco, porque la convocatoria i−4 es anterior a 2017 (decisión D-10). |
 
 ```dax
 K11 Tendencia 5 convocatorias =
@@ -711,7 +750,7 @@ Los ficheros de validación no incluyen K11 por área.
 | Interpretación | Cuanto más alto, mejor. |
 | Filtros y exclusiones de calidad | Excluye el francés (`EsInformativa = TRUE`). Hereda todas las condiciones del K10: un solo año con convocatoria, periodo de diseño comparable y mínimo muestral. `BLANK()` si ninguna materia tiene K10. |
 | Mínimo muestral | Heredado del K10 de cada materia; no hay un mínimo de materias. |
-| Limitaciones | **Puntuaciones no equiparadas** (orientativo). El denominador es pequeño (como máximo cinco materias), así que el indicador varía a saltos de 20 pp; en 2017 solo el inglés era comparable y el resultado (100 %) se basa en una sola materia. Tiene sentido sin filtro de materia. |
+| Limitaciones | **Puntuaciones no equiparadas** (orientativo). El denominador es pequeño (como máximo cinco materias), así que el indicador varía a saltos de 20 pp; en 2018 solo matemáticas e inglés eran comparables y el resultado (50 %) se basa en dos materias; en 2017 queda en blanco (decisión D-10). Tiene sentido sin filtro de materia. |
 
 ```dax
 K12 % competencias que mejoran =
@@ -735,7 +774,7 @@ RETURN
 
 | Convocatoria | 2017 | 2018 | 2019 | 2021 | 2022 | 2023 | 2024 | 2025 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| K12 | 100,0 % | 50,0 % | 40,0 % | 40,0 % | 20,0 % | 40,0 % | 60,0 % | 40,0 % |
+| K12 | (en blanco) | 50,0 % | 40,0 % | 40,0 % | 20,0 % | 40,0 % | 60,0 % | 40,0 % |
 
 En 2025 mejoran al menos 1 punto dos de las cinco materias comparables (castellano, +2,58, e inglés, +2,47). Los ficheros de validación no incluyen K12 por área.
 
@@ -743,7 +782,7 @@ En 2025 mejoran al menos 1 punto dos de las cinco materias comparables (castella
 
 ## 4. Fichas de los semáforos
 
-Los semáforos traducen un KPI a tres estados: **1 favorable**, **0 neutro** y **−1 desfavorable** (formato `0`). Están en la carpeta `5. Semáforos` de `_Medidas`.
+Los semáforos traducen un KPI a tres estados: **1 favorable**, **0 neutro** y **−1 desfavorable**. Las tres medidas devuelven ese número y su cadena de formato (`"▲ Favorable";"▼ Desfavorable";"● Neutro"`, secciones positivo;negativo;cero) lo muestra como símbolo y palabra, de modo que el estado no depende solo del color (RNF05) y no hace falta formato condicional (decisión D-12). Están en la carpeta `5. Semáforos` de `_Medidas`. Referencias: K01 y K03 se comparan con Cataluña cuando hay un contexto de centro filtrado (±1 punto y ±2 puntos porcentuales); K10 se compara con 0 (±0,5 puntos); sin contexto, `Estado K01` usa K10. Los umbrales son propuestas del TFG. En los CSV de `validacion/resultados/` los semáforos figuran como 1, 0 y −1.
 
 #### Estado K01 — Semáforo de la puntuación media
 
@@ -753,11 +792,11 @@ Los semáforos traducen un KPI a tres estados: **1 favorable**, **0 neutro** y *
 | Perspectiva | Rendimiento académico |
 | Objetivo estratégico | Señalar de un vistazo si el rendimiento del contexto es favorable |
 | Definición | Regla con dos modos. **Con algún filtro de `DimContextoCentro`** (área, naturaleza o hábitat) usa K07: ≥ +1 punto → 1; ≤ −1 → −1; resto → 0. **Sin filtro de contexto de centro** usa K10: ≥ +0,5 → 1; ≤ −0,5 → −1; resto → 0. |
-| Unidad y formato | Estado {−1, 0, 1} · `0` |
-| Interpretación | 1: el contexto supera a Cataluña en al menos 1 punto (o Cataluña mejora al menos 0,5 respecto a la convocatoria anterior). |
+| Unidad y formato | Estado {−1, 0, 1} · `"▲ Favorable";"▼ Desfavorable";"● Neutro"` |
+| Interpretación | ▲ Favorable: el contexto supera a Cataluña en al menos 1 punto (o, sin contexto, Cataluña mejora al menos 0,5 respecto a la convocatoria anterior). |
 | Filtros y exclusiones de calidad | Las de K07 o K10, según el modo. |
 | Mínimo muestral | Heredado; `BLANK()` si el indicador usado está en blanco. |
-| Limitaciones | El mismo semáforo responde a dos preguntas distintas según haya o no filtro de contexto (posición frente a Cataluña o evolución en el tiempo). En el modo K10 es orientativo (puntuaciones no equiparadas). Los umbrales son propuestas del TFG. Se muestra en la página «Operativo - Dirección de centro». |
+| Limitaciones | El mismo semáforo responde a dos preguntas distintas según haya o no filtro de contexto (posición frente a Cataluña o evolución en el tiempo). En el modo K10 es orientativo (puntuaciones no equiparadas). Los umbrales son propuestas del TFG. Se muestra en las páginas «Táctico - Inspección» (área seleccionada) y «Operativo - Dirección de centro» (contexto seleccionado). |
 
 ```dax
 Estado K01 =
@@ -789,11 +828,11 @@ RETURN
 | Perspectiva | Rendimiento académico |
 | Objetivo estratégico | Señalar los contextos con más alumnado en nivel bajo que la media |
 | Definición | Diferencia entre K03 del contexto y K03 de Cataluña (sin filtros de `DimContextoCentro`): ≤ −2 pp → 1 (favorable); ≥ +2 pp → −1 (desfavorable); resto → 0. |
-| Unidad y formato | Estado {−1, 0, 1} · `0` |
-| Interpretación | 1: el contexto tiene al menos 2 pp menos de alumnado en nivel bajo que Cataluña. |
+| Unidad y formato | Estado {−1, 0, 1} · `"▲ Favorable";"▼ Desfavorable";"● Neutro"` |
+| Interpretación | ▲ Favorable: el contexto tiene al menos 2 pp menos de alumnado en nivel bajo que Cataluña. |
 | Filtros y exclusiones de calidad | Las de K03 (sin celdas censuradas ni convocatorias con nivel no comparable). |
 | Mínimo muestral | Heredado; `BLANK()` si alguno de los dos K03 está en blanco. |
-| Limitaciones | Sin filtro de contexto siempre vale 0 (Cataluña frente a sí misma). Niveles internos del TFG. En esta versión del informe ningún visual lo muestra. |
+| Limitaciones | Sin filtro de contexto siempre vale 0 (Cataluña frente a sí misma); por eso no se muestra en el panel estratégico. Niveles internos del TFG. Se muestra en las páginas «Táctico - Inspección» y «Operativo - Dirección de centro». No tiene modo temporal: un semáforo del % en nivel bajo entre convocatorias sería el indicador menos defendible del cuadro, porque las pruebas no están equiparadas y ese porcentaje oscila mucho con la dificultad de cada prueba (ciencias pasa del 13,2 % al 26,9 % de 2024 a 2025). |
 
 ```dax
 Estado K03 =
@@ -827,11 +866,11 @@ RETURN
 | Perspectiva | Eficiencia y progreso |
 | Objetivo estratégico | Señalar si el contexto mejora o empeora respecto a la convocatoria anterior |
 | Definición | K10 ≥ +0,5 puntos → 1; K10 ≤ −0,5 → −1; resto → 0. |
-| Unidad y formato | Estado {−1, 0, 1} · `0` |
-| Interpretación | 1: mejora de al menos medio punto respecto a la convocatoria anterior. |
+| Unidad y formato | Estado {−1, 0, 1} · `"▲ Favorable";"▼ Desfavorable";"● Neutro"` |
+| Interpretación | ▲ Favorable: mejora de al menos medio punto respecto a la convocatoria anterior. |
 | Filtros y exclusiones de calidad | Las de K10. |
 | Mínimo muestral | Heredado; `BLANK()` si K10 está en blanco. |
-| Limitaciones | **Puntuaciones no equiparadas** (orientativo). En esta versión del informe ningún visual lo muestra. |
+| Limitaciones | **Puntuaciones no equiparadas** (orientativo). Se muestra en la página «Estratégico - Departamento» (tarjeta y columna de la tabla «Resumen por competencia»). |
 
 ```dax
 Estado K10 =
@@ -858,7 +897,7 @@ Las medidas DAX solo pueden evaluarse dentro de Power BI. Para comprobar que cal
 
 | Implementación | Componentes | Resultado |
 |---|---|---|
-| Power BI | ETL en Power Query (M) y 19 medidas DAX en `_Medidas.tmdl` | Modelo semántico TMDL y el informe de tres páginas |
+| Power BI | ETL en Power Query (M) y 20 medidas DAX en `_Medidas.tmdl` | Modelo semántico TMDL y el informe de tres páginas |
 | Réplica de referencia en Python | `validacion/etl_referencia.py` (ETL con pandas y DuckDB, reglas R01–R29 del contrato de diseño) y `validacion/kpis_referencia.py` (los 12 KPI y los 3 semáforos con la misma semántica que las medidas DAX) | Las ocho tablas del modelo en estrella (`validacion/salida/*.parquet`) y seis CSV de valores de referencia (`validacion/resultados/`) |
 
 Ambas implementaciones parten del mismo contrato de diseño (`trabajo_en_curso/contrato_diseno.md`), que fija nombres, claves, reglas de limpieza y la semántica de cada medida: mínimo muestral de 30, `REMOVEFILTERS ( DimContextoCentro )` para Cataluña, navegación por `IndiceConvocatoria`, periodo de diseño comparable y exclusión del francés en K09 y K12. La réplica Python se completa con `validacion/test_modelo.py`, que comprueba recuentos (1.102.324 evaluaciones y 17.728.085 puntuaciones, 4.769.851 de ellas globales), ausencia de claves huérfanas, las rotaciones R03/R04 (con control negativo sobre el CSV original), la media corregida de castellano 2017 (73,51) y el contraste con las medias oficiales; los 27 tests pasan.
@@ -870,24 +909,25 @@ La validación tiene dos niveles:
 
 ### 5.2. Contraste con las medias oficiales
 
-El fichero `validacion/resultados/contraste_oficial.csv` compara K01 de Cataluña por materia y convocatoria (columna `media_calculada`) con la media oficial de los *Quaderns d'avaluació* (contrato de diseño, §6). La tolerancia es de ±0,2 puntos, ya que las medias oficiales se publican con un decimal.
+El fichero `validacion/resultados/contraste_oficial.csv` compara K01 de Cataluña por materia y convocatoria (columna `media_calculada`) con la media oficial de los *Quaderns d'avaluació* (contrato de diseño, §6). Hay dos umbrales con nombre propio (decisión D-01): el **criterio de aceptación** del requisito RNF06 de la memoria, 0,5 puntos (columna `dentro_RNF06`; `test_criterio_aceptacion_rnf06` exige que lo cumplan las 72 combinaciones), y una **alerta interna** de ±0,2 puntos (columna `dentro_tolerancia`), más exigente porque las medias oficiales se publican con un decimal y el CSV no contiene exactamente la misma población: toda diferencia mayor que 0,2 debe estar explicada en el informe de calidad §4.6, y así lo comprueba `test_medias_cataluna_frente_a_oficiales`. Fue este umbral el que obligó a investigar inglés 2016 y francés 2024.
 
 | Resultado | Valor |
 |---|---|
 | Combinaciones materia-convocatoria contrastadas (2009–2025, sin 2020) | 72 |
-| Dentro de la tolerancia de ±0,2 puntos | **70 (97,2 %)** |
+| Dentro del criterio de aceptación de 0,5 puntos (RNF06) | **72 (100 %)**, diferencia máxima 0,30 |
+| Dentro de la alerta interna de ±0,2 puntos | **70 (97,2 %)** |
 | Diferencia absoluta ≤ 0,1 puntos | 65 |
 | Diferencia absoluta media / mediana | 0,048 / 0,03 puntos |
 | Diferencia máxima dentro de tolerancia | 0,18 (ciencias 2024) |
 
-Las dos combinaciones fuera de tolerancia son:
+Las dos combinaciones fuera de la alerta de ±0,2 son:
 
-| Convocatoria | Materia | Calculada | Oficial | Diferencia | Explicación provisional (columna `nota`) |
+| Convocatoria | Materia | Calculada | Oficial | Diferencia | Explicación (informe de calidad §4.6; columna `nota`) |
 |---|---|---:|---:|---:|---|
-| 2016 | Lengua inglesa | 73,94 | 73,7 | +0,24 | Convocatoria con nota de calidad: escalas de comprensión oral y lectora comprimidas y % por nivel no comparable (R27, R28); falta contrastar la *n* oficial. |
-| 2024 | Lengua francesa | 62,80 | 62,5 | +0,30 | Francés solo informativo, con *n* = 266 (PUN-19). |
+| 2016 | Lengua inglesa | 73,94 | 73,7 | +0,24 | No es redondeo ni error de carga (la global cuadra con sus subcompetencias en el 98,23 % de las filas). Escalas de comprensión oral y lectora comprimidas (máximo de la global 95,55; R27, R28). Queda por contrastar la *n* oficial. |
+| 2024 | Lengua francesa | 62,80 | 62,5 | +0,30 | *n* = 266: la diferencia equivale a 80 puntos en total y se explica con pocos alumnos de diferencia en la *n* (PUN-19). Francés solo informativo. |
 
-Ambas figuran en el CSV como «fuera de tolerancia, pendiente de documentar en §4.6» del informe de calidad, y `test_modelo.py` las trata como excepciones conocidas. Ninguna afecta a una materia troncal en una convocatoria sin incidencias de calidad conocidas. Otras diferencias dentro de la tolerancia se explican por diferencias de población ya documentadas en el informe de calidad (§4.6): en 2017 el CSV tiene 756 alumnos menos en castellano y 791 en inglés; en 2024, 1.024 menos en catalán y 395 en matemáticas; y en 2025, 41 más en matemáticas.
+Ambas están documentadas en el informe de calidad §4.6 y figuran en el CSV como «esperada fuera de tolerancia (informe §4.6)»; `test_modelo.py` las trata como excepciones conocidas y fallaría ante cualquier diferencia nueva mayor que 0,2 sin explicar. Ninguna afecta a una materia troncal en una convocatoria sin incidencias de calidad conocidas. Otras diferencias dentro de la tolerancia se explican por diferencias de población ya documentadas en el informe de calidad (§4.6): en 2017 el CSV tiene 756 alumnos menos en castellano y 791 en inglés; en 2024, 1.024 menos en catalán y 395 en matemáticas; y en 2025, 41 más en matemáticas.
 
 El contraste confirma que la lectura del CSV, las correcciones de la ETL (en particular la rotación de castellano 2017, que lleva la media de 74,30 sin corregir a 73,51) y la definición de K01 reproducen las cifras oficiales de Cataluña.
 

@@ -5,23 +5,28 @@ códigos y medidas son VINCULANTES. Si algo es imposible o erróneo, NO improvis
 Fuente de las reglas: `Documentation/Docu_Final/Docu_Parcial/01_Informe_calidad_datos.md` (auditoría verificada,
 reglas R01–R34). Léela si necesitas detalle; este contrato fija qué se implementa en el MVP.
 
-## 0. Rutas
+## 0. Rutas (actualizado el 12/11/2026, D-18)
 
-Raíz repo: `/home/kiara-rodriguez-uribe/Uni/TFG_Project`
-Python: `/home/kiara-rodriguez-uribe/Uni/TFG_Project/.venv/bin/python` (pandas, duckdb, pyarrow, jsonschema, numpy)
-Datos: `/home/kiara-rodriguez-uribe/Uni/TFG_Project/Datos.csv` (NO modificar). 1.102.324 filas.
-Validador TMDL (Microsoft TOM en .NET, ya compilado):
-  `DOTNET_ROOT=/tmp/claude-1000/-home-kiara-rodriguez-uribe-Uni-TFG-Project/e4d67534-2cda-46c9-9607-3737fe5b6260/scratchpad/dotnet /tmp/claude-1000/-home-kiara-rodriguez-uribe-Uni-TFG-Project/e4d67534-2cda-46c9-9607-3737fe5b6260/scratchpad/tmdlcheck/out/tmdlcheck <carpeta definition>`
-  Deserializa la carpeta TMDL, lista tablas/columnas/medidas/relaciones y ejecuta Model.Validate(). NO valida la semántica DAX.
-Analizador sintáctico oficial de Power Query M (@microsoft/powerquery-parser, Node 22):
-  `node /tmp/claude-1000/-home-kiara-rodriguez-uribe-Uni-TFG-Project/e4d67534-2cda-46c9-9607-3737fe5b6260/scratchpad/mparser/mcheck.js fichero1.m [fichero2.m ...]`  -> "OK" o "FAIL <motivo> <posición>" por fichero.
-  Para validar el M de un TMDL: extrae cada expresión/partición (el bloque tras "source =" o "expression X =", sin la
-  indentación TMDL ni las líneas de propiedades) a un .m y analízalo. Detecta errores de sintaxis, no de tipos ni de ejecución.
+Raíz repo (Windows): `C:\Users\kiara\Desktop\Uni\TFG\Project\TFG_Project` (usar Git Bash para los scripts).
+Python 3.12 global sin duckdb/pyarrow: instalarlos en una carpeta temporal (`pip install --target <tmp>/pylibs duckdb pyarrow numpy pandas jsonschema referencing`)
+y ejecutar con `PYTHONPATH=<tmp>/pylibs PYTHONIOENCODING=utf-8 python ...`.
+Datos: `Datos.csv` en la raíz del repositorio (NO modificar; no versionado). 1.102.324 filas. El parámetro `RutaDatos` del modelo
+apunta a esa ruta (valor fijado desde Power BI Desktop y conservado por el generador, D-19).
+Validador TMDL (`trabajo_en_curso/herramientas/tmdlcheck`, Microsoft TOM en .NET): hace falta el SDK de .NET 8 (en Windows,
+`dotnet-install.ps1 -Channel 8.0 -InstallDir <tmp>/dotnet`); copiar la carpeta fuera del repo, `dotnet build -c Release -o out`
+y `DOTNET_ROOT=<tmp>/dotnet out/tmdlcheck <carpeta definition>`. Deserializa la carpeta TMDL, lista tablas/columnas/medidas/relaciones
+y ejecuta Model.Validate(). NO valida la semántica DAX.
+Analizador sintáctico oficial de Power Query M (`trabajo_en_curso/herramientas/mparser`, @microsoft/powerquery-parser, Node 24):
+copiar la carpeta a `<tmp>/mparser`, `npm ci` y `python trabajo_en_curso/herramientas/validar_m.py --mcheck <tmp>/mparser/mcheck.js`
+(extrae cada expresión/partición del TMDL y da "OK" o "FAIL <motivo> <posición>" por bloque; detecta errores de sintaxis, no de tipos ni de ejecución).
 Generadores (en el repo): modelo TMDL + M + PBIP -> `trabajo_en_curso/generadores/modelo/gen_modelo.py PowerBI`
 (consultas en `modelo/m_*.m`); medidas -> `generadores/gen_medidas.py <_Medidas.tmdl>`; informe -> `generadores/gen_pbir.py`.
+Los generadores conservan lo que Power BI Desktop añade al guardar (`.platform`, `.pbi/`, `cultures/`, `RutaDatos`; D-19).
 Comprobación M frente a parquet: `trabajo_en_curso/herramientas/verificar_claves.py`.
-Esquemas JSON oficiales de PBIR/PBIP (clon local de github.com/microsoft/json-schemas):
-  `/tmp/claude-1000/-home-kiara-rodriguez-uribe-Uni-TFG-Project/e4d67534-2cda-46c9-9607-3737fe5b6260/scratchpad/json-schemas/fabric/`
+Esquemas JSON oficiales de PBIR/PBIP: clon disperso de github.com/microsoft/json-schemas en `<tmp>/json-schemas`
+(`sparse-checkout set fabric/item/report fabric/item/semanticModel fabric/pbip`) y
+`PBIR_SCHEMAS=<tmp>/json-schemas/fabric python trabajo_en_curso/herramientas/validar_pbir.py`.
+Decisiones posteriores a este contrato: `trabajo_en_curso/week2/DECISIONES.md` (D-01 a D-19); donde difieran, manda DECISIONES.md.
 
 ```
 PowerBI/
@@ -51,7 +56,7 @@ Documentation/Docu_Final/Docu_Parcial/   (01 ya existe; 02_Modelo_y_diccionario.
 
 - Castellano. Nombres de TABLAS y COLUMNAS sin tildes ni espacios (PascalCase): `DimAnio`, `AreaTerritorial`, `Puntuacion`.
   Medidas con nombres legibles con tildes y espacios (ver §7).
-- `compatibilityLevel: 1567`; `model Model` con `culture: es-ES`, `defaultPowerBIDataSourceVersion: powerBI_V3`,
+- `compatibilityLevel: 1606` (1567 en la primera versión; Power BI Desktop lo subió a 1606 al guardar y el generador lo respeta, D-19); `model Model` con `culture: es-ES`, `defaultPowerBIDataSourceVersion: powerBI_V3`,
   `sourceQueryCulture: es-ES`, `discourageImplicitMeasures` (true).
 - Claves `int64`, `summarizeBy: none`. En hechos, todas las columnas ocultas (`isHidden`). Columnas *Codigo/*Orden
   de dimensiones ocultas y usadas como `sortByColumn` de su atributo de texto.
@@ -98,7 +103,7 @@ IndiceConvocatoria int64 (1..N solo en años con datos; null en 2020) | EsUltima
 NotaConvocatoria string ("Sin prueba por la COVID-19" en 2020; "Primera convocatoria tras la COVID-19 (se compara con 2019)" en 2021; "" resto)
 
 ### DimContextoCentro (M estática: producto cartesiano de §5.1 x naturaleza {1,2} x hábitat {0,1,2,3})
-ContextoKey | AreaCodigo (oculta) | AreaTerritorial (texto publicado; código 3 y 4 -> "Barcelona Comarques"; 99 -> "Desconocida") |
+ContextoKey | AreaCodigo (oculta) | AreaTerritorial (nombre de los informes oficiales: código 3 -> "Barcelona Comarques"; códigos 4 y 5 -> "Barcelonès" (D-05); 99 -> "Desconocida") |
 AreaPerimetro2025 | AreaSerieComparable | AreaConRupturaSerie boolean | RupturaHabitat2024 boolean (Girona, Maresme - Vallès Oriental) |
 Naturaleza ("Pública"/"Privada") | NaturalezaCodigo (oculta, sort) | Habitat | HabitatCodigo (oculta, sort de Habitat) |
 AreaOrden (oculta, sort de AreaTerritorial)
@@ -116,7 +121,7 @@ CompetenciaKey | CampoOrigen | CodigoMateria | Materia | MateriaOrden (oculta, s
 SubcompetenciaOrden (oculta, sort de Subcompetencia; UN valor por texto, ver §5.2) | EsGlobal boolean | AnioInicio int64 | AnioFin int64 (null = vigente) |
 PeriodoDisenoInicio int64 | EsInformativa boolean (francés)
 
-### DimNivelLogro (M estática) — umbrales R29 (provisionales; internos del TFG, NO oficiales)
+### DimNivelLogro (M estática) — cortes fijos R29 55/70/85 (definitivos, D-08; internos del TFG, NO oficiales)
 NivelKey | Nivel | LimiteInferior double | LimiteSuperior double | NivelOrden (oculta)
 0 "No aplica (subcompetencia)" null null ; 1 "Bajo" 0 55 ; 2 "Medio-bajo" 55 70 ; 3 "Medio-alto" 70 85 ; 4 "Alto" 85 100.
 Asignación (solo globales): <55 ->1; [55,70) ->2; [70,85) ->3; >=85 ->4. Subcompetencias -> 0.
@@ -153,7 +158,7 @@ FactEvaluacion[PerfilKey]->DimPerfilAlumno[PerfilKey].
 | 1 | Alt Pirineu i Aran | Alt Pirineu i Aran | Lleida + Alt Pirineu i Aran | true | false |
 | 2 | Baix Llobregat | Baix Llobregat | Baix Llobregat | false | false |
 | 3 | Barcelona Comarques | Barcelona Comarques (perímetro hasta 2023) | Barcelonès-Penedès y áreas afectadas | true | false |
-| 4 | Barcelona Comarques | Barcelonès | Barcelonès-Penedès y áreas afectadas | true | false |
+| 4 | Barcelonès (el CSV de 2024 la llama "Barcelona Comarques"; D-05) | Barcelonès | Barcelonès-Penedès y áreas afectadas | true | false |
 | 5 | Barcelonès | Barcelonès | Barcelonès-Penedès y áreas afectadas | true | false |
 | 6 | Catalunya Central | Catalunya Central | Barcelonès-Penedès y áreas afectadas | true | false |
 | 7 | Consorci d'Educació de Barcelona | Consorci d'Educació de Barcelona | Consorci d'Educació de Barcelona | false | false |
@@ -165,8 +170,11 @@ FactEvaluacion[PerfilKey]->DimPerfilAlumno[PerfilKey].
 | 13 | Terres de l'Ebre | Terres de l'Ebre | Terres de l'Ebre | false | false |
 | 14 | Vallès Occidental | Vallès Occidental | Vallès Occidental | false | false |
 | 99 | Desconocida | Desconocida | Desconocida | false | false |
-AreaOrden = AreaCodigo, salvo el código 4, que toma AreaOrden = 3 (cambio de la integración: sortByColumn exige un único
-valor de orden por texto de AreaTerritorial, y los códigos 3 y 4 comparten «Barcelona Comarques»). ("Barcelonès-Penedès y áreas afectadas" = Barcelona Comarques/Barcelonès + Penedès + Tarragona + Catalunya Central.)
+AreaOrden = AreaCodigo, salvo el código 4, que toma AreaOrden = 5 (sortByColumn exige un único valor de orden por texto de
+AreaTerritorial, y los códigos 4 y 5 comparten «Barcelonès»; D-05). El texto "Barcelona Comarques" del CSV se codifica 3 hasta 2023
+y 4 en 2024 (m_stg.m); el código 4 tiene el perímetro del Barcelonès (5.386 alumnos en 2024 frente a 5.408 en 2025, misma composición)
+y el Quadern 62 ya lo publica como Barcelonès. ("Barcelonès-Penedès y áreas afectadas" = Barcelona Comarques/Barcelonès + Penedès + Tarragona + Catalunya Central.)
+Girona se mantiene como serie propia aunque pierda la Cerdanya en 2024 (en torno al 1 % de su alumnado; D-06).
 Naturaleza: 1 "Pública", 2 "Privada" (incluye concertada). Hábitat: 0 "No fiable", 1 "Hasta 10.000 hab.",
 2 "De 10.001 a 100.000 hab.", 3 "Más de 100.000 hab.".
 
@@ -183,11 +191,11 @@ Naturaleza: 1 "Pública", 2 "Privada" (incluye concertada). Hábitat: 0 "No fiab
 | 10 | PMAT_NC | PMAT | Matemáticas | 3 | Numeración y cálculo | 4 | false | 2009 | null | 2017 | false |
 | 11 | PMAT_EFM | PMAT | Matemáticas | 3 | Espacio, medida y datos | 5 | false | 2009 | null | 2017 | false |
 | 12 | PMAT_CR | PMAT | Matemáticas | 3 | Relaciones y cambio | 6 | false | 2009 | null | 2017 | false |
-| 13 | PANG | PANG | Lengua inglesa | 4 | Global | 0 | true | 2010 | null | 2016 | false |
+| 13 | PANG | PANG | Lengua inglesa | 4 | Global | 0 | true | 2010 | null | 2017 | false |
 | 14 | PANG_CO | PANG | Lengua inglesa | 4 | Comprensión oral | 2 | false | 2010 | null | 2017 | false |
 | 15 | PANG_CE | PANG | Lengua inglesa | 4 | Comprensión lectora | 1 | false | 2010 | null | 2017 | false |
 | 16 | PANG_EE | PANG | Lengua inglesa | 4 | Expresión escrita | 3 | false | 2013 | null | 2017 | false |
-| 17 | PFRAN | PFRAN | Lengua francesa | 5 | Global | 0 | true | 2010 | null | 2016 | true |
+| 17 | PFRAN | PFRAN | Lengua francesa | 5 | Global | 0 | true | 2010 | null | 2017 | true |
 | 18 | PFRAN_CO | PFRAN | Lengua francesa | 5 | Comprensión oral | 2 | false | 2010 | null | 2017 | true |
 | 19 | PFRAN_CE | PFRAN | Lengua francesa | 5 | Comprensión lectora | 1 | false | 2010 | null | 2017 | true |
 | 20 | PFRAN_EE | PFRAN | Lengua francesa | 5 | Expresión escrita | 3 | false | 2013 | null | 2017 | true |
@@ -197,12 +205,15 @@ Naturaleza: 1 "Pública", 2 "Privada" (incluye concertada). Hábitat: 0 "No fiab
 | 24 | PMED_COMP3 | PMED | Ciencias | 6 | Interpretar datos y pruebas científicas | 9 | false | 2018 | null | 2018 | false |
 SubcompetenciaOrden es un orden GLOBAL por texto (0 Global, 1 Comprensión lectora, 2 Comprensión oral, 3 Expresión escrita,
 4-6 matemáticas, 7-9 ciencias), no el orden dentro de la materia: cambio de la integración para que sea sortByColumn válido.
+PeriodoDisenoInicio: 2017 en matemáticas, inglés y francés (la global de inglés y francés era 2016 en la primera versión; pasa a 2017
+porque la de 2016 se calculó con CO y CE comprimidas, R27/R28, y no es comparable con la de 2017; D-10) y 2018 en catalán, castellano y ciencias.
 
 ## 6. Valores esperados (para tests)
 FactEvaluacion 1.102.324 filas; FactPuntuacion 17.728.085 (4.769.851 globales + 12.958.234 subcompetencias);
 media castellano 2017 corregida 73,51 (oficial 73,4); 0 claves sin dimensión; DimContextoCentro 15x2x4 = 120 filas;
 DimPerfilAlumno 182; DimCompetencia 24; DimNivelLogro 5; DimCalidadDato 16; DimAnio 17.
-Medias oficiales de Cataluña (Quaderns d'avaluació, puntuación global; se esperan diferencias <= 0,2 salvo las anotadas):
+Medias oficiales de Cataluña (Quaderns d'avaluació, puntuación global). Dos umbrales (D-01): criterio de aceptación RNF06 = 0,5 puntos
+(lo cumplen las 72 combinaciones; máximo 0,30) y alerta interna = 0,2 (70 de 72; inglés 2016 +0,24 y francés 2024 +0,30 explicadas en el informe §4.6):
 2009 CAT 76,9 CAST 74,7 MAT 78,0 | 2010 CAT 73,7 CAST 71,2 ING 71,4 MAT 78,2 | 2011 CAT 77,2 CAST 73,6 ING 80,6 MAT 80,9 |
 2012 CAT 79,6 CAST 76,6 MAT 80,2 ING 74,3 | 2013 CAT 71,1 CAST 73,0 MAT 76,3 ING 73,0 | 2014 CAT 75,5 CAST 75,4 MAT 81,0 ING 75,1 |
 2015 CAT 74,5 CAST 75,7 ING 74,5 MAT 80,0 | 2016 CAT 74,5 CAST 74,1 ING 73,7 MAT 77,9 | 2017 CAT 75,8 CAST 73,4 ING 79,9 MAT 77,6 |
@@ -227,6 +238,8 @@ contexto tiene != 1 año con convocatoria. Puntuaciones NO equiparadas entre con
 - `K01 Puntuación media competencia` = media de globales (KEEPFILTERS EsGlobal = TRUE), con mínimo muestral.
 - `K02 Puntuación media subcompetencia` = media de no globales excluyendo DimCalidadDato[NoValida] = TRUE, mínimo muestral.
 - `K03 % alumnado nivel bajo` = globales con NivelKey = 1 / globales; ambos excluyendo Censurada o NivelNoComparable.
+- `Puntuaciones por nivel de logro` (D-13) = globales del nivel del contexto excluyendo Censurada o NivelNoComparable; BLANK si la
+   competencia no llega a 30 globales sumando todos los niveles (REMOVEFILTERS(DimNivelLogro) para el total). Base del gráfico de niveles.
 "2. Equidad e inclusión":
 - `K04 Brecha de género (Niños - Niñas)` = K01 con Genero="Niño" - K01 con Genero="Niña" (filtros sobre DimPerfilAlumno[Genero], quitando el filtro de género existente).
 - `K05 Brecha pública - privada` = K01 Pública - K01 Privada.
@@ -246,16 +259,24 @@ contexto tiene != 1 año con convocatoria. Puntuaciones NO equiparadas entre con
 - `Estado K01` = si hay filtro de contexto: K07 >= 1 -> 1, <= -1 -> -1, si no 0; sin filtro de contexto: usa K10 con ±0,5.
 - `Estado K03` = K03 - K03 Cataluña: <= -2 pp -> 1; >= +2 pp -> -1; si no 0.
 - `Estado K10` = K10 >= 0,5 -> 1; <= -0,5 -> -1; si no 0.
-Formatos: puntuaciones "0.0"; porcentajes "0.0%"; brechas/variaciones "+0.0;-0.0;0.0"; posición "0"; recuentos "#,0".
+Formatos: puntuaciones "0.0"; porcentajes "0.0%"; brechas/variaciones "+0.0;-0.0;0.0"; posición "0"; recuentos "#,0";
+semáforos `"▲ Favorable";"▼ Desfavorable";"● Neutro"` (secciones positivo;negativo;cero; en TMDL se escribe entrecomillado con las
+comillas interiores duplicadas; D-12). Total: 20 medidas.
 
-## 8. Informe PBIR — 3 páginas (lienzo 1280x720)
-1. "Estratégico - Departamento": tarjetas K01, K03, K06, K10, K12, Alumnos evaluados; gráfico de líneas K01 por DimAnio[Anio]
-   con leyenda DimCompetencia[Materia]; tabla por Materia con K01, K10, K11, K03; segmentadores DimAnio[Anio] y DimCompetencia[Materia];
-   cuadro de texto con la advertencia "Puntuaciones no equiparadas entre convocatorias; 2020 sin prueba (COVID-19)".
-2. "Táctico - Inspección": barras K07 por DimContextoCentro[AreaTerritorial]; matriz AreaTerritorial x Naturaleza con K01;
-   tarjetas K04, K05, K08, K09; línea K01 por Anio con leyenda DimContextoCentro[AreaSerieComparable];
-   segmentadores Anio, Materia, AreaTerritorial. Interacciones NoFilter: segmentador Anio -> línea; segmentador
-   AreaTerritorial -> barras K07 (las barras muestran siempre todas las áreas y el tooltip K09 coincide con la tarjeta).
-3. "Operativo - Dirección de centro": segmentadores AreaTerritorial, Naturaleza, Habitat, Anio, Materia; tarjetas K01, K07,
-   Puntuación media Cataluña, Estado K01; barras K02 por DimCompetencia[Subcompetencia]; barras 100% apiladas de Puntuaciones
-   globales por DimNivelLogro[Nivel] (excluir "No aplica"); líneas K01 y Puntuación media Cataluña por Anio.
+## 8. Informe PBIR — 3 páginas (lienzo 1280x720), 41 visuales (actualizado el 12/11/2026: D-11 a D-15 y D-19)
+Etiquetas visibles: "Competencia" para DimCompetencia[Materia] y "Titularidad" para DimContextoCentro[Naturaleza] (D-15).
+Aviso fijo de los tres paneles: "Puntuaciones no equiparadas entre convocatorias; 2020 sin prueba (COVID-19) y 2021 se compara con 2019" (D-11).
+Los tres gráficos de líneas llevan showAll en el eje para que 2020 aparezca como hueco (D-14). La selección por defecto 2025 de los
+segmentadores de año es un filtro Categorical en filterConfig (D-19).
+1. "Estratégico - Departamento" (13 visuales): tarjetas K01, K03, K06, K10, Estado K10, K12, Alumnos evaluados; gráfico de líneas K01
+   por DimAnio[Anio] con leyenda Competencia; tabla por Competencia con K01, K10, Estado K10, K11, K03; segmentadores Anio y Competencia;
+   cuadro de texto con el aviso y "Niveles de logro internos del TFG (cortes 55/70/85), no los niveles oficiales".
+2. "Táctico - Inspección" (14 visuales): barras K07 por DimContextoCentro[AreaTerritorial]; matriz AreaTerritorial x Titularidad con K01;
+   tarjetas K04, K05, K08, K09, Estado K01, Estado K03 (área seleccionada frente a Cataluña); línea K01 por Anio con leyenda
+   DimContextoCentro[AreaSerieComparable]; segmentadores Anio, Competencia, AreaTerritorial, Género (DimPerfilAlumno[Genero]).
+   Interacciones NoFilter: segmentador Anio -> línea; segmentador AreaTerritorial -> barras K07 (las barras muestran siempre todas las
+   áreas y el tooltip K09 coincide con la tarjeta).
+3. "Operativo - Dirección de centro" (14 visuales): segmentadores AreaTerritorial, Titularidad, Habitat, Anio, Competencia; tarjetas K01, K07,
+   Puntuación media Cataluña, Estado K01, Estado K03; barras K02 por DimCompetencia[Subcompetencia]; barras 100% apiladas de
+   `Puntuaciones por nivel de logro` por DimNivelLogro[Nivel] (el visual solo excluye "No aplica"; las exclusiones de calidad y el mínimo
+   de 30 van en la medida, D-13); líneas K01 y Puntuación media Cataluña por Anio.

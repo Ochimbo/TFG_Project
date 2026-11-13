@@ -15,10 +15,12 @@ La solución sigue una arquitectura de cuatro capas, todas en modo *Import* dent
 
 1. **Origen.** El fichero `Datos.csv` (*Avaluació de sisè d'educació primària*, Portal de Dades Obertes de la Generalitat; 1.102.324 registros y 32 columnas). La ruta se configura con el parámetro de consulta `RutaDatos` (por defecto `C:\TFG_Project\Datos.csv`, obligatorio).
 2. **ETL en Power Query (M).** Una consulta de *staging*, `stg_Evaluaciones`, que no se carga en el modelo, lee el CSV y aplica las reglas de limpieza R01–R21. De ella derivan las dos tablas de hechos y `DimAnio`. Las demás dimensiones son tablas estáticas definidas en el propio código M.
-3. **Modelo semántico dimensional (Kimball).** Un esquema en estrella con dos tablas de hechos que comparten tres dimensiones conformadas (`DimAnio`, `DimContextoCentro` y `DimPerfilAlumno`), tres dimensiones propias de las puntuaciones (`DimCompetencia`, `DimNivelLogro` y `DimCalidadDato`) y una tabla de medidas (`_Medidas`) con 19 medidas DAX.
-4. **Informe PBIR.** Tres páginas (lienzo de 1280 × 720) orientadas a tres perfiles de decisión: «Estratégico - Departamento» (12 visuales), «Táctico - Inspección» (11) y «Operativo - Dirección de centro» (13), 36 visuales en total.
+3. **Modelo semántico dimensional (Kimball).** Un esquema en estrella con dos tablas de hechos que comparten tres dimensiones conformadas (`DimAnio`, `DimContextoCentro` y `DimPerfilAlumno`), tres dimensiones propias de las puntuaciones (`DimCompetencia`, `DimNivelLogro` y `DimCalidadDato`) y una tabla de medidas (`_Medidas`) con 20 medidas DAX.
+4. **Informe PBIR.** Tres páginas (lienzo de 1280 × 720) orientadas a tres perfiles de decisión: «Estratégico - Departamento» (13 visuales), «Táctico - Inspección» (14) y «Operativo - Dirección de centro» (14), 41 visuales en total.
 
-En paralelo, la carpeta `validacion/` contiene una réplica independiente de la ETL y de las medidas en Python (pandas y DuckDB) que sirve para contrastar el modelo cifra a cifra (27 tests de integridad y 6 ficheros de KPIs de referencia).
+En paralelo, la carpeta `validacion/` contiene una réplica independiente de la ETL y de las medidas en Python (pandas y DuckDB) que sirve para contrastar el modelo cifra a cifra (31 tests de integridad y 7 ficheros de KPIs de referencia).
+
+**Nombres técnicos y nombres visibles.** Las columnas conservan su nombre técnico y el informe muestra el nombre de la memoria y de los informes oficiales (decisión D-15 de `trabajo_en_curso/week2/DECISIONES.md`): «Competencia» en el informe es `DimCompetencia[Materia]` (las 6 materias con puntuación global: lengua catalana, lengua castellana, matemáticas, lengua inglesa, lengua francesa y ciencias; `DimCompetencia` tiene 24 filas porque incluye también las subcompetencias) y «Titularidad» es `DimContextoCentro[Naturaleza]`.
 
 Las consultas M se organizan en cuatro grupos (`queryGroup`): **Parámetros** (`RutaDatos`), **Staging** (`stg_Evaluaciones`), **Dimensiones** y **Hechos**.
 
@@ -34,10 +36,10 @@ flowchart LR
         FP["FactPuntuacion<br/>17.728.085 filas"]
         DA["DimAnio"]
         DS["DimContextoCentro · DimPerfilAlumno<br/>DimCompetencia · DimNivelLogro · DimCalidadDato"]
-        MED["_Medidas<br/>19 medidas DAX"]
+        MED["_Medidas<br/>20 medidas DAX"]
     end
 
-    subgraph INFORME["Informe PBIR (3 páginas, 36 visuales)"]
+    subgraph INFORME["Informe PBIR (3 páginas, 41 visuales)"]
         P1["Estratégico - Departamento"]
         P2["Táctico - Inspección"]
         P3["Operativo - Dirección de centro"]
@@ -244,8 +246,8 @@ Origen: tabla estática en M (producto cartesiano de las tablas de códigos del 
 | Columna | Tipo | Visible | Descripción | Origen / regla |
 |---|---|---|---|---|
 | `ContextoKey` | int64 | Oculta | Clave determinista. | `AreaCodigo·100 + NaturalezaCodigo·10 + HabitatCodigo`. |
-| `AreaCodigo` | int64 | Oculta | Código del área: 3 = Barcelona Comarques hasta 2023; 4 = Barcelona Comarques en 2024 (perímetro del Barcelonès); 99 = desconocida. | R13, R14. |
-| `AreaTerritorial` | string | Visible | Área territorial tal como la publica el Departament (los códigos 3 y 4 comparten «Barcelona Comarques»). Se ordena por `AreaOrden`. | `AREA_TERRITORIAL`; R13. |
+| `AreaCodigo` | int64 | Oculta | Código del área: 3 = Barcelona Comarques hasta 2023; 4 = área publicada en el CSV como «Barcelona Comarques» en 2024, con el perímetro del Barcelonès; 5 = Barcelonès desde 2025; 99 = desconocida. | R13, R14. |
+| `AreaTerritorial` | string | Visible | Área territorial con el nombre de los informes oficiales: «Barcelona Comarques» hasta 2023 (perímetro antiguo) y «Barcelonès» desde 2024 (códigos 4 y 5, mismo perímetro). Se ordena por `AreaOrden`. | `AREA_TERRITORIAL`; R13, R14; decisión D-05 (véase 7.3). |
 | `AreaPerimetro2025` | string | Visible | Área expresada con el perímetro territorial vigente en 2025. | R14. |
 | `AreaSerieComparable` | string | Visible | Agrupación de áreas con serie temporal comparable a pesar de los cambios de perímetro de 2024–2025. | R14. |
 | `AreaConRupturaSerie` | boolean | Visible | VERDADERO si el área cambió de perímetro y su serie no es comparable sin agrupar. | R14. |
@@ -254,9 +256,9 @@ Origen: tabla estática en M (producto cartesiano de las tablas de códigos del 
 | `NaturalezaCodigo` | int64 | Oculta | 1 = Pública, 2 = Privada. | R10. |
 | `Habitat` | string | Visible | Tamaño del municipio: «No fiable», «Hasta 10.000 hab.», «De 10.001 a 100.000 hab.», «Más de 100.000 hab.». Se ordena por `HabitatCodigo`. | `HÀBITAT`; R11, R12. |
 | `HabitatCodigo` | int64 | Oculta | 0 = No fiable, 1, 2, 3 (tramos anteriores). | R11, R12. |
-| `AreaOrden` | int64 | Oculta | Orden de presentación (= `AreaCodigo`, salvo el código 4, que toma el 3). | Contrato §5.1. |
+| `AreaOrden` | int64 | Oculta | Orden de presentación (= `AreaCodigo`, salvo el código 4, que toma el 5 para que «Barcelonès» tenga un único orden). | Contrato §5.1. |
 
-Valores de `AreaSerieComparable`: «Lleida + Alt Pirineu i Aran» (Lleida y Alt Pirineu i Aran); «Barcelonès-Penedès y áreas afectadas» (Barcelona Comarques en sus dos perímetros, Barcelonès, Catalunya Central, Penedès y Tarragona); el propio nombre del área en Baix Llobregat, Consorci d'Educació de Barcelona, Girona, Maresme - Vallès Oriental, Terres de l'Ebre, Vallès Occidental y Desconocida.
+Valores de `AreaSerieComparable`: «Lleida + Alt Pirineu i Aran» (Lleida y Alt Pirineu i Aran); «Barcelonès-Penedès y áreas afectadas» (Barcelona Comarques, Barcelonès, Catalunya Central, Penedès y Tarragona); el propio nombre del área en Baix Llobregat, Consorci d'Educació de Barcelona, Girona, Maresme - Vallès Oriental, Terres de l'Ebre, Vallès Occidental y Desconocida. Girona pierde en 2024 la parte de la Cerdanya que pasa a Alt Pirineu i Aran (alrededor del 1 % de su alumnado) y se mantiene como serie propia (decisión D-06; véase 7.3).
 
 ### 4.5. `DimPerfilAlumno` (182 filas: 2 géneros × 7 combinaciones edad/situación × 13 meses)
 
@@ -290,12 +292,12 @@ Origen: tabla estática en M (contrato §5.2); una fila por cada columna de punt
 | `EsGlobal` | boolean | Visible | VERDADERO si es la puntuación global de la materia (base de K01, K03, K06 y K10–K12). | Contrato §5.2. |
 | `AnioInicio` | int64 | Visible | Primer año con datos de la competencia. | Informe de calidad §4.5. |
 | `AnioFin` | int64 | Visible | Último año de la competencia; vacío si sigue vigente (todas lo están). | Informe de calidad §4.5. |
-| `PeriodoDisenoInicio` | int64 | Visible | Primer año del diseño actual de la prueba; K10 y K11 solo comparan años desde él. | R32. |
+| `PeriodoDisenoInicio` | int64 | Visible | Primer año del diseño actual de la prueba: 2017 en matemáticas, inglés y francés (global y subcompetencias) y 2018 en catalán, castellano y ciencias. K10 y K11 solo comparan años desde él. | R32; decisión D-10 (la global de inglés y francés pasa de 2016 a 2017, como sus subcompetencias). |
 | `EsInformativa` | boolean | Visible | VERDADERO para el francés (muestra pequeña): no entra en K09 ni en K12. | R30. |
 
 ### 4.7. `DimNivelLogro` (5 filas)
 
-Origen: tabla estática en M. Los umbrales 55/70/85 son provisionales e internos del TFG; no son los niveles oficiales.
+Origen: tabla estática en M. Los cortes 55/70/85 son fijos, comunes a todas las materias y convocatorias, e internos del TFG; no son los niveles oficiales (informe de calidad §6.3; decisión D-08).
 
 | Columna | Tipo | Visible | Descripción | Origen / regla |
 |---|---|---|---|---|
@@ -327,7 +329,7 @@ Asignación de bits por (columna, año) en la consulta `FactPuntuacion`:
 | 4 `NoComparableSerie` | R27 | `PANG_CO` y `PCAT_CL` 2011; `PANG_EE` 2013–2016; `PANG_CO` y `PANG_CE` 2015–2016; `PMAT_NC`, `PMAT_EFM`, `PMAT_CR` 2015 |
 | 8 `NivelNoComparable` | R28 | `PANG` 2015 y 2016; `PMAT` 2015 y 2019; `PCAT` 2018; `PFRAN` 2022 |
 
-### 4.9. `_Medidas` (19 medidas)
+### 4.9. `_Medidas` (20 medidas)
 
 Tabla sin columnas que agrupa las medidas en carpetas de visualización. Todas las medidas tienen una `description` en el modelo; aquí se resumen. Las reglas comunes son: «global» = `DimCompetencia[EsGlobal] = TRUE`; «Cataluña» = sin filtros de `DimContextoCentro`; mínimo muestral de 30 puntuaciones (si no se alcanza, BLANK); comparaciones temporales por `DimAnio[IndiceConvocatoria]`, nunca por `Anio − 1`.
 
@@ -340,6 +342,7 @@ Tabla sin columnas que agrupa las medidas en carpetas de visualización. Todas l
 | `K01 Puntuación media competencia` | 1. Rendimiento académico | `0.0` | Media de las globales, con mínimo muestral. |
 | `K02 Puntuación media subcompetencia` | 1. Rendimiento académico | `0.0` | Media de las subcompetencias sin las no válidas. |
 | `K03 % alumnado nivel bajo` | 1. Rendimiento académico | `0.0%` | % de globales en nivel Bajo, sin censuradas ni niveles no comparables. |
+| `Puntuaciones por nivel de logro` | 1. Rendimiento académico | `#,0` | Globales del nivel del contexto con las exclusiones de K03; BLANK si la competencia no llega a 30 puntuaciones en total. Base del gráfico de distribución por nivel (D-13). |
 | `K04 Brecha de género (Niños - Niñas)` | 2. Equidad e inclusión | `+0.0;-0.0;0.0` | K01 Niño − K01 Niña. |
 | `K05 Brecha pública - privada` | 2. Equidad e inclusión | `+0.0;-0.0;0.0` | K01 Pública − K01 Privada. |
 | `K06 Dispersión de resultados` | 2. Equidad e inclusión | `0.0` | STDEV.P de las globales sin censuradas. |
@@ -349,11 +352,11 @@ Tabla sin columnas que agrupa las medidas en carpetas de visualización. Todas l
 | `K10 Variación interanual` | 4. Eficiencia y progreso | `+0.0;-0.0;0.0` | K01 actual − K01 de la convocatoria anterior, con periodo de diseño comparable. |
 | `K11 Tendencia 5 convocatorias` | 4. Eficiencia y progreso | `+0.0;-0.0;0.0` | (K01(i) − K01(i−4)) / 4. |
 | `K12 % competencias que mejoran` | 4. Eficiencia y progreso | `0.0%` | % de materias no informativas con K10 ≥ 1. |
-| `Estado K01` | 5. Semáforos | `0` | 1/0/−1 según K07 (±1) con filtro de contexto, o según K10 (±0,5) sin él. |
-| `Estado K03` | 5. Semáforos | `0` | 1/0/−1 según K03 − K03 de Cataluña (±2 puntos porcentuales). |
-| `Estado K10` | 5. Semáforos | `0` | 1/0/−1 según K10 (±0,5). |
+| `Estado K01` | 5. Semáforos | `"▲ Favorable";"▼ Desfavorable";"● Neutro"` | 1/0/−1 según K07 (±1) con filtro de contexto, o según K10 (±0,5) sin él. |
+| `Estado K03` | 5. Semáforos | ídem | 1/0/−1 según K03 − K03 de Cataluña (±2 puntos porcentuales). |
+| `Estado K10` | 5. Semáforos | ídem | 1/0/−1 según K10 (±0,5). |
 
-La definición completa de cada indicador se recogerá en `03_Fichas_KPI.md`.
+Los tres semáforos devuelven 1, 0 o −1 y su cadena de formato los muestra como «▲ Favorable», «● Neutro» o «▼ Desfavorable», de modo que el estado no depende solo del color (RNF05; decisión D-12). La definición completa de cada indicador está en `03_Fichas_KPI.md`.
 
 ---
 
@@ -383,7 +386,7 @@ Cada componente ocupa una posición decimal propia y está acotado (por ejemplo,
 - **Estabilidad.** El contenido de la dimensión no cambia al publicarse una nueva convocatoria, y los segmentadores muestran siempre los mismos miembros, en el mismo orden.
 - **Atributos derivados en un solo lugar.** `AreaSerieComparable`, `AreaPerimetro2025`, `RupturaHabitat2024`, `TrimestreNacimiento` y las columnas de orden se definen una vez en la tabla de códigos y no por fila de hechos.
 
-El coste es que algunas filas de la dimensión no tienen hechos (por ejemplo, el área 4 solo existe en 2024), algo inocuo en modo *Import*. `DimCompetencia`, `DimNivelLogro` y `DimCalidadDato` también son estáticas por la misma razón. `DimAnio` es la única dimensión que se deriva de los datos, porque debe crecer cuando se añada una convocatoria.
+El coste es que algunas filas de la dimensión no tienen hechos (por ejemplo, el código de área 4 solo existe en 2024 y el 5 desde 2025, y ambos se muestran como «Barcelonès»), algo inocuo en modo *Import*. `DimCompetencia`, `DimNivelLogro` y `DimCalidadDato` también son estáticas por la misma razón. `DimAnio` es la única dimensión que se deriva de los datos, porque debe crecer cuando se añada una convocatoria.
 
 ---
 
@@ -437,12 +440,18 @@ El informe de calidad concluye que no hay que borrar las puntuaciones problemát
 
 - una sola clave en el hecho, en lugar de cuatro columnas booleanas de 17,7 millones de filas;
 - una dimensión de solo 16 filas con un atributo booleano por problema, que las medidas filtran con condiciones legibles (`DimCalidadDato[Censurada] = FALSE`) y que el usuario puede usar como segmentador;
-- cada medida decide qué problemas le afectan: K02 excluye `NoValida`; K03 excluye `Censurada` y `NivelNoComparable`; K06 excluye `Censurada`;
+- cada medida decide qué problemas le afectan: K02 excluye `NoValida`; K03 y `Puntuaciones por nivel de logro` excluyen `Censurada` y `NivelNoComparable`; K06 excluye `Censurada`;
 - añadir un nuevo tipo de problema solo requiere un bit más.
+
+El criterio que separa los dos bits que afectan a las globales es explícito (decisión D-09): `Censurada` marca una columna-año cuya propia distribución tiene una masa de puntos en un suelo (en inglés 2015 el 12,9 % de las globales vale exactamente 48,79, que es también su percentil 1); una desviación típica calculada sobre esa masa es un artefacto, por eso K03 y K06 la excluyen. `NivelNoComparable` marca globales cuya distribución está comprimida o desplazada sin masa en un punto (en catalán 2018 el valor más frecuente, 89,29, solo reúne el 0,86 % y el percentil 1 está en 37,59 frente a 28,18 en 2017 y 32,30 en 2019); su dispersión es la real de las puntuaciones publicadas, así que solo K03 la excluye y K06 la muestra con advertencia. Las convocatorias no se excluyen enteras del CMI porque romperían la conciliación con las medias oficiales (inglés 2015: 74,42 frente a 74,5).
 
 ### 7.3. `AreaSerieComparable`
 
-La reorganización territorial de 2024 (Decret 120/2023) cambia el perímetro de varias áreas, de modo que la serie de un área concreta no es comparable antes y después del cambio. El modelo conserva el área tal como se publicó (`AreaTerritorial`), añade su equivalente en el perímetro de 2025 (`AreaPerimetro2025`) y define `AreaSerieComparable`, que agrupa las áreas afectadas en conjuntos cuyo perímetro conjunto sí es estable («Lleida + Alt Pirineu i Aran» y «Barcelonès-Penedès y áreas afectadas»). Para distinguir los dos perímetros de «Barcelona Comarques» sin alterar el nombre publicado, la ETL le asigna códigos distintos según el año (3 hasta 2023, 4 en 2024). El gráfico de líneas de K01 por año de la página «Táctico - Inspección» usa `AreaSerieComparable` como leyenda. Esta agrupación es la opción por defecto de la cuestión abierta 4 del informe de calidad (§7.2).
+La reorganización territorial de 2024 (Decret 120/2023) cambia el perímetro de varias áreas, de modo que la serie de un área concreta no es comparable antes y después del cambio. El modelo añade a cada área su equivalente en el perímetro de 2025 (`AreaPerimetro2025`) y define `AreaSerieComparable`, que agrupa las áreas afectadas en conjuntos cuyo perímetro conjunto sí es estable («Lleida + Alt Pirineu i Aran» y «Barcelonès-Penedès y áreas afectadas»). El gráfico de líneas de K01 por año de la página «Táctico - Inspección» usa `AreaSerieComparable` como leyenda. Esta agrupación resuelve la cuestión abierta 4 del informe de calidad (§7.2).
+
+**«Barcelona Comarques» de 2024 se muestra como «Barcelonès» (decisión D-05).** El CSV llama «Barcelona Comarques» al área en 2024 y «Barcelonès» en 2025, pero el perímetro es el mismo: 5.386 y 5.408 alumnos, con la misma composición (pública 3.166 y 3.182; privada 2.220 y 2.226; ningún alumno en municipios de hasta 10.000 habitantes en los dos años, frente a 660 en 2023), y el Quadern 62 ya publica el área de 2024 como «Barcelonès» (informe de calidad §4.5). La ETL asigna códigos distintos según el año (3 hasta 2023, 4 en 2024, 5 desde 2025) y `AreaTerritorial` muestra «Barcelona Comarques» en el código 3 y «Barcelonès» en los códigos 4 y 5. Así un mismo nombre no designa dos perímetros distintos, el nombre coincide con el del informe oficial de cada año (RNF04) y K10 por área funciona para el Barcelonès en 2025 (antes quedaba en blanco). No cambia ninguna cifra de Cataluña ni de 2025 por área.
+
+**Girona se mantiene como serie propia (decisión D-06).** La Cerdanya, antes repartida entre Girona y Lleida, pasa en 2024 a Alt Pirineu i Aran. Sobre `Datos.csv`: de 2023 a 2024 las áreas estables sin Girona pasan de 41.346 a 39.721 alumnos (factor 0,9607); con ese factor, a Lleida le faltan unos 440 alumnos y Alt Pirineu i Aran tiene 514, así que la aportación de Girona es de unos 75–90 alumnos, en torno al 1 % de sus 7.758 de 2023. La caída de Girona (factor 0,9388) queda dentro de lo que varían otras áreas estables (Vallès Occidental 0,9409; Terres de l'Ebre 0,9441). Aunque esos alumnos puntuaran 10 puntos por encima o por debajo de la media de Girona, la media del área cambiaría como mucho 0,1–0,2 puntos, menos que el umbral del semáforo (0,5). Fusionar Girona (7.283 alumnos en 2024) con Lleida y Alt Pirineu (3.980) crearía un grupo dominado por Girona para corregir un efecto de décimas.
 
 ### 7.4. Por qué la puntuación global no se recalcula
 
@@ -452,7 +461,9 @@ Sería tentador recalcular la global de cada materia a partir de sus subcompeten
 - en ciencias, los pesos publicados (42/25/33) no reproducen los datos, que siguen una media simple; aplicar una media simple al resto de materias daría errores de hasta 19 puntos;
 - en catalán y castellano 2009, una misma combinación de subcompetencias puede tener globales distintas, lo que indica varias versiones de la prueba.
 
-Por eso el modelo carga la global **tal como se publica**, y K01 la usa directamente. La validez de esta decisión se comprueba externamente: la réplica en Python reproduce las medias oficiales de Cataluña de los Quaderns d'avaluació en 70 de las 72 combinaciones materia-año dentro de la tolerancia de ±0,2 puntos (por ejemplo, castellano 2017 corregido: 73,51 frente a 73,4 oficial); las dos restantes (inglés 2016, +0,24, y francés 2024, +0,30) están pendientes de documentar en el informe de calidad.
+Sobre ciencias (decisión D-07, cuestión abierta 8 del informe): la media simple reproduce la global en el 100 % de las 496.745 filas de 2018–2025 con las cuatro puntuaciones (diferencia máxima 0,01); los pesos 42/25/33 solo la reproducen en el 4,7 %–8,7 % de las filas (error medio de 1,32 a 1,62 puntos) y ninguna permutación de esos pesos pasa del 9 %. Con los pesos oficiales la media anual de Cataluña cambiaría entre −0,55 y +1,06 puntos y dejaría de coincidir con la oficial publicada (2018: 70,20 con la global del CSV, oficial 70,2; 71,14 con 42/25/33), es decir, las medias oficiales también salen de la global publicada. Ningún KPI depende de los pesos: usan la global (K01) o cada subcompetencia por separado (K02). La discrepancia se recomienda comunicarla al titular del dataset.
+
+Por eso el modelo carga la global **tal como se publica**, y K01 la usa directamente. La validez de esta decisión se comprueba externamente: la réplica en Python reproduce las medias oficiales de Cataluña de los Quaderns d'avaluació en las 72 combinaciones materia-año dentro del criterio de aceptación de 0,5 puntos del requisito RNF06 (diferencia máxima 0,30; por ejemplo, castellano 2017 corregido: 73,51 frente a 73,4 oficial). La validación aplica además una alerta interna de ±0,2 puntos (decisión D-01): 70 de las 72 quedan dentro, y las dos restantes (inglés 2016, +0,24, y francés 2024, +0,30) están explicadas en el informe de calidad §4.6.
 
 ### 7.5. Otras decisiones
 
@@ -467,14 +478,14 @@ Por eso el modelo carga la global **tal como se publica**, y K01 la usa directam
 
 ### 8.1. Limitaciones
 
-- **El código M no se ha ejecutado en Power BI Desktop.** El modelo se ha validado con la librería oficial de Microsoft (TOM, `Model.Validate()` sin errores), el analizador sintáctico oficial de Power Query M (11/11 expresiones correctas) y los esquemas JSON oficiales de PBIR (0 errores), y las claves M se han contrastado con la réplica en Python (0 fallos). Sin embargo, la primera actualización real, que debe confirmar los recuentos de filas y K01 de castellano 2017 = 73,51, está pendiente.
+- **La primera actualización en Power BI Desktop no tiene resultados anotados.** El modelo se ha validado con la librería oficial de Microsoft (TOM, `Model.Validate()` sin errores), el analizador sintáctico oficial de Power Query M (11/11 expresiones correctas) y los esquemas JSON oficiales de PBIR (0 errores), y las claves M se han contrastado con la réplica en Python (0 fallos). El proyecto se abrió y actualizó en Power BI Desktop el 15/10/2026 (commit `6adfe70`, que guardó `cultures/es-ES.tmdl`, `.platform` y el nivel de compatibilidad 1606), pero no quedó registrada la lista de comprobación de `04_Guia_de_uso.md` §3.2 (recuentos de filas, K01 de castellano 2017 = 73,51), que sigue pendiente, igual que la comprobación de los cambios posteriores (decisión D-19).
 - **Rendimiento de la actualización.** `FactEvaluacion`, `FactPuntuacion` y `DimAnio` referencian `stg_Evaluaciones`, y cada una vuelve a leer el CSV.
 - **Comprobaciones de carga incompletas.** De R34 solo se implementan la comprobación de la cabecera y la detención ante códigos o puntuaciones inválidos; no se comprueba el número fijo de filas ni las pruebas de regresión de R03/R04, que solo se verifican en `validacion/test_modelo.py`.
 - **`EvaluacionID` depende de la versión del fichero.** Si la Generalitat publica otra versión del CSV, las posiciones (y por tanto las claves) pueden cambiar.
-- **Niveles de logro no oficiales.** Los umbrales 55/70/85 son provisionales e internos del TFG.
+- **Niveles de logro no oficiales.** Los cortes 55/70/85 son internos del TFG; aproximan los porcentajes oficiales por nivel (error medio de 2,70 puntos porcentuales en el nivel bajo) pero no los reproducen en cada año.
 - **Puntuaciones no equiparadas.** K10, K11, K12 y los semáforos temporales son orientativos, porque no hay ítems de anclaje entre convocatorias; las descripciones de las medidas lo advierten.
-- **Decisiones pendientes con las directoras.** El modelo aplica las opciones por defecto de las cuestiones del informe de calidad §7.2 (umbrales, inglés 2015 y catalán 2018 marcados sin excluir, 2010 «No fiable», series territoriales agrupadas, francés informativo).
-- **Año por defecto del informe.** Los segmentadores de año arrancan en 2025, valor fijado en el generador del informe; al añadir una convocatoria hay que cambiarlo y regenerar.
+- **Cuestiones abiertas del informe de calidad.** Las diez cuestiones de la sección 7.2 del informe se han resuelto como decisiones de ingeniería (D-05 a D-11 de `trabajo_en_curso/week2/DECISIONES.md`, resumidas en el propio informe §7.2); la memoria las justifica y las directoras pueden revisarlas allí.
+- **Año por defecto del informe.** Los segmentadores de año arrancan en 2025, valor fijado en el generador del informe (filtro `Categorical` en `filterConfig` de cada segmentador de año); al añadir una convocatoria hay que cambiarlo y regenerar.
 
 ### 8.2. Extensiones previstas
 

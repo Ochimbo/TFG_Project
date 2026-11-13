@@ -4,10 +4,10 @@
   "position": {
     "x": 16,
     "y": 658,
-    "z": 12000,
+    "z": 13000,
     "height": 50,
     "width": 1248,
-    "tabOrder": 12000
+    "tabOrder": 13000
   },
   "visual": {
     "visualType": "textbox",
@@ -28,7 +28,7 @@
                     }
                   },
                   {
-                    "value": "Puntuaciones no equiparadas entre convocatorias; 2020 sin prueba (COVID-19)",
+                    "value": "Puntuaciones no equiparadas entre convocatorias; 2020 sin prueba (COVID-19) y 2021 se compara con 2019",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "10pt",
@@ -41,7 +41,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Umbrales de nivel de logro provisionales e internos del TFG (no oficiales). Se oculta un valor si se basa en menos de 30 puntuaciones.",
+                    "value": "Niveles de logro internos del TFG (cortes 55/70/85), no los niveles oficiales. Se oculta un valor si se basa en menos de 30 puntuaciones.",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "9pt",
@@ -75,7 +75,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Puntuaciones no equiparadas entre convocatorias; 2020 sin prueba (COVID-19)'"
+                  "Value": "'Puntuaciones no equiparadas entre convocatorias; 2020 sin prueba (COVID-19) y 2021 se compara con 2019'"
                 }
               }
             }

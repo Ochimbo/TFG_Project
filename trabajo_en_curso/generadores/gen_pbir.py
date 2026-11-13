@@ -1,4 +1,8 @@
-"""Genera el informe PBIR CMI_Educacion_Primaria.Report (contrato §8)."""
+"""Genera el informe PBIR CMI_Educacion_Primaria.Report (contrato §8).
+
+Solo reescribe lo que es suyo: `definition/`, `definition.pbir` y `StaticResources/`. Los ficheros que
+añade Power BI Desktop al guardar (`.platform`, `.pbi/`) se conservan (DECISIONES.md, D-19).
+"""
 import json
 import shutil
 import sys
@@ -79,6 +83,7 @@ class Layout:
 
     def pos(self, x, y, w, h):
         self.n += 1
+        x, y, w, h = (int(v) if float(v).is_integer() else round(v, 1) for v in (x, y, w, h))
         return {"x": x, "y": y, "z": self.n * 1000, "height": h, "width": w, "tabOrder": self.n * 1000}
 
 
@@ -89,16 +94,6 @@ def slicer(name, pos, field, display, sync_group, single=False, default_in=None)
     }
     if single:
         objects["selection"] = [{"properties": {"singleSelect": lit("true")}}]
-    if default_in is not None:
-        entity, prop = field_ids(field)
-        objects["general"] = [{"properties": {"filter": {"filter": {
-            "Version": 2,
-            "From": [{"Name": "s", "Entity": entity, "Type": 0}],
-            "Where": [{"Condition": {"In": {
-                "Expressions": [{"Column": {"Expression": {"SourceRef": {"Source": "s"}}, "Property": prop}}],
-                "Values": [[{"Literal": {"Value": v}}] for v in default_in],
-            }}}],
-        }}}}]
     vis = {
         "visualType": "slicer",
         "query": {"queryState": {"Values": {"projections": [proj(field, display, active=True)]}}},
@@ -107,7 +102,11 @@ def slicer(name, pos, field, display, sync_group, single=False, default_in=None)
         "syncGroup": {"groupName": sync_group, "fieldChanges": True, "filterChanges": True},
         "drillFilterOtherVisuals": True,
     }
-    return visual(name, pos, vis)
+    # Selección por defecto: como filtro Categorical del propio visual, que es donde Power BI Desktop
+    # guarda la selección de un segmentador (D-19). La forma anterior, objects.general.filter, la descartó
+    # Desktop al guardar el proyecto.
+    filters = [categorical_filter(f"f_{name}_defecto", field, default_in)] if default_in is not None else None
+    return visual(name, pos, vis, filters)
 
 
 def card(name, pos, measure, title, subtitle=None, alt=None):
@@ -152,7 +151,9 @@ def header(name, pos, title, subtitle):
 
 
 def line_chart(name, pos, category, ys, title, series=None, subtitle=None, alt=None):
-    qs = {"Category": {"projections": [proj(category[0], category[1], active=True)]}}
+    # showAll: el eje muestra también las categorías sin datos, así 2020 aparece como hueco y la línea
+    # se interrumpe entre 2019 y 2021 (D-14; propiedad ProjectionState.showAll del esquema PBIR).
+    qs = {"Category": {"projections": [proj(category[0], category[1], active=True)], "showAll": True}}
     if series:
         qs["Series"] = {"projections": [proj(series[0], series[1])]}
     qs["Y"] = {"projections": [proj(meas(m), d) for m, d in ys]}
@@ -227,8 +228,16 @@ def page(name, display, visuals, interactions):
 
 
 ANIO = ("DimAnio", "Anio")
-AVISO = "Puntuaciones no equiparadas entre convocatorias; 2020 sin prueba (COVID-19)"
+# Aviso fijo de los tres paneles (RF15): no equiparación, 2020 sin prueba y 2021 frente a 2019 (D-11).
+AVISO = "Puntuaciones no equiparadas entre convocatorias; 2020 sin prueba (COVID-19) y 2021 se compara con 2019"
+# Cortes de nivel definitivos (D-08): internos del TFG, no oficiales.
+AVISO_NIVELES = ("Niveles de logro internos del TFG (cortes 55/70/85), no los niveles oficiales. "
+                 "Se oculta un valor si se basa en menos de 30 puntuaciones.")
 ANIO_DEFECTO = ["2025L"]
+# Etiquetas visibles (D-15): la memoria y los informes oficiales hablan de «competencia» y «titularidad»;
+# las columnas del modelo conservan su nombre técnico (DimCompetencia[Materia], DimContextoCentro[Naturaleza]).
+ETQ_COMPETENCIA = "Competencia"
+ETQ_TITULARIDAD = "Titularidad"
 
 
 def f_anio():
@@ -243,6 +252,14 @@ def f_area():
     return col("DimContextoCentro", "AreaTerritorial")
 
 
+def fila_tarjetas(L, v, cards, y, h, ancho_total=1248, x0=16, hueco=8):
+    """Reparte n tarjetas en una fila de ancho_total píxeles."""
+    n = len(cards)
+    w = (ancho_total - hueco * (n - 1)) / n
+    for i, (name, m, title, sub) in enumerate(cards):
+        v.append(card(name, L.pos(round(x0 + i * (w + hueco), 1), y, round(w, 1), h), m, title, sub))
+
+
 def page1():
     L = Layout()
     pid = "Estrategico_Departamento"
@@ -251,29 +268,30 @@ def page1():
                     "Cuadro de Mando Integral - Educación primaria de Cataluña",
                     "Visión estratégica (Departamento de Educación): resultados de la convocatoria seleccionada y evolución"))
     v.append(slicer("p1_seg_anio", L.pos(884, 8, 186, 60), f_anio(), "Año", "Anio", single=True, default_in=ANIO_DEFECTO))
-    v.append(slicer("p1_seg_materia", L.pos(1078, 8, 186, 60), f_materia(), "Materia", "Materia"))
+    v.append(slicer("p1_seg_materia", L.pos(1078, 8, 186, 60), f_materia(), ETQ_COMPETENCIA, "Materia"))
+    # Semáforo (D-12): en el panel estratégico no hay territorio de referencia, así que solo K10 lleva
+    # semáforo (Estado K10); K01 y K03 lo llevan en los paneles táctico y operativo, frente a Cataluña.
     cards = [
         ("p1_tarjeta_k01", "K01 Puntuación media competencia", "Puntuación media (K01)", "Competencias globales"),
         ("p1_tarjeta_k03", "K03 % alumnado nivel bajo", "% alumnado en nivel bajo (K03)", "Puntuación global < 55"),
         ("p1_tarjeta_k06", "K06 Dispersión de resultados", "Dispersión de resultados (K06)", "Desviación típica"),
         ("p1_tarjeta_k10", "K10 Variación interanual", "Variación interanual (K10)", "Frente a la convocatoria anterior"),
+        ("p1_tarjeta_estado_k10", "Estado K10", "Estado de la variación (K10)", "Semáforo: ±0,5 puntos"),
         ("p1_tarjeta_k12", "K12 % competencias que mejoran", "% competencias que mejoran (K12)", "Mejora de 1 punto o más"),
         ("p1_tarjeta_alumnos", "Alumnos evaluados", "Alumnos evaluados", "Registros de evaluación"),
     ]
-    x = 16.0
-    for name, m, title, sub in cards:
-        v.append(card(name, L.pos(round(x, 1), 76, 200, 100), m, title, sub))
-        x += 209.6
+    fila_tarjetas(L, v, cards, 76, 100)
     v.append(line_chart("p1_linea_k01_materia", L.pos(16, 188, 724, 462),
                         (f_anio(), "Año"), [("K01 Puntuación media competencia", "Puntuación media (K01)")],
-                        "Evolución de la puntuación media (K01) por materia",
-                        series=(f_materia(), "Materia"),
+                        "Evolución de la puntuación media (K01) por competencia",
+                        series=(f_materia(), ETQ_COMPETENCIA),
                         subtitle="Todas las convocatorias; no se filtra por el segmentador de año",
-                        alt="Gráfico de líneas con la puntuación media global por año para cada materia"))
+                        alt="Gráfico de líneas con la puntuación media global por año para cada competencia"))
     tabla_vals = [
-        proj(f_materia(), "Materia"),
+        proj(f_materia(), ETQ_COMPETENCIA),
         proj(meas("K01 Puntuación media competencia"), "K01 Puntuación media"),
         proj(meas("K10 Variación interanual"), "K10 Variación interanual"),
+        proj(meas("Estado K10"), "Estado K10"),
         proj(meas("K11 Tendencia 5 convocatorias"), "K11 Tendencia (5 conv.)"),
         proj(meas("K03 % alumnado nivel bajo"), "K03 % nivel bajo"),
     ]
@@ -284,14 +302,13 @@ def page1():
             "sortDefinition": {"sort": [{"field": f_materia(), "direction": "Ascending"}]},
         },
         "visualContainerObjects": container_objects(
-            "Resumen por materia", "Convocatoria seleccionada",
-            "Tabla por materia con puntuación media, variación interanual, tendencia y porcentaje en nivel bajo"),
+            "Resumen por competencia", "Convocatoria seleccionada",
+            "Tabla por competencia con puntuación media, variación interanual y su semáforo, tendencia y porcentaje en nivel bajo"),
         "drillFilterOtherVisuals": True,
     }))
     v.append(textbox("p1_aviso", L.pos(16, 658, 1248, 50), [
         {"textRuns": [run("Aviso: ", 10, bold=True, colour="#A4262C"), run(AVISO, 10, bold=True)]},
-        {"textRuns": [run("Umbrales de nivel de logro provisionales e internos del TFG (no oficiales). "
-                          "Se oculta un valor si se basa en menos de 30 puntuaciones.", 9, colour="#605E5C")]},
+        {"textRuns": [run(AVISO_NIVELES, 9, colour="#605E5C")]},
     ], alt=AVISO))
     inter = [("p1_seg_anio", "p1_linea_k01_materia")]
     return pid, page(pid, "Estratégico - Departamento", v, inter), v
@@ -301,22 +318,23 @@ def page2():
     L = Layout()
     pid = "Tactico_Inspeccion"
     v = []
-    v.append(header("p2_cabecera", L.pos(16, 8, 660, 60),
+    v.append(header("p2_cabecera", L.pos(16, 8, 480, 60),
                     "Visión táctica - Inspección educativa",
                     "Comparación territorial y equidad. " + AVISO))
-    v.append(slicer("p2_seg_anio", L.pos(684, 8, 188, 60), f_anio(), "Año", "Anio", single=True, default_in=ANIO_DEFECTO))
-    v.append(slicer("p2_seg_materia", L.pos(880, 8, 188, 60), f_materia(), "Materia", "Materia"))
-    v.append(slicer("p2_seg_area", L.pos(1076, 8, 188, 60), f_area(), "Área territorial", "AreaTerritorial"))
+    v.append(slicer("p2_seg_anio", L.pos(504, 8, 184, 60), f_anio(), "Año", "Anio", single=True, default_in=ANIO_DEFECTO))
+    v.append(slicer("p2_seg_materia", L.pos(696, 8, 184, 60), f_materia(), ETQ_COMPETENCIA, "Materia"))
+    v.append(slicer("p2_seg_area", L.pos(888, 8, 184, 60), f_area(), "Área territorial", "AreaTerritorial"))
+    # Filtro de género (RF06, CU05; D-15). K04 lo sustituye por diseño; afecta al resto de visuales del panel.
+    v.append(slicer("p2_seg_genero", L.pos(1080, 8, 184, 60), col("DimPerfilAlumno", "Genero"), "Género", "Genero"))
     cards = [
         ("p2_tarjeta_k04", "K04 Brecha de género (Niños - Niñas)", "Brecha de género: niños - niñas (K04)", "Puntos de diferencia"),
         ("p2_tarjeta_k05", "K05 Brecha pública - privada", "Brecha pública - privada (K05)", "Puntos de diferencia"),
         ("p2_tarjeta_k08", "K08 Diferencia urbano - rural", "Diferencia urbano - rural (K08)", "Más de 100.000 hab. frente a hasta 10.000"),
         ("p2_tarjeta_k09", "K09 Posición del área", "Posición del área (K09)", "Requiere una sola área en contexto"),
+        ("p2_tarjeta_estado_k01", "Estado K01", "Estado de K01 (área frente a Cataluña)", "Semáforo: ±1 punto"),
+        ("p2_tarjeta_estado_k03", "Estado K03", "Estado de K03 (área frente a Cataluña)", "Semáforo: ±2 puntos porcentuales"),
     ]
-    x = 16
-    for name, m, title, sub in cards:
-        v.append(card(name, L.pos(x, 76, 306, 100), m, title, sub))
-        x += 314
+    fila_tarjetas(L, v, cards, 76, 100)
     v.append(bar_chart("p2_barras_k07_area", L.pos(16, 188, 410, 520),
                        (f_area(), "Área territorial"),
                        ("K07 Desviación respecto a Cataluña", "Desviación respecto a Cataluña (K07)"),
@@ -329,12 +347,12 @@ def page2():
         "visualType": "pivotTable",
         "query": {"queryState": {
             "Rows": {"projections": [proj(f_area(), "Área territorial", active=True)]},
-            "Columns": {"projections": [proj(col("DimContextoCentro", "Naturaleza"), "Naturaleza", active=True)]},
+            "Columns": {"projections": [proj(col("DimContextoCentro", "Naturaleza"), ETQ_TITULARIDAD, active=True)]},
             "Values": {"projections": [proj(meas("K01 Puntuación media competencia"), "Puntuación media (K01)")]},
         }},
         "visualContainerObjects": container_objects(
-            "Puntuación media (K01) por área y naturaleza", "Centros públicos y privados",
-            "Matriz con la puntuación media por área territorial y naturaleza del centro"),
+            "Puntuación media (K01) por área y titularidad", "Centros públicos y privados",
+            "Matriz con la puntuación media por área territorial y titularidad del centro"),
         "drillFilterOtherVisuals": True,
     }))
     v.append(line_chart("p2_linea_k01_serie", L.pos(852, 188, 412, 520),
@@ -360,27 +378,25 @@ def page3():
     w = 243.2
     xs = [16 + i * (w + 8) for i in range(5)]
     v.append(slicer("p3_seg_area", L.pos(round(xs[0], 1), 52, w, 60), f_area(), "Área territorial", "AreaTerritorial"))
-    v.append(slicer("p3_seg_naturaleza", L.pos(round(xs[1], 1), 52, w, 60), col("DimContextoCentro", "Naturaleza"), "Naturaleza", "Naturaleza"))
+    v.append(slicer("p3_seg_naturaleza", L.pos(round(xs[1], 1), 52, w, 60), col("DimContextoCentro", "Naturaleza"), ETQ_TITULARIDAD, "Naturaleza"))
     v.append(slicer("p3_seg_habitat", L.pos(round(xs[2], 1), 52, w, 60), col("DimContextoCentro", "Habitat"), "Hábitat", "Habitat"))
     v.append(slicer("p3_seg_anio", L.pos(round(xs[3], 1), 52, w, 60), f_anio(), "Año", "Anio", single=True, default_in=ANIO_DEFECTO))
-    v.append(slicer("p3_seg_materia", L.pos(round(xs[4], 1), 52, w, 60), f_materia(), "Materia", "Materia"))
+    v.append(slicer("p3_seg_materia", L.pos(round(xs[4], 1), 52, w, 60), f_materia(), ETQ_COMPETENCIA, "Materia"))
     cards = [
         ("p3_tarjeta_k01", "K01 Puntuación media competencia", "Puntuación media del contexto (K01)", "Competencias globales"),
         ("p3_tarjeta_k07", "K07 Desviación respecto a Cataluña", "Desviación respecto a Cataluña (K07)", "Puntos de diferencia"),
         ("p3_tarjeta_cataluna", "Puntuación media Cataluña", "Puntuación media de Cataluña", "Referencia sin filtros de contexto"),
-        ("p3_tarjeta_estado_k01", "Estado K01", "Estado de K01", "1 favorable, 0 neutro, -1 desfavorable"),
+        ("p3_tarjeta_estado_k01", "Estado K01", "Estado de K01 (contexto frente a Cataluña)", "Semáforo: ±1 punto; sin contexto, variación interanual (±0,5)"),
+        ("p3_tarjeta_estado_k03", "Estado K03", "Estado de K03 (contexto frente a Cataluña)", "Semáforo: ±2 puntos porcentuales"),
     ]
-    x = 16
-    for name, m, title, sub in cards:
-        v.append(card(name, L.pos(x, 120, 306, 96), m, title, sub))
-        x += 314
+    fila_tarjetas(L, v, cards, 120, 96)
     v.append(bar_chart("p3_barras_k02_subcomp", L.pos(16, 228, 410, 480),
                        (col("DimCompetencia", "Subcompetencia"), "Subcompetencia"),
                        ("K02 Puntuación media subcompetencia", "Puntuación media (K02)"),
                        "Puntuación media por subcompetencia (K02)",
-                       series=(f_materia(), "Materia"),
+                       series=(f_materia(), ETQ_COMPETENCIA),
                        subtitle="Excluye datos no válidos",
-                       alt="Gráfico de barras con la puntuación media de cada subcompetencia, coloreado por materia"))
+                       alt="Gráfico de barras con la puntuación media de cada subcompetencia, coloreado por competencia"))
     nivel = col("DimNivelLogro", "Nivel")
     data_point = [{
         "properties": {"fill": color(hexv)},
@@ -390,25 +406,26 @@ def page3():
             "Right": {"Literal": {"Value": txt(nv)}},
         }}}]},
     } for nv, hexv in NIVELES]
+    # D-13: la medida «Puntuaciones por nivel de logro» aplica las exclusiones de K03 (censuradas y nivel no
+    # comparable) y el mínimo de 30 puntuaciones por competencia (RF14); el visual solo quita de la leyenda el
+    # nivel 0 «No aplica», que las puntuaciones globales nunca usan.
     filtros = [
         categorical_filter("f_p3_nivel_sin_no_aplica", col("DimNivelLogro", "Nivel"), [txt("No aplica (subcompetencia)")], negate=True),
-        categorical_filter("f_p3_calidad_no_censurada", col("DimCalidadDato", "Censurada"), ["false"]),
-        categorical_filter("f_p3_calidad_nivel_comparable", col("DimCalidadDato", "NivelNoComparable"), ["false"]),
     ]
     v.append(visual("p3_barras100_nivel", L.pos(434, 228, 410, 480), {
         "visualType": "hundredPercentStackedBarChart",
         "query": {"queryState": {
-            "Category": {"projections": [proj(f_materia(), "Materia", active=True)]},
+            "Category": {"projections": [proj(f_materia(), ETQ_COMPETENCIA, active=True)]},
             "Series": {"projections": [proj(col("DimNivelLogro", "Nivel"), "Nivel de logro")]},
-            "Y": {"projections": [proj(meas("Puntuaciones globales"), "Puntuaciones globales")]},
+            "Y": {"projections": [proj(meas("Puntuaciones por nivel de logro"), "Puntuaciones por nivel de logro")]},
         }},
         "objects": {
             "legend": [{"properties": {"show": lit("true"), "position": lit("'Top'")}}],
             "dataPoint": data_point,
         },
         "visualContainerObjects": container_objects(
-            "Distribución por nivel de logro", "Puntuaciones globales; excluye datos censurados y niveles no comparables",
-            "Barras apiladas al 100 % con la proporción de puntuaciones globales en cada nivel de logro por materia"),
+            "Distribución por nivel de logro", "Puntuaciones globales; mismas exclusiones y mínimo de 30 que K03",
+            "Barras apiladas al 100 % con la proporción de puntuaciones globales en cada nivel de logro por competencia"),
         "drillFilterOtherVisuals": True,
     }, filters=filtros))
     v.append(line_chart("p3_linea_k01_cataluna", L.pos(852, 228, 412, 480),
@@ -430,8 +447,12 @@ def write(path, obj):
 
 
 def main():
-    if REPORT.exists():
-        shutil.rmtree(REPORT)
+    # Solo se borra lo que este generador escribe; .platform y .pbi/ (de Power BI Desktop) se conservan (D-19).
+    for ruta in (REPORT / "definition", REPORT / "StaticResources"):
+        if ruta.exists():
+            shutil.rmtree(ruta)
+    if (REPORT / "definition.pbir").exists():
+        (REPORT / "definition.pbir").unlink()
     d = REPORT / "definition"
     write(REPORT / "definition.pbir", {
         "$schema": SCH_PBIR,

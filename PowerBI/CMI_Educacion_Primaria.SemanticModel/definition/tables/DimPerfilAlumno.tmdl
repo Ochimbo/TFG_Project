@@ -161,4 +161,3 @@ table DimPerfilAlumno
 				    Resultado
 
 	annotation PBI_ResultType = Table
-

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "p3_tarjeta_cataluna",
   "position": {
-    "x": 644,
+    "x": 518.4,
     "y": 120,
     "z": 9000,
     "height": 96,
-    "width": 306,
+    "width": 243.2,
     "tabOrder": 9000
   },
   "visual": {

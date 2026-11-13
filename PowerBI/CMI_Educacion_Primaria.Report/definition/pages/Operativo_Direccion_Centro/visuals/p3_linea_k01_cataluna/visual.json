@@ -4,10 +4,10 @@
   "position": {
     "x": 852,
     "y": 228,
-    "z": 13000,
+    "z": 14000,
     "height": 480,
     "width": 412,
-    "tabOrder": 13000
+    "tabOrder": 14000
   },
   "visual": {
     "visualType": "lineChart",
@@ -31,7 +31,8 @@
               "displayName": "Año",
               "active": true
             }
-          ]
+          ],
+          "showAll": true
         },
         "Y": {
           "projections": [

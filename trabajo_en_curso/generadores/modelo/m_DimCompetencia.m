@@ -1,7 +1,10 @@
 let
     // Tabla de códigos §5.2: las 24 columnas de puntuación de Datos.csv. CompetenciaKey es la
     // misma que asigna FactPuntuacion. AnioFin = null: competencia vigente. EsInformativa: francés
-    // (muestra pequeña, solo informativo). PeriodoDisenoInicio: primer año del diseño actual de la prueba.
+    // (muestra pequeña, solo informativo). PeriodoDisenoInicio: primer año del diseño actual de la prueba
+    // (2017 en matemáticas, inglés y francés; 2018 en catalán, castellano y ciencias). La global de inglés
+    // y francés empieza en 2017, como sus subcompetencias: la de 2016 se calculó con escalas comprimidas
+    // (R27/R28) y no es comparable con la de 2017 (DECISIONES.md, D-10).
     // SubcompetenciaOrden es global por texto (0 Global, 1 CL, 2 CO, 3 EE, 4-6 matemáticas, 7-9 ciencias):
     // un único valor por texto de Subcompetencia, para poder usarlo como su sortByColumn.
     Resultado = #table(
@@ -32,11 +35,11 @@ let
             {10, "PMAT_NC", "PMAT", "Matemáticas", 3, "Numeración y cálculo", 4, false, 2009, null, 2017, false},
             {11, "PMAT_EFM", "PMAT", "Matemáticas", 3, "Espacio, medida y datos", 5, false, 2009, null, 2017, false},
             {12, "PMAT_CR", "PMAT", "Matemáticas", 3, "Relaciones y cambio", 6, false, 2009, null, 2017, false},
-            {13, "PANG", "PANG", "Lengua inglesa", 4, "Global", 0, true, 2010, null, 2016, false},
+            {13, "PANG", "PANG", "Lengua inglesa", 4, "Global", 0, true, 2010, null, 2017, false},
             {14, "PANG_CO", "PANG", "Lengua inglesa", 4, "Comprensión oral", 2, false, 2010, null, 2017, false},
             {15, "PANG_CE", "PANG", "Lengua inglesa", 4, "Comprensión lectora", 1, false, 2010, null, 2017, false},
             {16, "PANG_EE", "PANG", "Lengua inglesa", 4, "Expresión escrita", 3, false, 2013, null, 2017, false},
-            {17, "PFRAN", "PFRAN", "Lengua francesa", 5, "Global", 0, true, 2010, null, 2016, true},
+            {17, "PFRAN", "PFRAN", "Lengua francesa", 5, "Global", 0, true, 2010, null, 2017, true},
             {18, "PFRAN_CO", "PFRAN", "Lengua francesa", 5, "Comprensión oral", 2, false, 2010, null, 2017, true},
             {19, "PFRAN_CE", "PFRAN", "Lengua francesa", 5, "Comprensión lectora", 1, false, 2010, null, 2017, true},
             {20, "PFRAN_EE", "PFRAN", "Lengua francesa", 5, "Expresión escrita", 3, false, 2013, null, 2017, true},

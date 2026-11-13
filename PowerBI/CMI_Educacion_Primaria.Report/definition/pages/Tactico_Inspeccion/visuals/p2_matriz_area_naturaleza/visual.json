@@ -4,10 +4,10 @@
   "position": {
     "x": 434,
     "y": 188,
-    "z": 10000,
+    "z": 13000,
     "height": 520,
     "width": 410,
-    "tabOrder": 10000
+    "tabOrder": 13000
   },
   "visual": {
     "visualType": "pivotTable",
@@ -47,8 +47,8 @@
                 }
               },
               "queryRef": "DimContextoCentro.Naturaleza",
-              "nativeQueryRef": "Naturaleza",
-              "displayName": "Naturaleza",
+              "nativeQueryRef": "Titularidad",
+              "displayName": "Titularidad",
               "active": true
             }
           ]
@@ -88,7 +88,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Puntuación media (K01) por área y naturaleza'"
+                  "Value": "'Puntuación media (K01) por área y titularidad'"
                 }
               }
             }
@@ -121,7 +121,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Matriz con la puntuación media por área territorial y naturaleza del centro'"
+                  "Value": "'Matriz con la puntuación media por área territorial y titularidad del centro'"
                 }
               }
             }

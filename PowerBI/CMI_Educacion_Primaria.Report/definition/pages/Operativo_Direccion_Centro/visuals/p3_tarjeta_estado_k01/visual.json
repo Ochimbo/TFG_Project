@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "p3_tarjeta_estado_k01",
   "position": {
-    "x": 958,
+    "x": 769.6,
     "y": 120,
     "z": 10000,
     "height": 96,
-    "width": 306,
+    "width": 243.2,
     "tabOrder": 10000
   },
   "visual": {
@@ -82,7 +82,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Estado de K01'"
+                  "Value": "'Estado de K01 (contexto frente a Cataluña)'"
                 }
               }
             }
@@ -102,7 +102,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'1 favorable, 0 neutro, -1 desfavorable'"
+                  "Value": "'Semáforo: ±1 punto; sin contexto, variación interanual (±0,5)'"
                 }
               }
             }
@@ -115,7 +115,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Tarjeta: Estado de K01'"
+                  "Value": "'Tarjeta: Estado de K01 (contexto frente a Cataluña)'"
                 }
               }
             }

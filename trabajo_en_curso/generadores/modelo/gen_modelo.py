@@ -3,8 +3,13 @@
 Uso: python gen_modelo.py <carpeta PowerBI>
 (p. ej. python trabajo_en_curso/generadores/modelo/gen_modelo.py PowerBI; _Medidas.tmdl lo genera gen_medidas.py)
 Las consultas M están en los ficheros m_*.m junto a este script.
+
+Lo que Power BI Desktop añade al guardar el proyecto se respeta (DECISIONES.md, D-19): no se tocan
+`.platform`, `.pbi/` ni `definition/cultures/` (si existe `cultures/es-ES.tmdl` se mantiene su
+`ref cultureInfo` en model.tmdl), y el valor actual del parámetro RutaDatos se conserva al regenerar.
 """
 import json
+import re
 import sys
 import uuid
 from pathlib import Path
@@ -14,6 +19,20 @@ RAIZ = Path(sys.argv[1])
 SM = RAIZ / "CMI_Educacion_Primaria.SemanticModel"
 DEF = SM / "definition"
 TAB = DEF / "tables"
+
+# Nivel de compatibilidad que escribe Power BI Desktop al guardar el proyecto (antes 1567; D-19).
+COMPATIBILITY_LEVEL = 1606
+RUTA_DATOS_POR_DEFECTO = r"C:\TFG_Project\Datos.csv"
+
+
+def ruta_datos_actual():
+    """Valor de RutaDatos del expressions.tmdl existente (fijado desde Power BI Desktop), o el de por defecto."""
+    fichero = DEF / "expressions.tmdl"
+    if fichero.exists():
+        m_ruta = re.search(r'^expression RutaDatos = "([^"]*)"', fichero.read_text(encoding="utf-8"), re.M)
+        if m_ruta and m_ruta.group(1).strip():
+            return m_ruta.group(1).strip()
+    return RUTA_DATOS_POR_DEFECTO
 
 NS = uuid.uuid5(uuid.NAMESPACE_URL, "https://tfg.fib.upc/CMI_Educacion_Primaria")
 
@@ -41,8 +60,8 @@ TABLAS = {
     ]),
     "DimContextoCentro": ("Dimensiones", "Contexto del centro: área territorial x naturaleza x hábitat (15 x 2 x 4 = 120 filas). Clave = AreaCodigo * 100 + NaturalezaCodigo * 10 + HabitatCodigo.", [
         ("ContextoKey", "int64", True, None, "Clave determinista: AreaCodigo * 100 + NaturalezaCodigo * 10 + HabitatCodigo."),
-        ("AreaCodigo", "int64", True, None, "Código del área (contrato §5.1). 3 = Barcelona Comarques hasta 2023; 4 = Barcelona Comarques en 2024 (perímetro del Barcelonès); 99 = desconocida (R13, R14)."),
-        ("AreaTerritorial", "string", False, "AreaOrden", "Área territorial tal como la publica el Departament (los códigos 3 y 4 comparten el nombre Barcelona Comarques)."),
+        ("AreaCodigo", "int64", True, None, "Código del área (contrato §5.1). 3 = Barcelona Comarques hasta 2023; 4 = área publicada como Barcelona Comarques en 2024, con el perímetro del Barcelonès, que se muestra como Barcelonès; 5 = Barcelonès desde 2025; 99 = desconocida (R13, R14)."),
+        ("AreaTerritorial", "string", False, "AreaOrden", "Área territorial con el nombre de los informes oficiales. Barcelona Comarques hasta 2023 (perímetro antiguo) y Barcelonès desde 2024 (el CSV de 2024 aún la llama Barcelona Comarques, pero su perímetro es el del Barcelonès)."),
         ("AreaPerimetro2025", "string", False, None, "Área expresada con el perímetro territorial vigente en 2025 (R14)."),
         ("AreaSerieComparable", "string", False, None, "Agrupación de áreas con serie temporal comparable a pesar de los cambios de perímetro de 2024-2025."),
         ("AreaConRupturaSerie", "boolean", False, None, "VERDADERO si el área cambió de perímetro y su serie no es comparable sin agrupar."),
@@ -51,7 +70,7 @@ TABLAS = {
         ("NaturalezaCodigo", "int64", True, None, "1 = Pública, 2 = Privada."),
         ("Habitat", "string", False, "HabitatCodigo", "Tamaño del municipio del centro (R11). No fiable: 2010 y bloque incoherente de 2014 (R12)."),
         ("HabitatCodigo", "int64", True, None, "0 = No fiable, 1 = hasta 10.000 hab., 2 = de 10.001 a 100.000 hab., 3 = más de 100.000 hab."),
-        ("AreaOrden", "int64", True, None, "Orden de presentación de las áreas (= AreaCodigo, salvo el código 4, que toma el 3 para que Barcelona Comarques tenga un único orden)."),
+        ("AreaOrden", "int64", True, None, "Orden de presentación de las áreas (= AreaCodigo, salvo el código 4, que toma el 5 para que Barcelonès tenga un único orden)."),
     ]),
     "DimPerfilAlumno": ("Dimensiones", "Perfil del alumno: género x situación de edad x mes de nacimiento (2 x 7 x 13 = 182 filas). Clave = GeneroCodigo * 100000 + SituacionEdadCodigo * 10000 + EdadAnioNatural * 100 + MesNacimiento.", [
         ("PerfilKey", "int64", True, None, "Clave determinista: GeneroCodigo * 100000 + SituacionEdadCodigo * 10000 + (EdadAnioNatural o 0) * 100 + MesNacimiento (0 si no informado)."),
@@ -75,10 +94,10 @@ TABLAS = {
         ("EsGlobal", "boolean", False, None, "VERDADERO si es la puntuación global de la materia (base de K01, K03, K06 y K10-K12)."),
         ("AnioInicio", "int64", False, None, "Primer año con datos de la competencia."),
         ("AnioFin", "int64", False, None, "Último año de la competencia; vacío si sigue vigente."),
-        ("PeriodoDisenoInicio", "int64", False, None, "Primer año del diseño actual de la prueba: las comparaciones temporales (K10, K11) solo usan años desde este."),
+        ("PeriodoDisenoInicio", "int64", False, None, "Primer año del diseño actual de la prueba (2017 en matemáticas, inglés y francés; 2018 en catalán, castellano y ciencias): las comparaciones temporales (K10, K11) solo usan años desde este."),
         ("EsInformativa", "boolean", False, None, "VERDADERO para el francés: muestra pequeña, solo informativo (no entra en K09 ni K12)."),
     ]),
-    "DimNivelLogro": ("Dimensiones", "Niveles de logro de las puntuaciones globales (R29). Umbrales 55 / 70 / 85 provisionales e internos del TFG: NO son los niveles oficiales.", [
+    "DimNivelLogro": ("Dimensiones", "Niveles de logro de las puntuaciones globales (R29). Cortes fijos 55 / 70 / 85, comunes a todas las materias y convocatorias; niveles internos del TFG, NO los niveles oficiales.", [
         ("NivelKey", "int64", True, None, "Clave del nivel: 0 = no aplica (subcompetencias), 1 = bajo ... 4 = alto."),
         ("Nivel", "string", False, "NivelOrden", "Nivel de logro (solo puntuaciones globales)."),
         ("LimiteInferior", "double", False, None, "Límite inferior del nivel (incluido)."),
@@ -153,7 +172,7 @@ escribir(SM / "definition.pbism", json.dumps({
 }, indent=2, ensure_ascii=False).split("\n"))
 
 # ---------------------------------------------------------------- database / model
-escribir(DEF / "database.tmdl", ["database", "\tcompatibilityLevel: 1567"])
+escribir(DEF / "database.tmdl", ["database", f"\tcompatibilityLevel: {COMPATIBILITY_LEVEL}"])
 
 modelo = [
     "model Model",
@@ -178,12 +197,16 @@ modelo += [
 ]
 for t in list(TABLAS) + ["_Medidas"]:
     modelo.append(f"ref table {t}")
+# Culturas que Power BI Desktop haya guardado (metadatos lingüísticos de Q&A): se conservan tal cual.
+for cultura in sorted((DEF / "cultures").glob("*.tmdl")) if (DEF / "cultures").is_dir() else []:
+    modelo += ["", f"ref cultureInfo {cultura.stem}"]
 escribir(DEF / "model.tmdl", modelo)
 
 # ---------------------------------------------------------------- expressions
+ruta_datos = ruta_datos_actual()
 expr = [
     "/// Ruta completa del fichero Datos.csv (Avaluació de sisè, 32 columnas). Ajustar antes de actualizar.",
-    'expression RutaDatos = "C:\\TFG_Project\\Datos.csv" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]',
+    f'expression RutaDatos = "{ruta_datos}" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]',
     f"\tlineageTag: {guid('expression', 'RutaDatos')}",
     "\tqueryGroup: Parámetros",
     "",
@@ -227,4 +250,4 @@ for tabla, (grupo, desc_tabla, columnas) in TABLAS.items():
     out += ["", "\tannotation PBI_ResultType = Table"]
     escribir(TAB / f"{tabla}.tmdl", out)
 
-print("Modelo generado en", DEF)
+print("Modelo generado en", DEF, "| RutaDatos =", ruta_datos)

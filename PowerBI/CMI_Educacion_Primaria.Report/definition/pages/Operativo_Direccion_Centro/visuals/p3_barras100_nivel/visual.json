@@ -4,10 +4,10 @@
   "position": {
     "x": 434,
     "y": 228,
-    "z": 12000,
+    "z": 13000,
     "height": 480,
     "width": 410,
-    "tabOrder": 12000
+    "tabOrder": 13000
   },
   "visual": {
     "visualType": "hundredPercentStackedBarChart",
@@ -27,8 +27,8 @@
                 }
               },
               "queryRef": "DimCompetencia.Materia",
-              "nativeQueryRef": "Materia",
-              "displayName": "Materia",
+              "nativeQueryRef": "Competencia",
+              "displayName": "Competencia",
               "active": true
             }
           ]
@@ -62,12 +62,12 @@
                       "Entity": "_Medidas"
                     }
                   },
-                  "Property": "Puntuaciones globales"
+                  "Property": "Puntuaciones por nivel de logro"
                 }
               },
-              "queryRef": "_Medidas.Puntuaciones globales",
-              "nativeQueryRef": "Puntuaciones globales",
-              "displayName": "Puntuaciones globales"
+              "queryRef": "_Medidas.Puntuaciones por nivel de logro",
+              "nativeQueryRef": "Puntuaciones por nivel de logro",
+              "displayName": "Puntuaciones por nivel de logro"
             }
           ]
         }
@@ -295,7 +295,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Puntuaciones globales; excluye datos censurados y niveles no comparables'"
+                  "Value": "'Puntuaciones globales; mismas exclusiones y mínimo de 30 que K03'"
                 }
               }
             }
@@ -308,7 +308,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Barras apiladas al 100 % con la proporción de puntuaciones globales en cada nivel de logro por materia'"
+                  "Value": "'Barras apiladas al 100 % con la proporción de puntuaciones globales en cada nivel de logro por competencia'"
                 }
               }
             }
@@ -392,114 +392,6 @@
             }
           ]
         }
-      },
-      {
-        "name": "f_p3_calidad_no_censurada",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimCalidadDato"
-              }
-            },
-            "Property": "Censurada"
-          }
-        },
-        "type": "Categorical",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "f",
-              "Entity": "DimCalidadDato",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "In": {
-                  "Expressions": [
-                    {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Source": "f"
-                          }
-                        },
-                        "Property": "Censurada"
-                      }
-                    }
-                  ],
-                  "Values": [
-                    [
-                      {
-                        "Literal": {
-                          "Value": "false"
-                        }
-                      }
-                    ]
-                  ]
-                }
-              }
-            }
-          ]
-        },
-        "howCreated": "User"
-      },
-      {
-        "name": "f_p3_calidad_nivel_comparable",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimCalidadDato"
-              }
-            },
-            "Property": "NivelNoComparable"
-          }
-        },
-        "type": "Categorical",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "f",
-              "Entity": "DimCalidadDato",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "In": {
-                  "Expressions": [
-                    {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Source": "f"
-                          }
-                        },
-                        "Property": "NivelNoComparable"
-                      }
-                    }
-                  ],
-                  "Values": [
-                    [
-                      {
-                        "Literal": {
-                          "Value": "false"
-                        }
-                      }
-                    ]
-                  ]
-                }
-              }
-            }
-          ]
-        },
-        "howCreated": "User"
       }
     ]
   }

@@ -119,4 +119,3 @@ table DimAnio
 				    Resultado
 
 	annotation PBI_ResultType = Table
-

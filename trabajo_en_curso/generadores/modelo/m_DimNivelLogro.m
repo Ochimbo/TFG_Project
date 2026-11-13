@@ -1,6 +1,7 @@
 let
-    // R29: niveles de logro de las puntuaciones globales. Umbrales 55 / 70 / 85 PROVISIONALES,
-    // internos del TFG (no son los niveles oficiales). Las subcompetencias van al nivel 0.
+    // R29: niveles de logro de las puntuaciones globales. Cortes fijos 55 / 70 / 85, comunes a todas
+    // las materias y convocatorias; son niveles internos del TFG, no los niveles oficiales
+    // (informe de calidad §6.3; DECISIONES.md, D-08). Las subcompetencias van al nivel 0.
     Resultado = #table(
         type table [
             NivelKey = Int64.Type,

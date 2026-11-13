@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "p2_tarjeta_k09",
   "position": {
-    "x": 958,
+    "x": 644,
     "y": 76,
-    "z": 8000,
+    "z": 9000,
     "height": 100,
-    "width": 306,
-    "tabOrder": 8000
+    "width": 201.3,
+    "tabOrder": 9000
   },
   "visual": {
     "visualType": "card",

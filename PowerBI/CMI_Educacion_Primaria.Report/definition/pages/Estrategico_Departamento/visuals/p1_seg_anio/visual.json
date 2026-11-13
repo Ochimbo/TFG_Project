@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "p1_seg_anio",
   "position": {
     "x": 884,
@@ -28,8 +28,8 @@
               },
               "queryRef": "DimAnio.Anio",
               "nativeQueryRef": "Año",
-              "active": true,
-              "displayName": "Año"
+              "displayName": "Año",
+              "active": true
             }
           ]
         }
@@ -73,11 +73,6 @@
               }
             }
           }
-        }
-      ],
-      "general": [
-        {
-          "properties": {}
         }
       ]
     },
@@ -126,7 +121,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "354b197344bfb942ac17",
+        "name": "f_p1_seg_anio_defecto",
         "field": {
           "Column": {
             "Expression": {
@@ -137,7 +132,47 @@
             "Property": "Anio"
           }
         },
-        "type": "Advanced"
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "f",
+              "Entity": "DimAnio",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "f"
+                          }
+                        },
+                        "Property": "Anio"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "2025L"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
       }
     ]
   }

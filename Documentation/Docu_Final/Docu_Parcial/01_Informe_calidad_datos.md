@@ -279,9 +279,11 @@ La agrupación «Barcelona Comarques/Barcelonès + Penedès + Tarragona + Catalu
 |---|---|
 | Catalán y castellano (global y subcompetencias) | 2018–2025 |
 | Matemáticas | 2017–2025 |
-| Inglés y francés: global | 2016–2025 (2016 con nota) |
+| Inglés y francés: global | 2017–2025 (la global de 2016 se calculó con CO y CE comprimidas, R27, y su % por nivel no es comparable, R28: no se compara con la de 2017) |
 | Inglés y francés: subcompetencias | 2017–2025 |
 | Ciencias | 2018–2025 |
+
+*Nota (revisión del 10/11/2026, decisión D-10 de `trabajo_en_curso/week2/DECISIONES.md`):* la primera versión de esta tabla daba 2016 «con nota» a la global de inglés y francés. Se ha pasado a 2017, el mismo año que sus subcompetencias: la global de inglés de 2016 tiene el máximo en 95,55 (100 en 2015 y 2017), solo un 4,35 % de puntuaciones de 95 o más (18,83 % en 2015 y 19,44 % en 2017) y 1.210 valores distintos frente a 204–214 desde 2017, así que no es comparable con la de 2017. En el modelo, `DimCompetencia[PeriodoDisenoInicio]` vale 2017 en matemáticas, inglés y francés y 2018 en catalán, castellano y ciencias.
 
 **Puntuaciones no equiparadas (PUN-12).** Hay 35 pares columna-año con saltos de la media de 8 puntos o más (18 de ellos en francés). Por ejemplo, ciencias baja 8,16 puntos de 2024 a 2025, y matemáticas pasa de 76,02 en 2021 a 71,12 en 2022. El % de alumnado con menos de 50 puntos en matemáticas varía entre el 0,7 % y el 17,2 % según el año. Como el propio Departament advierte, estas variaciones mezclan la dificultad de cada prueba con el rendimiento real.
 
@@ -311,7 +313,7 @@ La media y el número de alumnos del CSV reproducen los informes oficiales con u
 
 Las cifras oficiales están tomadas de los Quaderns de la sección 2.3, y las del CSV del script complementario (sección G). El CSV solo incluye al alumnado con corrección externa. Por ejemplo, las 70.380 filas de 2024 coinciden con la cifra oficial de alumnos que «han realitzat la prova amb correcció externa».
 
-**Combinaciones fuera de la tolerancia de ±0,2.** El contraste automático de la réplica Python (`validacion/resultados/contraste_oficial.csv`) compara las 72 medias oficiales del contrato de diseño (§6) con las del CSV. Solo dos quedan fuera de ±0,2 puntos. En ambas, la n oficial no figura entre las cifras recogidas de los Quaderns, de modo que la causa se ha acotado con los datos del CSV (consultas DuckDB sobre `Datos.csv`):
+**Combinaciones fuera de la tolerancia de ±0,2.** El contraste automático de la réplica Python (`validacion/resultados/contraste_oficial.csv`) compara las 72 medias oficiales del contrato de diseño (§6) con las del CSV. Las 72 cumplen el criterio de aceptación del requisito RNF06 de la memoria (0,5 puntos; la diferencia máxima es 0,30). El umbral de ±0,2 es una alerta interna de la validación, más exigente, y toda diferencia que lo supere debe quedar explicada en esta sección (decisión D-01). Solo dos quedan fuera de ±0,2 puntos. En ambas, la n oficial no figura entre las cifras recogidas de los Quaderns, de modo que la causa se ha acotado con los datos del CSV (consultas DuckDB sobre `Datos.csv`):
 
 | Comprobación | Inglés 2016 | Francés 2024 |
 |---|---|---|
@@ -376,9 +378,32 @@ Las reglas están ordenadas tal como se aplicarán en la ETL (T12–T13). Ningun
 
 El script `perfil_categoricas.py` y su versión M (`limpieza_categoricas.pq`) implementan las reglas tal como las propuso el perfilado. Hay que actualizarlos en T12 en cuatro puntos que la verificación ha cambiado: `HabitatCod` de 2010 pasa a «No fiable (2010)» (R12), se añade `FechaNacimientoDudosa` (R19), la edad pasa a llamarse `EdadAnioNatural` (R16), y `RepeticionProbable` usa la comparación relajada y el índice de convocatoria (R08).
 
+**Cómo aplica la ETL estas reglas (revisión del 10/11/2026, decisión D-03).** La ETL implementada (`trabajo_en_curso/generadores/modelo/m_stg.m`, descrita en `02_Modelo_y_diccionario.md` §6) sigue estas reglas con cinco diferencias que se dejan constancia aquí y que no se consideran desviaciones:
+
+| Regla | Lo que propone esta sección | Lo que hace la ETL | Por qué |
+|---|---|---|---|
+| R01 | `EvaluacionID` = número de línea del CSV (2…1.102.325). | `EvaluacionID` = posición del registro (1…1.102.324), asignada con `Table.AddIndexColumn` antes de cualquier filtro. | Es la misma clave desplazada en una unidad (posición = línea − 1) y no depende de la cabecera. |
+| R02 | Validar el patrón `^\d{1,3},\d{2}$` y el rango. | Convierte con `Number.FromText(texto, "es-ES")` sobre el texto original y comprueba el rango [0, 100]; si falla, la carga se detiene. No comprueba el patrón. | Con cultura es-ES, un valor con punto se lee como separador de miles y queda fuera de rango («87.70» → 8770), así que la carga falla igual; solo pasaría un valor con punto y un decimal («8.7» → 87), que no existe (0 valores con punto en `Datos.csv`) y que la réplica Python sí rechaza con el patrón estricto. Añadir la comprobación de patrón al M supondría unos 26 millones de operaciones de texto más en una actualización que ya relee el CSV tres veces. |
+| R09, R10 | Valor no previsto → «Desconocido». | Valor no previsto → la actualización falla con el mensaje de la regla. | Un código nuevo no debe pasar inadvertido (RF05, HU14). Hoy hay 0 casos. |
+| R34 | La carga falla si no hay 1.102.324 filas y comprueba las regresiones de R03/R04. | Comprueba la cabecera (32 columnas) y detiene la carga ante códigos o puntuaciones no previstos; no exige un número fijo de filas ni ejecuta las regresiones. | Un número fijo de filas contradice la incorporación de una convocatoria nueva sin rediseñar (RNF09, HU13). El recuento y las regresiones de R03/R04 se comprueban en la validación independiente (`validacion/test_modelo.py`). |
+| R07, R08, R20, R23, R24 | Indicadores por fila. | No se implementan en el MVP. | Documentados como extensiones en `02_Modelo_y_diccionario.md` §8.2. |
+
 ---
 
 ## 6. Decisiones de modelado derivadas
+
+> **Nota (revisión del 10/11/2026, decisión D-04).** Esta sección es la propuesta de modelo que hizo la auditoría (tarea T7) antes de construir el sistema, y se conserva como registro. El modelo definitivo es el que describe `02_Modelo_y_diccionario.md` (y, para la memoria, la sección «Datos para el capítulo 8» de `trabajo_en_curso/week2/DECISIONES.md`). Las diferencias son:
+>
+> | Aspecto | Propuesta de esta sección | Modelo implementado |
+> |---|---|---|
+> | Claves | `IdCompetencia`, `IdNivelLogro`, `EvaluacionID` en las dos tablas de hechos | Claves `…Key` deterministas (`AnioKey`, `ContextoKey`, `PerfilKey`, `CompetenciaKey`, `NivelKey`, `CalidadKey`); `EvaluacionID` solo en `FactEvaluacion` |
+> | Indicadores de calidad | Cinco indicadores booleanos en `FactPuntuacion` y ocho en `FactEvaluacion` | Una máscara de 4 bits (`CalidadKey`, dimensión `DimCalidadDato` de 16 filas) en `FactPuntuacion`; en `FactEvaluacion` solo `TieneCodigoAlumno` y `CompetenciasEvaluadas` |
+> | `CodiAlumne` | Atributo degenerado de `FactEvaluacion` | No se carga (privacidad y memoria) |
+> | Dimensiones de combinaciones | Con las combinaciones observadas (86 y 169 filas) | Estáticas, producto cartesiano de los códigos válidos (120 y 182 filas) |
+> | `DimContextoCentro` | `HabitatFiable` como atributo | El hábitat 0 «No fiable» ya lo expresa; no hay columna aparte |
+> | `DimAnio` | `MotivoSinConvocatoria` | `NotaConvocatoria` (2020 y 2021) |
+> | `PesoCompetenciaAnio` | Tabla documental | No se implementa (extensión) |
+> | Nombres | `GeneroCod`, `HabitatCod`, `Orden`, `FlagValida`… | `GeneroCodigo`, `HabitatCodigo`, `MateriaOrden`/`SubcompetenciaOrden`, `NoValida`… |
 
 ### 6.1. Granularidad y tablas de hechos
 
@@ -416,7 +441,7 @@ El CSV no incluye el nivel oficial de cada alumno, y los informes no publican pu
 
 Errores en puntos porcentuales (complemento, sección B). En la misma muestra, los cortes que reproducen exactamente los % oficiales tienen una mediana de 55,98 / 70,70 / 85,69, con rangos de 50,08–63,59, 67,86–75,55 y 83,93–90,50.
 
-**Propuesta: cortes fijos 55 / 70 / 85, comunes a todas las materias y años y aplicados a la puntuación global.**
+**Propuesta: cortes fijos 55 / 70 / 85, comunes a todas las materias y años y aplicados a la puntuación global.** (Adoptada como definitiva en la revisión del 10/11/2026, decisión D-08; véase la cuestión 1 de la sección 7.2.)
 
 - Cada corte cae en la horquilla oficial: 55 es el centro de la horquilla del nivel mínimo (50–60), 70 es el «llindar òptim» oficial y 85 es el centro de la horquilla del nivel alto (80–90).
 - Son los cortes fijos que mejor reproducen el % oficial en nivel bajo: error medio de 2,70 puntos porcentuales y sesgo prácticamente nulo. Con 50 se infravalora sistemáticamente el nivel bajo (−4,39 puntos), y con 60 se sobrevalora (+5,22).
@@ -528,11 +553,13 @@ Ninguna columna tiene datos en 2020. Las descripciones originales en catalán es
 - **Pesos estimados.** Los pesos de 2009–2012 se han estimado con los datos y no hay fuente oficial que los confirme. En ciencias, los pesos observados (media simple) contradicen los publicados (42/25/33).
 - **Niveles no oficiales.** Los cortes 55/70/85 aproximan los % oficiales, pero no los reproducen en cada año.
 - **Normativa territorial.** El detalle del Decret 120/2023 procede de un resumen del INAP y de documentos del Govern, no del texto del DOGC. El antecedente del nombre «Barcelona Comarques» (2008–2009) no se ha verificado.
-- **Power Query sin ejecutar.** Las reglas se han verificado en pandas y DuckDB. El código M no se ha podido ejecutar en este entorno, y no está comprobado que Power Query lea el campo vacío sin comillas como null o como cadena vacía (por eso R05 trata ambos casos).
+- **Power Query ejecutado una vez, sin registro de resultados.** Las reglas se han verificado en pandas y DuckDB. El código M se ejecutó por primera vez en Power BI Desktop el 15/10/2026 (commit `6adfe70`), pero no quedó anotado el resultado de la lista de comprobación de `04_Guia_de_uso.md` §3.2; tampoco está comprobado que Power Query lea el campo vacío sin comillas como null o como cadena vacía (por eso R05 trata ambos casos).
 - **Clave dependiente del fichero.** `EvaluacionID` es el número de línea de esta versión del CSV (SHA-256 de la sección 2.1). Si la Generalitat publica una nueva versión, las claves cambian.
 - **Población.** El CSV contiene solo al alumnado con corrección externa, y en 2017 y 2024 parece filtrado. Los recuentos de alumnado pueden diferir hasta en unos 1.000 alumnos de los informes.
 
 ### 7.2. Cuestiones para validar con las directoras
+
+> **Resolución (revisión del 10/11/2026).** Las diez cuestiones se han resuelto como decisiones de ingeniería, registradas con su evidencia en `trabajo_en_curso/week2/DECISIONES.md`; las directoras pueden revisarlas en la memoria. En resumen: (1) cortes 55/70/85 definitivos, internos del TFG (D-08); (2) inglés 2015 y catalán 2018 se marcan y no se excluyen; `Censurada` (masa de puntos en un suelo) la excluyen K03 y K06, `NivelNoComparable` (distribución comprimida sin masa) solo K03 (D-09); (3) hábitat y edad de 2010 «No fiable», sin imputar (D-11); (4) se mantienen los dos grupos de `AreaSerieComparable` y Girona queda como serie propia con nota, porque la Cerdanya que pierde en 2024 es en torno al 1 % de su alumnado y mueve su media una o dos décimas como máximo (D-06); además, el área de 2024 publicada como «Barcelona Comarques» se muestra como «Barcelonès» (D-05); (5) K10, K11 y K12 se mantienen con el aviso de no equiparación, el umbral de 1 punto y los periodos de diseño, cuyo inicio pasa a 2017 también para la global de inglés y francés (D-10 y D-11); no se añade una puntuación estandarizada; (6) 2021 se compara con 2019 y el aviso de los paneles lo dice (D-11); (7) el francés se mantiene como informativo (D-11); (8) la global de ciencias no se recalcula; la media simple la reproduce en el 100 % de las 496.745 filas con las cuatro puntuaciones (diferencia máxima 0,01) y los pesos 42/25/33 solo en el 4,7–8,7 %; se recomienda comunicarlo al titular del dataset junto con las otras incidencias objetivas (D-07); (9) se conservan las 17.728.085 celdas con la máscara de calidad (D-11); (10) `EdadAnioNatural` y situación de edad por cohorte (D-11).
 
 1. **Umbrales de nivel.** ¿Se aceptan los cortes fijos 55/70/85 (sección 6.3)? Las alternativas son 50/70/85, la propuesta inicial, más simple pero con el nivel bajo infravalorado en 4,4 puntos, o cortes calibrados por materia y año, que reproducen los oficiales pero solo existen para los años con informe.
 2. **Inglés 2015 y catalán 2018.** ¿Basta con marcar los suelos artificiales y la escala anómala (R25, R26 y R28), o se excluyen esas convocatorias del CMI?

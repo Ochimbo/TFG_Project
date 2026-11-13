@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "p1_tarjeta_k06",
   "position": {
-    "x": 435.2,
+    "x": 374.9,
     "y": 76,
     "z": 6000,
     "height": 100,
-    "width": 200,
+    "width": 171.4,
     "tabOrder": 6000
   },
   "visual": {

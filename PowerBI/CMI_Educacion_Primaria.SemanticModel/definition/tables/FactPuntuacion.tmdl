@@ -167,4 +167,3 @@ table FactPuntuacion
 				    Resultado
 
 	annotation PBI_ResultType = Table
-

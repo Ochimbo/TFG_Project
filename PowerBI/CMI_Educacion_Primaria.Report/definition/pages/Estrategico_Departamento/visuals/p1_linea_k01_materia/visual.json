@@ -4,10 +4,10 @@
   "position": {
     "x": 16,
     "y": 188,
-    "z": 10000,
+    "z": 11000,
     "height": 462,
     "width": 724,
-    "tabOrder": 10000
+    "tabOrder": 11000
   },
   "visual": {
     "visualType": "lineChart",
@@ -31,7 +31,8 @@
               "displayName": "Año",
               "active": true
             }
-          ]
+          ],
+          "showAll": true
         },
         "Series": {
           "projections": [
@@ -47,8 +48,8 @@
                 }
               },
               "queryRef": "DimCompetencia.Materia",
-              "nativeQueryRef": "Materia",
-              "displayName": "Materia"
+              "nativeQueryRef": "Competencia",
+              "displayName": "Competencia"
             }
           ]
         },
@@ -139,7 +140,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Evolución de la puntuación media (K01) por materia'"
+                  "Value": "'Evolución de la puntuación media (K01) por competencia'"
                 }
               }
             }
@@ -172,7 +173,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Gráfico de líneas con la puntuación media global por año para cada materia'"
+                  "Value": "'Gráfico de líneas con la puntuación media global por año para cada competencia'"
                 }
               }
             }

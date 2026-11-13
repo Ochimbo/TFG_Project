@@ -79,7 +79,7 @@ check("genero{0} * 100000 + combinacion{1} * 10000 + combinacion{0} * 100 + mes"
 # ---- DimContextoCentro reconstruida desde el M
 cc = M["partition_DimContextoCentro"]
 areas, nats, habs = literal(cc, "Areas"), literal(cc, "Naturalezas"), literal(cc, "Habitats")
-dim_ctx = [(a[0] * 100 + n[0] * 10 + h[0], a[0], a[1], a[2], a[3], a[4], a[5], n[1], n[0], h[1], h[0], 3 if a[0] == 4 else a[0])
+dim_ctx = [(a[0] * 100 + n[0] * 10 + h[0], a[0], a[1], a[2], a[3], a[4], a[5], n[1], n[0], h[1], h[0], 5 if a[0] == 4 else a[0])
            for a in areas for n in nats for h in habs]
 check(sorted(dim_ctx) == sorted(pq["DimContextoCentro"]), f"DimContextoCentro M == parquet ({len(dim_ctx)} filas)")
 claves_ctx = {r[0] for r in dim_ctx}

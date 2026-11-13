@@ -31,8 +31,11 @@ Salida (validacion/resultados/, separador coma, 2 decimales, vacío = BLANK de D
                                      Alumnos evaluados, Puntuaciones globales
   kpi_area_2025.csv                  AreaTerritorial x Materia en 2025: K01, K07, K09
   kpi_global_por_anio.csv            por año, sin filtro de materia: K01, K03, K06, K10, K11, K12
+  kpi_niveles_2025.csv               Materia x nivel de logro en 2025: «Puntuaciones por nivel de logro»,
+                                     su % sobre la competencia y K03 (el tramo Bajo debe coincidir)
   semaforos_2025.csv                 Cataluña y cada área x materia en 2025: Estado K01/K03/K10
-  contraste_oficial.csv              media calculada frente a la oficial (contrato §6)
+  contraste_oficial.csv              media calculada frente a la oficial (contrato §6): dentro de la
+                                     alerta interna de 0,2 y del criterio de aceptación RNF06 de 0,5
 K03 y K12 se expresan en porcentaje (0-100), igual que los muestra el formato "0.0%".
 """
 
@@ -51,6 +54,10 @@ CARPETA = Path(__file__).resolve().parent
 SALIDA_ETL = CARPETA / "salida"
 RESULTADOS = CARPETA / "resultados"
 MINIMO_MUESTRAL = 30
+# Dos umbrales con nombre propio (DECISIONES.md, D-01): 0,5 es el criterio de aceptación del requisito
+# RNF06 de la memoria; 0,2 es la alerta interna de la validación (toda diferencia mayor debe estar
+# explicada en el informe de calidad §4.6).
+TOLERANCIA_RNF06 = 0.5
 TOLERANCIA_OFICIAL = 0.2
 
 # Contrato §6: medias oficiales de Cataluña (Quaderns d'avaluació, puntuación global).
@@ -214,6 +221,16 @@ class Modelo:
                                     NivelKey=1)
         return bajo / n
 
+    def puntuaciones_por_nivel(self, ctx: dict, nivel_key: int) -> int | None:
+        """Medida «Puntuaciones por nivel de logro» (D-13): globales del nivel con las exclusiones de K03;
+        BLANK si la competencia no llega a 30 puntuaciones sumando todos los niveles."""
+        ctx = _sin(ctx, "NivelKey")
+        total, _, _ = self._agregado(ctx, EsGlobal=True, Censurada=False, NivelNoComparable=False)
+        if total < MINIMO_MUESTRAL:
+            return None
+        return self._agregado(ctx, EsGlobal=True, Censurada=False, NivelNoComparable=False,
+                              NivelKey=nivel_key)[0]
+
     # --- 2. Equidad -----------------------------------------------------------------------
     def _brecha(self, ctx: dict, col: str, a, b) -> float | None:
         va, vb = self.k01({**ctx, col: a}), self.k01({**ctx, col: b})
@@ -376,6 +393,23 @@ def tabla_subcompetencia_2025(m: Modelo, anio: int = 2025) -> pd.DataFrame:
     return pd.DataFrame(filas)
 
 
+def tabla_niveles_2025(m: Modelo, anio: int = 2025) -> pd.DataFrame:
+    """Distribución por nivel de logro (visual p3_barras100_nivel sin otros filtros): la medida
+    «Puntuaciones por nivel de logro», su % sobre la competencia y K03 para comprobar que coinciden."""
+    filas = []
+    materias = m.dim_comp[m.dim_comp["EsGlobal"]].sort_values("MateriaOrden")
+    for _, mat in materias.iterrows():
+        ctx = {"Anio": anio, "CodigoMateria": mat["CodigoMateria"]}
+        por_nivel = {k: m.puntuaciones_por_nivel(ctx, k) for k in (1, 2, 3, 4)}
+        total = sum(v for v in por_nivel.values() if v is not None) or None
+        for nivel_key, nivel in ((1, "Bajo"), (2, "Medio-bajo"), (3, "Medio-alto"), (4, "Alto")):
+            n = por_nivel[nivel_key]
+            filas.append({"Materia": mat["Materia"], "Nivel": nivel, "Puntuaciones por nivel de logro": n,
+                          "% del nivel": None if n is None else 100 * n / total,
+                          "K03": _pct(m.k03(ctx)) if nivel_key == 1 else None})
+    return pd.DataFrame(filas)
+
+
 def tabla_semaforos(m: Modelo, anio: int = 2025) -> pd.DataFrame:
     filas = []
     materias = m.dim_comp[m.dim_comp["EsGlobal"]].sort_values("MateriaOrden")
@@ -404,6 +438,7 @@ def tabla_contraste(m: Modelo) -> pd.DataFrame:
         media = m.k01({"Anio": anio, "CodigoMateria": codigo})
         diferencia = None if media is None else media - oficial
         dentro = diferencia is not None and abs(diferencia) <= TOLERANCIA_OFICIAL + 1e-9
+        dentro_rnf06 = diferencia is not None and abs(diferencia) <= TOLERANCIA_RNF06 + 1e-9
         if dentro:
             estado = "dentro de tolerancia"
         elif (anio, codigo) in EXCEPCIONES_DOCUMENTADAS:
@@ -417,7 +452,7 @@ def tabla_contraste(m: Modelo) -> pd.DataFrame:
         filas.append({"Anio": anio, "Materia": nombres[codigo], "CodigoMateria": codigo,
                       "media_calculada": media, "media_oficial": oficial,
                       "diferencia": diferencia, "dentro_tolerancia": dentro,
-                      "estado": estado, "nota": nota})
+                      "dentro_RNF06": dentro_rnf06, "estado": estado, "nota": nota})
     return pd.DataFrame(filas)
 
 
@@ -429,7 +464,8 @@ def escribir_csv(df: pd.DataFrame, ruta: Path) -> None:
             continue
         if valores.map(lambda v: isinstance(v, (int, np.integer)) or float(v).is_integer()).all() \
                 and (col.startswith("Estado") or col in ("K09", "Anio", "Alumnos evaluados",
-                                                          "Puntuaciones globales", "Puntuaciones válidas")):
+                                                          "Puntuaciones globales", "Puntuaciones válidas",
+                                                          "Puntuaciones por nivel de logro")):
             salida[col] = pd.array([None if pd.isna(v) else int(v) for v in salida[col]],
                                    dtype="Int64")
         else:
@@ -454,6 +490,7 @@ def main(argv: list[str] | None = None) -> int:
         "kpi_area_2025.csv": tabla_area_2025(m),
         "kpi_global_por_anio.csv": tabla_global_por_anio(m),
         "kpi_subcompetencia_2025.csv": tabla_subcompetencia_2025(m),
+        "kpi_niveles_2025.csv": tabla_niveles_2025(m),
         "semaforos_2025.csv": tabla_semaforos(m),
         "contraste_oficial.csv": tabla_contraste(m),
     }
@@ -461,8 +498,9 @@ def main(argv: list[str] | None = None) -> int:
         escribir_csv(df, args.resultados / nombre)
         print(f"  {nombre:<36} {len(df):>4} filas")
     contraste = tablas["contraste_oficial.csv"]
-    print(f"Contraste oficial: {int(contraste['dentro_tolerancia'].sum())} de {len(contraste)} "
-          f"combinaciones dentro de ±{TOLERANCIA_OFICIAL}")
+    print(f"Contraste oficial: {int(contraste['dentro_RNF06'].sum())} de {len(contraste)} combinaciones dentro "
+          f"de ±{TOLERANCIA_RNF06} (RNF06); {int(contraste['dentro_tolerancia'].sum())} dentro de la alerta "
+          f"de ±{TOLERANCIA_OFICIAL}; diferencia máxima {contraste['diferencia'].abs().max():.2f}")
     return 0
 
 

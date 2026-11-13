@@ -66,6 +66,8 @@ COLUMNAS_CSV = [
 # §5.2 DimCompetencia (24 filas). Es también el «registro M estático» CampoOrigen -> clave.
 # (CompetenciaKey, CampoOrigen, CodigoMateria, Materia, MateriaOrden, Subcompetencia,
 #  SubcompetenciaOrden (único por texto, sortByColumn de Subcompetencia), EsGlobal, AnioInicio, AnioFin, PeriodoDisenoInicio, EsInformativa)
+# PeriodoDisenoInicio: 2017 en matemáticas, inglés y francés (también sus globales: la de 2016 se
+# calculó con escalas comprimidas, R27/R28; DECISIONES.md D-10) y 2018 en catalán, castellano y ciencias.
 # ---------------------------------------------------------------------------------------
 COMPETENCIAS = [
     (1, "PCAT", "PCAT", "Lengua catalana", 1, "Global", 0, True, 2009, None, 2018, False),
@@ -80,11 +82,11 @@ COMPETENCIAS = [
     (10, "PMAT_NC", "PMAT", "Matemáticas", 3, "Numeración y cálculo", 4, False, 2009, None, 2017, False),
     (11, "PMAT_EFM", "PMAT", "Matemáticas", 3, "Espacio, medida y datos", 5, False, 2009, None, 2017, False),
     (12, "PMAT_CR", "PMAT", "Matemáticas", 3, "Relaciones y cambio", 6, False, 2009, None, 2017, False),
-    (13, "PANG", "PANG", "Lengua inglesa", 4, "Global", 0, True, 2010, None, 2016, False),
+    (13, "PANG", "PANG", "Lengua inglesa", 4, "Global", 0, True, 2010, None, 2017, False),
     (14, "PANG_CO", "PANG", "Lengua inglesa", 4, "Comprensión oral", 2, False, 2010, None, 2017, False),
     (15, "PANG_CE", "PANG", "Lengua inglesa", 4, "Comprensión lectora", 1, False, 2010, None, 2017, False),
     (16, "PANG_EE", "PANG", "Lengua inglesa", 4, "Expresión escrita", 3, False, 2013, None, 2017, False),
-    (17, "PFRAN", "PFRAN", "Lengua francesa", 5, "Global", 0, True, 2010, None, 2016, True),
+    (17, "PFRAN", "PFRAN", "Lengua francesa", 5, "Global", 0, True, 2010, None, 2017, True),
     (18, "PFRAN_CO", "PFRAN", "Lengua francesa", 5, "Comprensión oral", 2, False, 2010, None, 2017, True),
     (19, "PFRAN_CE", "PFRAN", "Lengua francesa", 5, "Comprensión lectora", 1, False, 2010, None, 2017, True),
     (20, "PFRAN_EE", "PFRAN", "Lengua francesa", 5, "Expresión escrita", 3, False, 2013, None, 2017, True),
@@ -107,7 +109,7 @@ AREAS = [
     (1, "Alt Pirineu i Aran", "Alt Pirineu i Aran", GRUPO_LLEIDA, True, False),
     (2, "Baix Llobregat", "Baix Llobregat", "Baix Llobregat", False, False),
     (3, "Barcelona Comarques", "Barcelona Comarques (perímetro hasta 2023)", GRUPO_BCN, True, False),
-    (4, "Barcelona Comarques", "Barcelonès", GRUPO_BCN, True, False),
+    (4, "Barcelonès", "Barcelonès", GRUPO_BCN, True, False),   # D-05: nombre del informe oficial de 2024
     (5, "Barcelonès", "Barcelonès", GRUPO_BCN, True, False),
     (6, "Catalunya Central", "Catalunya Central", GRUPO_BCN, True, False),
     (7, "Consorci d'Educació de Barcelona", "Consorci d'Educació de Barcelona",
@@ -122,7 +124,8 @@ AREAS = [
     (99, "Desconocida", "Desconocida", "Desconocida", False, False),
 ]
 # Texto de AREA_TERRITORIAL en el CSV -> AreaCodigo. «Barcelona Comarques» depende del año
-# (3 hasta 2023, 4 en 2024) y se trata aparte en _sql_area(); el nulo va a 99 (R13).
+# (3 hasta 2023, 4 en 2024; el código 4 tiene el perímetro del Barcelonès y se muestra con ese
+# nombre, D-05) y se trata aparte en _sql_area(); el nulo va a 99 (R13).
 CODIGO_AREA_POR_TEXTO = {
     "Alt Pirineu i Aran": 1, "Baix Llobregat": 2, "Barcelonès": 5, "Catalunya Central": 6,
     "Consorci d'Educació de Barcelona": 7, "Girona": 8, "Lleida": 9,
@@ -151,7 +154,7 @@ SITUACIONES_EDAD = {
 COMBINACIONES_EDAD = [(10, 4), (11, 4), (12, 1), (13, 2), (14, 3), (0, 8), (0, 9)]
 
 # ---------------------------------------------------------------------------------------
-# §3 DimNivelLogro (umbrales R29: internos del TFG, NO oficiales)
+# §3 DimNivelLogro (cortes fijos R29, 55/70/85: niveles internos del TFG, NO los oficiales; D-08)
 # ---------------------------------------------------------------------------------------
 NIVELES = [  # (NivelKey, Nivel, LimiteInferior, LimiteSuperior, NivelOrden)
     (0, "No aplica (subcompetencia)", None, None, 0),
@@ -415,7 +418,7 @@ def construir_dimensiones(con: duckdb.DuckDBPyConnection) -> None:
             for hab_cod, hab in HABITATS:
                 filas.append((area_cod * 100 + nat_cod * 10 + hab_cod, area_cod, area,
                               perimetro, serie, ruptura, ruptura_hab, nat, nat_cod, hab,
-                              hab_cod, 3 if area_cod == 4 else area_cod))   # AreaOrden (contrato §5.1)
+                              hab_cod, 5 if area_cod == 4 else area_cod))   # AreaOrden (contrato §5.1; D-05)
     _crear_tabla(con, "DimContextoCentro", filas, pa.schema([
         ("ContextoKey", i64), ("AreaCodigo", i64), ("AreaTerritorial", txt),
         ("AreaPerimetro2025", txt), ("AreaSerieComparable", txt), ("AreaConRupturaSerie", bln),

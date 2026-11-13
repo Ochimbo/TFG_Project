@@ -1,77 +1,89 @@
-# Estado de la implementación del CMI (actualizado el 15/10/2026: versión mínima completa)
+# Estado de la implementación del CMI (actualizado el 12/11/2026, Week_2)
 
 Carpeta de trabajo para retomar la implementación con Claude Code. No es un entregable del TFG: cuando el
 proyecto esté terminado se puede borrar, o mover lo útil a `validacion/` o a `Documentation/`.
+Las decisiones tomadas después del contrato de diseño están en `trabajo_en_curso/week2/DECISIONES.md` (D-01 a D-19);
+donde difieran del contrato o de los documentos 01–04, manda `DECISIONES.md`.
 
-## Qué está hecho (actualizado el 15/10/2026, integración final)
+## Qué está hecho
 
 | Fase | Estado | Dónde |
 |---|---|---|
-| Auditoría de calidad de datos (T7) | Terminada y verificada | `Documentation/Docu_Final/Docu_Parcial/01_Informe_calidad_datos.md`, scripts en `validacion/perfilado/` |
-| Contrato de diseño | Terminado (con los cambios de integración de §5.1 AreaOrden y §5.2 SubcompetenciaOrden) | `trabajo_en_curso/contrato_diseno.md` |
-| Modelo semántico TMDL + ETL M + PBIP | Hecho. TOM Validate 0 errores; parser M 11/11 OK | `PowerBI/` (generado por `trabajo_en_curso/generadores/modelo/gen_modelo.py PowerBI`; consultas M en `generadores/modelo/m_*.m`) |
-| Medidas DAX (19) | Hechas y contrastadas con `kpis_referencia.py` | `.../tables/_Medidas.tmdl` (generado por `generadores/gen_medidas.py <ruta>`) |
-| Informe PBIR (3 páginas, 36 visuales) | Validado contra los esquemas oficiales: 0 errores | `PowerBI/CMI_Educacion_Primaria.Report/` (generado por `generadores/gen_pbir.py`) |
-| Réplica Python de la ETL, tests y KPIs de referencia | Hechos: 27/27 tests OK; 6 CSV en `validacion/resultados/` | `validacion/etl_referencia.py`, `test_modelo.py`, `kpis_referencia.py` |
+| Auditoría de calidad de datos (T7) | Terminada y verificada; cuestiones abiertas de §7.2 resueltas (D-05 a D-11, resumen en el propio §7.2) | `Documentation/Docu_Final/Docu_Parcial/01_Informe_calidad_datos.md`, scripts en `validacion/perfilado/` |
+| Contrato de diseño | Terminado y actualizado el 12/11/2026 (§0 rutas Windows, §1 compat 1606, §3 y §5.1 Barcelonès, §5.2 periodos de diseño, §7 20 medidas, §8 41 visuales) | `trabajo_en_curso/contrato_diseno.md` |
+| Modelo semántico TMDL + ETL M + PBIP | Hecho. TOM `Model.Validate()` 0 errores (12/11/2026); parser M 11/11 OK | `PowerBI/` (generado por `trabajo_en_curso/generadores/modelo/gen_modelo.py PowerBI`; consultas M en `generadores/modelo/m_*.m`) |
+| Medidas DAX (20) | Hechas y contrastadas con `kpis_referencia.py`; semáforos con formato «▲ Favorable / ● Neutro / ▼ Desfavorable» (D-12); medida nueva `Puntuaciones por nivel de logro` (D-13) | `.../tables/_Medidas.tmdl` (generado por `generadores/gen_medidas.py <ruta>`) |
+| Informe PBIR (3 páginas, 41 visuales) | Validado contra los esquemas oficiales: 0 errores, 0 avisos | `PowerBI/CMI_Educacion_Primaria.Report/` (generado por `generadores/gen_pbir.py`) |
+| Réplica Python de la ETL, tests y KPIs de referencia | Hechos: 31/31 tests OK; 7 CSV en `validacion/resultados/` | `validacion/etl_referencia.py`, `test_modelo.py`, `kpis_referencia.py` |
 | Comprobación M frente a parquet | 0 fallos | `trabajo_en_curso/herramientas/verificar_claves.py` |
+| Documentos 02, 03 y 04 | Hechos el 15/10/2026 y actualizados el 12/11/2026 con las decisiones D-01 a D-19 | `Documentation/Docu_Final/Docu_Parcial/` |
 
 REGLA: no editar a mano `PowerBI/`. Cambiar el generador (o los `m_*.m`) y regenerar; después ejecutar
 `validacion/etl_referencia.py` si cambia la ETL, `test_modelo.py`, `kpis_referencia.py` y los validadores.
+Los generadores conservan lo que Power BI Desktop añade al guardar (`.platform`, `.pbi/`, `cultures/`, `RutaDatos`, compat 1606; D-19).
+
+## Power BI Desktop
+
+El proyecto se abrió y actualizó en Power BI Desktop (Windows) el 15/10/2026: el commit `6adfe70` contiene lo que Desktop
+guarda (`cultures/es-ES.tmdl`, `.platform`, `.pbi/editorSettings.json`, compat 1606, `RutaDatos` con la ruta del repo),
+así que el M se ejecutó. No quedó anotado el resultado de la lista de comprobación de `04_Guia_de_uso.md` §3.2.
 
 ## Qué falta
 
-1. Documentación: HECHA el 15/10/2026: `02_Modelo_y_diccionario.md`, `03_Fichas_KPI.md` y `04_Guia_de_uso.md` en
-   `Documentation/Docu_Final/Docu_Parcial/`. En el §4.6 del informe de calidad se han documentado inglés 2016 y francés 2024.
-2. Primera apertura en Power BI Desktop (Windows), que nadie ha hecho todavía (el M nunca se ha ejecutado):
-   - abrir `PowerBI/CMI_Educacion_Primaria.pbip`, fijar `RutaDatos` y actualizar;
-   - comprobar filas: FactEvaluacion 1.102.324, FactPuntuacion 17.728.085; K01 castellano 2017 = 73,51;
-     comparar visuales con `validacion/resultados/*.csv` (incluido `kpi_subcompetencia_2025.csv` para K02);
+1. Repetir la actualización en Power BI Desktop con la versión actual y anotar aquí el resultado:
+   - filas: FactEvaluacion 1.102.324, FactPuntuacion 17.728.085; K01 castellano 2017 = 73,51;
+   - comparar los visuales con `validacion/resultados/*.csv` (incluidos `kpi_niveles_2025.csv` y `semaforos_2025.csv`);
+   - comprobar que las tarjetas de estado muestran «▲ Favorable», «● Neutro» o «▼ Desfavorable» y no 1, 0, −1 (D-12);
+   - comprobar que 2020 aparece como hueco en los tres gráficos de líneas, con la línea cortada entre 2019 y 2021 (D-14);
+   - comprobar que los segmentadores de año arrancan en 2025 (filtro en `filterConfig`, D-19) y que el segmentador de
+     género del panel táctico filtra todo salvo K04 (D-15);
+   - comprobar que el Barcelonès tiene K10 y `Estado K10` en 2025 y que «Barcelona Comarques» solo aparece hasta 2023 (D-05);
    - prueba negativa: en una COPIA del CSV poner una puntuación inválida y comprobar que la actualización falla;
    - si la actualización tarda demasiado: DimAnio puede leer solo la columna ANY del CSV en vez de
      `stg_Evaluaciones` (cada consulta que referencia stg relee el CSV). No usar Table.Buffer sobre stg.
+2. Memoria: aplicar lo que cada entrada D-NN deja en «Pendiente en la memoria» y escribir el capítulo 8 con la
+   sección «Datos para el capítulo 8» de `DECISIONES.md`.
+3. Contrastar la n oficial de inglés 2016 y francés 2024 en los Quaderns (informe de calidad §4.6).
+4. Comunicar al titular del dataset las incidencias objetivas (texto en `DECISIONES.md`, D-07): acción de la estudiante.
 
-## Decisiones pendientes con las directoras
+## Decisiones que antes estaban pendientes con las directoras
 
-Están en el informe de calidad, §7.2. Esta versión aplica las opciones por defecto: umbrales de nivel 55/70/85;
-marcar sin excluir inglés 2015 y catalán 2018; hábitat y edad de 2010 como «No fiable»; series territoriales
-agrupadas (`AreaSerieComparable`); francés solo informativo (n >= 30); KPIs temporales con la nota «no equiparada».
+Resueltas como decisiones de ingeniería el 10/11/2026 (D-05 a D-11; resumen en el informe de calidad §7.2): cortes
+55/70/85 definitivos; inglés 2015 y catalán 2018 marcados sin excluir; hábitat y edad de 2010 «No fiable»; series
+territoriales agrupadas y Girona como serie propia; el área de 2024 publicada como «Barcelona Comarques» se muestra como
+«Barcelonès»; francés informativo; KPIs temporales con aviso de no equiparación y periodo de diseño desde 2017 en inglés y
+francés; global de ciencias sin recalcular. Las directoras las revisan en la memoria.
 
-## Herramientas de validación (Linux)
+## Herramientas de validación (Windows, 12/11/2026)
 
-Estaban en `/tmp` (se pierden al reiniciar). Aquí está su código fuente para reconstruirlas:
+Todo en una carpeta del directorio temporal, nunca en el repositorio:
 
-- **Validador TMDL** (`herramientas/tmdlcheck`): usa la librería oficial de Microsoft (TOM). Deserializa la carpeta
-  `definition`, lista el modelo y ejecuta `Model.Validate()`. No valida la semántica DAX.
-  ```bash
-  # .NET 8 en una carpeta local (unos 600 MB)
-  curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 8.0 --install-dir ~/.dotnet
-  cd trabajo_en_curso/herramientas/tmdlcheck && ~/.dotnet/dotnet build -c Release -o out
-  DOTNET_ROOT=~/.dotnet ./out/tmdlcheck ../../../PowerBI/CMI_Educacion_Primaria.SemanticModel/definition
-  ```
-  `herramientas/tmdldump` hace un volcado y una reserialización (round-trip) del modelo.
-- **Analizador sintáctico de Power Query M** (`herramientas/mparser`): usa el parser oficial `@microsoft/powerquery-parser`.
-  ```bash
-  cd trabajo_en_curso/herramientas/mparser && npm ci && node mcheck.js pruebas/ok.m pruebas/bad.m
-  ```
-  `python trabajo_en_curso/herramientas/validar_m.py` extrae los bloques M del TMDL y los analiza (necesita el `npm ci`
-  anterior; `package-lock.json` está versionado y `node_modules/` está en .gitignore).
-- **Esquemas JSON de PBIR/PBIP**: `git clone --depth 1 --filter=blob:none --sparse https://github.com/microsoft/json-schemas`
-  y después `git sparse-checkout set fabric/item/report fabric/item/semanticModel fabric/pbip`.
-  `validar_pbir.py` los toma de `--schemas` o de la variable `PBIR_SCHEMAS` (p. ej. `PBIR_SCHEMAS=~/json-schemas/fabric`).
+- Python: `pip install --target <tmp>/pylibs duckdb pyarrow numpy pandas jsonschema referencing` y
+  `PYTHONPATH=<tmp>/pylibs PYTHONIOENCODING=utf-8 python validacion/etl_referencia.py` (ídem `test_modelo.py`, `kpis_referencia.py`,
+  `trabajo_en_curso/herramientas/verificar_claves.py`).
+- **Validador TMDL** (`herramientas/tmdlcheck`, librería oficial TOM): SDK de .NET 8 en una carpeta temporal
+  (`dotnet-install.ps1 -Channel 8.0 -InstallDir <tmp>/dotnet`), copiar la carpeta a `<tmp>/tmdlcheck`, `dotnet build -c Release -o out`
+  y `DOTNET_ROOT=<tmp>/dotnet out/tmdlcheck <repo>/PowerBI/CMI_Educacion_Primaria.SemanticModel/definition`. Deserializa el modelo,
+  lo lista y ejecuta `Model.Validate()`. No valida la semántica DAX. `herramientas/tmdldump` hace un volcado y una reserialización.
+- **Analizador sintáctico de Power Query M** (`herramientas/mparser`, `@microsoft/powerquery-parser`, Node 24): copiar a
+  `<tmp>/mparser`, `npm ci` y `python trabajo_en_curso/herramientas/validar_m.py --mcheck <tmp>/mparser/mcheck.js`.
+- **Esquemas JSON de PBIR/PBIP**: `git clone --depth 1 --filter=blob:none --sparse https://github.com/microsoft/json-schemas <tmp>/json-schemas`,
+  `git -C <tmp>/json-schemas sparse-checkout set fabric/item/report fabric/item/semanticModel fabric/pbip` y
+  `PBIR_SCHEMAS=<tmp>/json-schemas/fabric python trabajo_en_curso/herramientas/validar_pbir.py`.
 - Documentación y ejemplos de PBIR descargados: `referencias_pbir/`.
 
-Los generadores ya no dependen de `/tmp`: `gen_pbir.py` y `gen_modelo.py` usan rutas relativas al repo.
+En Linux valen las mismas instrucciones con `dotnet-install.sh`. Los generadores usan rutas relativas al repo.
 
 ## Cómo retomar con Claude Code
 
-La versión mínima está completa en Linux. El siguiente paso lo tiene que hacer la estudiante: abrir el proyecto en
-Power BI Desktop (Windows) siguiendo `Documentation/Docu_Final/Docu_Parcial/04_Guia_de_uso.md` (punto 2 de «Qué falta»).
-Con los errores o capturas de esa primera actualización, pídele a Claude Code: «corrige el CMI con estos errores de
-Power BI». Las correcciones se hacen en los generadores (`trabajo_en_curso/generadores/`) y se revalidan con las herramientas.
+Leer `trabajo_en_curso/week2/DECISIONES.md` y `PROGRESO_datos.md`. Con los errores o capturas de la próxima actualización
+en Power BI Desktop, pedir: «corrige el CMI con estos errores de Power BI». Las correcciones se hacen en los generadores
+(`trabajo_en_curso/generadores/`) y se revalidan con las herramientas de arriba.
 Los scripts de los workflows usados están en `trabajo_en_curso/workflows/` (1 auditoría, 2 construcción interrumpida,
 3 reanudación completada).
 
 ## Comprobaciones clave (contrato §6)
 
 FactEvaluacion = 1.102.324 filas; FactPuntuacion = 17.728.085 (4.769.851 globales); media de castellano 2017
-corregida = 73,51 (oficial 73,4); medias de Cataluña dentro de ±0,2 de los Quaderns d'avaluació 2009–2025.
+corregida = 73,51 (oficial 73,4); las 72 medias de Cataluña dentro de 0,5 puntos de los Quaderns d'avaluació 2009–2025
+(criterio RNF06; máximo 0,30) y 70 de 72 dentro de la alerta interna de 0,2 (D-01).
