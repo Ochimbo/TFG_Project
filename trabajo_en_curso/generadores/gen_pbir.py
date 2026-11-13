@@ -276,7 +276,7 @@ def page1():
         ("p1_tarjeta_k03", "K03 % alumnado nivel bajo", "% alumnado en nivel bajo (K03)", "Puntuación global < 55"),
         ("p1_tarjeta_k06", "K06 Dispersión de resultados", "Dispersión de resultados (K06)", "Desviación típica"),
         ("p1_tarjeta_k10", "K10 Variación interanual", "Variación interanual (K10)", "Frente a la convocatoria anterior"),
-        ("p1_tarjeta_estado_k10", "Estado K10", "Estado de la variación (K10)", "Semáforo: ±0,5 puntos"),
+        ("p1_tarjeta_estado_k10", "Estado K10", "Estado de la variación (K10)", "Umbral: ±0,5 puntos"),
         ("p1_tarjeta_k12", "K12 % competencias que mejoran", "% competencias que mejoran (K12)", "Mejora de 1 punto o más"),
         ("p1_tarjeta_alumnos", "Alumnos evaluados", "Alumnos evaluados", "Registros de evaluación"),
     ]
@@ -331,8 +331,8 @@ def page2():
         ("p2_tarjeta_k05", "K05 Brecha pública - privada", "Brecha pública - privada (K05)", "Puntos de diferencia"),
         ("p2_tarjeta_k08", "K08 Diferencia urbano - rural", "Diferencia urbano - rural (K08)", "Más de 100.000 hab. frente a hasta 10.000"),
         ("p2_tarjeta_k09", "K09 Posición del área", "Posición del área (K09)", "Requiere una sola área en contexto"),
-        ("p2_tarjeta_estado_k01", "Estado K01", "Estado de K01 (área frente a Cataluña)", "Semáforo: ±1 punto"),
-        ("p2_tarjeta_estado_k03", "Estado K03", "Estado de K03 (área frente a Cataluña)", "Semáforo: ±2 puntos porcentuales"),
+        ("p2_tarjeta_estado_k01", "Estado K01", "Estado de K01 (área frente a Cataluña)", "Umbral: ±1 punto"),
+        ("p2_tarjeta_estado_k03", "Estado K03", "Estado de K03 (área frente a Cataluña)", "Umbral: ±2 puntos porcentuales"),
     ]
     fila_tarjetas(L, v, cards, 76, 100)
     v.append(bar_chart("p2_barras_k07_area", L.pos(16, 188, 410, 520),
@@ -386,8 +386,8 @@ def page3():
         ("p3_tarjeta_k01", "K01 Puntuación media competencia", "Puntuación media del contexto (K01)", "Competencias globales"),
         ("p3_tarjeta_k07", "K07 Desviación respecto a Cataluña", "Desviación respecto a Cataluña (K07)", "Puntos de diferencia"),
         ("p3_tarjeta_cataluna", "Puntuación media Cataluña", "Puntuación media de Cataluña", "Referencia sin filtros de contexto"),
-        ("p3_tarjeta_estado_k01", "Estado K01", "Estado de K01 (contexto frente a Cataluña)", "Semáforo: ±1 punto; sin contexto, variación interanual (±0,5)"),
-        ("p3_tarjeta_estado_k03", "Estado K03", "Estado de K03 (contexto frente a Cataluña)", "Semáforo: ±2 puntos porcentuales"),
+        ("p3_tarjeta_estado_k01", "Estado K01", "Estado de K01 (contexto frente a Cataluña)", "Umbral: ±1 punto; sin contexto, variación interanual (±0,5)"),
+        ("p3_tarjeta_estado_k03", "Estado K03", "Estado de K03 (contexto frente a Cataluña)", "Umbral: ±2 puntos porcentuales"),
     ]
     fila_tarjetas(L, v, cards, 120, 96)
     v.append(bar_chart("p3_barras_k02_subcomp", L.pos(16, 228, 410, 480),

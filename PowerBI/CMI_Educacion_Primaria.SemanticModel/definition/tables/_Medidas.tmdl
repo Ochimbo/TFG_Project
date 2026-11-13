@@ -361,7 +361,7 @@ table _Medidas
 		displayFolder: 4. Eficiencia y progreso
 		lineageTag: aef489c9-a46c-50aa-ac6b-7545f6603056
 
-	/// Semáforo de K01: 1 favorable, 0 neutro, -1 desfavorable; el formato lo muestra como ▲ Favorable, ● Neutro o ▼ Desfavorable. Con algún filtro de DimContextoCentro (área, naturaleza o hábitat) compara con Cataluña mediante K07 (>= 1 -> 1; <= -1 -> -1; resto 0). Sin filtro de contexto de centro usa K10 (>= 0,5 -> 1; <= -0,5 -> -1; resto 0), que exige un solo año con convocatoria. BLANK si el indicador usado está en blanco. Cuando usa K10, las puntuaciones no están equiparadas entre convocatorias y el semáforo es orientativo.
+	/// Estado de K01: 1 favorable, 0 neutro, -1 desfavorable; el formato lo muestra como ▲ Favorable, ● Neutro o ▼ Desfavorable. Con algún filtro de DimContextoCentro (área, titularidad o hábitat) compara con Cataluña mediante K07 (>= 1 -> 1; <= -1 -> -1; resto 0). Sin filtro de contexto de centro usa K10 (>= 0,5 -> 1; <= -0,5 -> -1; resto 0), que exige un solo año con convocatoria. BLANK si el indicador usado está en blanco. Cuando usa K10, las puntuaciones no están equiparadas entre convocatorias y el semáforo es orientativo.
 	measure 'Estado K01' =
 			VAR _conContexto = ISFILTERED ( DimContextoCentro )
 			VAR _valor =
@@ -380,10 +380,10 @@ table _Medidas
 			        0
 			    )
 		formatString: """▲ Favorable"";""▼ Desfavorable"";""● Neutro"""
-		displayFolder: 5. Semáforos
+		displayFolder: 5. Estado de los KPIs
 		lineageTag: d56c3a0e-0cbf-5720-a976-fa9ec60fb86b
 
-	/// Semáforo de K03: compara el % en nivel bajo del contexto con el de Cataluña (sin filtros de DimContextoCentro). Diferencia <= -2 puntos porcentuales -> 1 (▲ Favorable); >= +2 puntos porcentuales -> -1 (▼ Desfavorable); resto 0 (● Neutro). Sin ningún filtro de contexto de centro compara Cataluña consigo misma y vale 0: tiene sentido en los paneles táctico y operativo, no en el estratégico. BLANK si alguno de los dos K03 está en blanco.
+	/// Estado de K03: compara el % en nivel bajo del contexto con el de Cataluña (sin filtros de DimContextoCentro). Diferencia <= -2 puntos porcentuales -> 1 (▲ Favorable); >= +2 puntos porcentuales -> -1 (▼ Desfavorable); resto 0 (● Neutro). Sin ningún filtro de contexto de centro compara Cataluña consigo misma y vale 0: tiene sentido en los paneles táctico y operativo, no en el estratégico. BLANK si alguno de los dos K03 está en blanco.
 	measure 'Estado K03' =
 			VAR _k03 = [K03 % alumnado nivel bajo]
 			VAR _k03Cataluna =
@@ -404,10 +404,10 @@ table _Medidas
 			            )
 			    )
 		formatString: """▲ Favorable"";""▼ Desfavorable"";""● Neutro"""
-		displayFolder: 5. Semáforos
+		displayFolder: 5. Estado de los KPIs
 		lineageTag: 0339044c-c7d8-5eab-9a87-de7c77a3ec82
 
-	/// Semáforo de K10: >= 0,5 puntos -> 1 (▲ Favorable); <= -0,5 -> -1 (▼ Desfavorable); resto 0 (● Neutro). BLANK si K10 está en blanco.
+	/// Estado de K10: >= 0,5 puntos -> 1 (▲ Favorable); <= -0,5 -> -1 (▼ Desfavorable); resto 0 (● Neutro). BLANK si K10 está en blanco.
 	/// ATENCIÓN: las puntuaciones no están equiparadas entre convocatorias (no hay ítems de anclaje), así que la diferencia mezcla la dificultad de cada prueba con el rendimiento real y solo es orientativa.
 	measure 'Estado K10' =
 			VAR _k10 = [K10 Variación interanual]
@@ -420,7 +420,7 @@ table _Medidas
 			        0
 			    )
 		formatString: """▲ Favorable"";""▼ Desfavorable"";""● Neutro"""
-		displayFolder: 5. Semáforos
+		displayFolder: 5. Estado de los KPIs
 		lineageTag: aa48fe15-95f5-5051-a862-3e6b6d073aa7
 
 	column Columna

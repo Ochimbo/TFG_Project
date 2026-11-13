@@ -32,6 +32,7 @@ define en un solo apartado; los demás lo referencian.
 | Bocetos de los paneles previos al diseño | prototipo (de la interfaz) | 3.5 (`sec:mockups`) | «bocetos» en títulos |
 | Valor medible que debe cumplir un requisito no funcional | criterio de aceptación | 3.4.3 (`tab:rnf`) y fichas de 7.4 | «criterio de verificación» |
 | Ficha de cinco campos de cada RNF | ficha Volere | 7.4 (`sec:rnf_volere`) | «tarjeta», «plantilla» para una ficha concreta |
+| Valoración favorable, neutra o desfavorable de un KPI frente a su referencia (medidas `Estado K01`, `Estado K03`, `Estado K10`) | estado del KPI (en plural, «el estado de los KPIs») | 1.2 (definición); 8.3.2 (`sec:semaforos`) | «semáforo» (D-D07) |
 
 ### Títulos y labels definitivos de los capítulos 7 y 8
 
@@ -272,6 +273,13 @@ Texto propuesto para el formulario de contacto del Portal de Dades Obertes (conj
 - Decisión: (b), a petición de la estudiante (13/11/2026). Se aplican los textos propuestos en D-12 (2, 3), D-13 (1, 2, 3) y D-16 (1, 2, 3); CU03 menciona además el estado de K01 y K03. El prototipo del 3.5 y sus mockups no se tocan: son bocetos previos y el 8.4.2 explica qué cambia respecto a ellos. SO3 se mantiene (objetivo inicial) y el 8.1 explica las dos dimensiones añadidas.
 - Justificación: los casos de uso, las historias y los requisitos especifican el sistema, así que deben coincidir con lo construido; el prototipo es un documento de partida y sus diferencias con el diseño son esperables.
 - Cambios aplicados: `main.tex` (1.3, tabla de agentes, RF12, 3.6, CU02, CU03, CU07, CU09, HU01, HU04, HU11, 8.4.2), `gen_pbir.py` (cabecera del panel operativo), informe regenerado (solo cambia `p3_cabecera/visual.json`), `gen_paneles_diseno.py` y `panel_operativo.png` regenerado.
+
+## D-D07 Comentarios de Maria Hitz del 12/11/2026 en el Drive
+- Problema: en el .docx del Drive, Maria Hitz (1) no entiende «semáforo» en el 8.3.2, (2) pide una línea en el resumen que resuma la justificación con referencia al estado del arte, (3) opina que el OCL encaja mejor en el diseño («especificación es el diseño lógico y diseño es diseño técnico») y (4) recuerda que sostenibilidad y gestión económica son apartados obligatorios, a revisar con Carme. Además, el resumen decía «70 de las 72 medias con una diferencia máxima de 0,2», que contradice RNF06 tras D-01.
+- Opciones: para (1), «estado del KPI», «indicador de alerta» o mantener «semáforo» con definición; para (3), mover el 7.2.1 al 8.1.1 o dejarlo.
+- Decisión (de la estudiante, 13/11/2026): (1) «estado del KPI» en toda la memoria (33 frases), en la interfaz (subtítulos «Umbral: …» en lugar de «Semáforo: …»), en la carpeta de medidas («5. Estado de los KPIs») y en las descripciones de las medidas; definición nueva en 1.2. Los labels `sec:semaforos` y `tab:semaforos` no cambian porque no se ven. (2) Una frase en el resumen, el resum y el abstract. (3) El OCL se queda en el 7.2.1 hasta decidirlo con la issue #14. (4) Sin cambios. Resumen: «las 72 medias difieren de las oficiales en 0,30 puntos como máximo».
+- Justificación: «estado» es el término de Power BI (las medidas ya se llamaban `Estado K01`) y no necesita metáfora; el OCL lo pidió Carme en el 7.2 (issue #9) y la ubicación depende del mismo criterio que la issue #14.
+- Cambios aplicados: `main.tex`, `gen_pbir.py`, `gen_medidas.py`, informe y `_Medidas.tmdl` regenerados (solo textos), `gen_paneles_diseno.py` y figuras regeneradas. Pendiente: `Docu_Parcial/02`, `03` y `04` siguen diciendo «semáforo».
 
 ## Datos para el capítulo 8 (diseño)
 

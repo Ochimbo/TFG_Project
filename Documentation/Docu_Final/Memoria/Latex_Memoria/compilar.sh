@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Compila la memoria a PDF (Tectonic) y exporta a la vez la versión .docx (Pandoc) para que las directoras la comenten.
 # Uso: ./compilar.sh   (desde cualquier carpeta)
+#      DRIVE_DOCX=<.docx descargado del Drive> ./compilar.sh
+#        genera además Memoria_..._Drive.docx con los comentarios de las directoras copiados del Drive, para subirlo
+#        como nueva versión del mismo archivo (Gestionar versiones) sin perder los hilos. Si un título comentado ha
+#        cambiado, pasar DRIVE_RENOMBRA="texto antiguo=texto nuevo".
 set -euo pipefail
 
 cd "$(dirname "$0")"
@@ -42,3 +46,15 @@ sed -e 's/^\\begin{revisado}/'"$INICIO"'/' -e 's/^\\end{revisado}/'"$FIN"'/' -e 
     -o "$NOMBRE.docx"
 
 echo "Generados: $NOMBRE.pdf y $NOMBRE.docx"
+
+if [ -n "${DRIVE_DOCX:-}" ]; then
+    # En Windows, «python3» puede ser el acceso directo vacío de la Microsoft Store: se usa el primero que funcione
+    PY=""
+    for c in python3 python; do
+        if command -v "$c" >/dev/null && "$c" -c "" 2>/dev/null; then PY="$c"; break; fi
+    done
+    [ -n "$PY" ] || { echo "No se encuentra Python para copiar los comentarios del Drive" >&2; exit 1; }
+    ARGS=()
+    [ -n "${DRIVE_RENOMBRA:-}" ] && ARGS=(--renombra "$DRIVE_RENOMBRA")
+    "$PY" -I -X utf8 docx/copiar_comentarios.py "$DRIVE_DOCX" "$NOMBRE.docx" "${NOMBRE}_Drive.docx" "${ARGS[@]}"
+fi

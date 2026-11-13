@@ -152,22 +152,22 @@
 % RESUMEN (CASTELLANO, CATALÁN E INGLÉS)
 % ------------------------------------------
 \chapter*{Resumen}
-Este Trabajo de Final de Grado diseña e implementa un Cuadro de Mando Integral (CMI) en Power BI para dar soporte a la toma de decisiones en la educación primaria de Cataluña. La fuente son los microdatos abiertos de la evaluación de 6.\textordmasculine{} de primaria que publica la Generalitat: más de 1,1 millones de registros de las convocatorias de 2009 a 2025, con las puntuaciones por competencia y subcompetencia y variables del alumno y del centro.
+Este Trabajo de Final de Grado diseña e implementa un Cuadro de Mando Integral (CMI) en Power BI para dar soporte a la toma de decisiones en la educación primaria de Cataluña. La fuente son los microdatos abiertos de la evaluación de 6.\textordmasculine{} de primaria que publica la Generalitat: más de 1,1 millones de registros de las convocatorias de 2009 a 2025, con las puntuaciones por competencia y subcompetencia y variables del alumno y del centro. El estado del arte muestra que el CMI se ha aplicado sobre todo en la universidad y muy poco en primaria, y que ninguna de las herramientas disponibles para estos datos relaciona los indicadores con objetivos.
 
 Estos datos se publican en una sola tabla plana y los resultados oficiales solo se difunden en informes PDF, de modo que no se pueden cruzar por territorio, tipo de centro o género ni seguir su evolución. Antes de modelarlos se auditó su calidad y aparecieron problemas que alteran los resultados si no se tratan, como columnas de puntuación rotadas en 2016 y 2017, columnas desalineadas en 2010, cambios de codificación entre convocatorias y la reorganización territorial de 2024. Las reglas de limpieza resultantes se aplican en una ETL con Power Query, que carga un modelo dimensional en estrella con dos tablas de hechos.
 
-Sobre este modelo se define un catálogo de 12 indicadores clave (KPI), organizados en cuatro perspectivas del CMI adaptadas al sector público, y cuadros de mando pensados para tres perfiles: el Departamento de Educación, la inspección territorial y la dirección de centro. Una réplica independiente en Python comprueba los cálculos: 70 de las 72 medias de Cataluña coinciden con las publicadas oficialmente con una diferencia máxima de 0,2 puntos.
+Sobre este modelo se define un catálogo de 12 indicadores clave (KPI), organizados en cuatro perspectivas del CMI adaptadas al sector público, y cuadros de mando pensados para tres perfiles: el Departamento de Educación, la inspección territorial y la dirección de centro. Una réplica independiente en Python comprueba los cálculos: las 72 medias de Cataluña por competencia y convocatoria difieren de las publicadas oficialmente en 0,30 puntos como máximo.
 
 \vspace{0.5cm}
 \noindent\textbf{Palabras clave:} Cuadro de Mando Integral, \textit{Business Intelligence}, Power BI, calidad de datos, modelo dimensional, evaluación educativa, datos abiertos.
 
 \begin{otherlanguage}{catalan}
 \chapter*{Resum}
-Aquest Treball de Final de Grau dissenya i implementa un Quadre de Comandament Integral (QCI) en Power BI per donar suport a la presa de decisions en l'educació primària de Catalunya. La font són les microdades obertes de l'avaluació de sisè de primària que publica la Generalitat: més d'1,1 milions de registres de les convocatòries de 2009 a 2025, amb les puntuacions per competència i subcompetència i variables de l'alumne i del centre.
+Aquest Treball de Final de Grau dissenya i implementa un Quadre de Comandament Integral (QCI) en Power BI per donar suport a la presa de decisions en l'educació primària de Catalunya. La font són les microdades obertes de l'avaluació de sisè de primària que publica la Generalitat: més d'1,1 milions de registres de les convocatòries de 2009 a 2025, amb les puntuacions per competència i subcompetència i variables de l'alumne i del centre. L'estat de l'art mostra que el QCI s'ha aplicat sobretot a la universitat i molt poc a primària, i que cap de les eines disponibles per a aquestes dades no relaciona els indicadors amb objectius.
 
 Aquestes dades es publiquen en una sola taula plana i els resultats oficials només es difonen en informes PDF, de manera que no es poden creuar per territori, tipus de centre o gènere ni seguir-ne l'evolució. Abans de modelar-les se'n va auditar la qualitat i van aparèixer problemes que alteren els resultats si no es tracten, com ara columnes de puntuació rotades el 2016 i el 2017, columnes desalineades el 2010, canvis de codificació entre convocatòries i la reorganització territorial del 2024. Les regles de neteja resultants s'apliquen en una ETL amb Power Query, que carrega un model dimensional en estrella amb dues taules de fets.
 
-Sobre aquest model es defineix un catàleg de 12 indicadors clau (KPI), organitzats en quatre perspectives del QCI adaptades al sector públic, i quadres de comandament pensats per a tres perfils: el Departament d'Educació, la inspecció territorial i la direcció de centre. Una rèplica independent en Python comprova els càlculs: 70 de les 72 mitjanes de Catalunya coincideixen amb les publicades oficialment amb una diferència màxima de 0,2 punts.
+Sobre aquest model es defineix un catàleg de 12 indicadors clau (KPI), organitzats en quatre perspectives del QCI adaptades al sector públic, i quadres de comandament pensats per a tres perfils: el Departament d'Educació, la inspecció territorial i la direcció de centre. Una rèplica independent en Python comprova els càlculs: les 72 mitjanes de Catalunya per competència i convocatòria difereixen de les publicades oficialment en 0,30 punts com a màxim.
 
 \vspace{0.5cm}
 \noindent\textbf{Paraules clau:} Quadre de Comandament Integral, \textit{Business Intelligence}, Power BI, qualitat de dades, model dimensional, avaluació educativa, dades obertes.
@@ -175,11 +175,11 @@ Sobre aquest model es defineix un catàleg de 12 indicadors clau (KPI), organitz
 
 \begin{otherlanguage}{english}
 \chapter*{Abstract}
-This bachelor's thesis designs and implements a Balanced Scorecard in Power BI to support decision-making in primary education in Catalonia. The source is the open microdata of the sixth-grade primary assessment published by the Government of Catalonia: more than 1.1 million records from the 2009 to 2025 assessments, with scores by competence and sub-competence and student and school variables.
+This bachelor's thesis designs and implements a Balanced Scorecard in Power BI to support decision-making in primary education in Catalonia. The source is the open microdata of the sixth-grade primary assessment published by the Government of Catalonia: more than 1.1 million records from the 2009 to 2025 assessments, with scores by competence and sub-competence and student and school variables. The state of the art shows that the Balanced Scorecard has mostly been applied in higher education and rarely in primary schools, and that none of the tools available for these data links indicators to objectives.
 
 The data are published as a single flat table and the official results are only released as PDF reports, so they cannot be broken down by territory, school type or gender, or tracked over time. A data quality audit carried out before modelling found problems that distort the results unless they are handled, such as rotated score columns in 2016 and 2017, misaligned columns in 2010, coding changes between years and the 2024 territorial reorganisation. The resulting cleaning rules are applied in a Power Query ETL process that loads a dimensional star schema with two fact tables.
 
-On top of this model, a catalogue of 12 key performance indicators (KPIs) is defined, grouped into four Balanced Scorecard perspectives adapted to the public sector, along with dashboards for three user profiles: the Department of Education, territorial inspection and school management. An independent Python replica checks the calculations: 70 of the 72 Catalan averages match the official figures within 0.2 points.
+On top of this model, a catalogue of 12 key performance indicators (KPIs) is defined, grouped into four Balanced Scorecard perspectives adapted to the public sector, along with dashboards for three user profiles: the Department of Education, territorial inspection and school management. An independent Python replica checks the calculations: all 72 Catalan averages by competence and year are within 0.30 points of the official figures.
 
 \vspace{0.5cm}
 \noindent\textbf{Keywords:} Balanced Scorecard, Business Intelligence, Power BI, data quality, dimensional modelling, educational assessment, open data.
@@ -210,6 +210,7 @@ Con estos datos, el TFG construye un Cuadro de Mando Integral en Power BI pensad
     \item \textbf{Business Intelligence (BI):} conjunto de estrategias, procesos y tecnologías que transforman datos en información analítica para dar soporte a la toma de decisiones \cite{sharda2014business}.
     \item \textbf{Cuadro de Mando Integral (CMI) / Balanced Scorecard (BSC):} metodología de gestión estratégica de Kaplan y Norton que evalúa el rendimiento de una organización mediante un conjunto equilibrado de indicadores agrupados en perspectivas \cite{kaplan1992balanced}. En el sector público, la misión de la organización se sitúa en la cúspide del modelo \cite{niven2008balanced}.
     \item \textbf{Indicador Clave de Rendimiento (KPI):} métrica cuantificable que mide el grado de cumplimiento de un objetivo estratégico.
+    \item \textbf{Estado de un KPI:} valoración de un KPI frente a una referencia (una meta, otro territorio o la convocatoria anterior) como favorable, neutra o desfavorable. Se muestra con un símbolo y una palabra junto al valor.
     \item \textbf{Modelado dimensional y esquema en estrella:} técnica de diseño de almacenes de datos que organiza la información en una tabla de hechos (medidas) rodeada de tablas de dimensiones (contexto de análisis) \cite{kimball2013data}.
     \item \textbf{ETL (\textit{Extract, Transform, Load}):} proceso que extrae datos de las fuentes, los depura y transforma, y los carga en el modelo analítico \cite{kimball2013data}.
     \item \textbf{Power BI, Power Query y DAX:} plataforma de analítica de Microsoft; Power Query (lenguaje M) implementa la ETL y DAX (\textit{Data Analysis Expressions}) define las medidas analíticas sobre el motor en memoria VertiPaq \cite{ferrari2019definitive}.
@@ -302,7 +303,7 @@ Con estos criterios y pesos, Power BI es la alternativa que mejor se ajusta al p
 
 Power BI resuelve la parte técnica. Para quien toma decisiones, lo útil depende de cómo se organizan los datos y los indicadores, y esa parte del enfoque se podría trasladar a otra plataforma. Se apoya en tres decisiones.
 
-La primera es usar un CMI adaptado al sector público \cite{niven2008balanced}. Los indicadores se agrupan en cuatro perspectivas ligadas a la misión del sistema educativo, y cada uno responde a una pregunta concreta de un perfil de usuario (Tabla~\ref{tab:preguntas}). Así, quien consulta el cuadro de mando ve si un objetivo va bien o se desvía, con semáforos y evolución temporal, en lugar de una tabla de cifras que debe interpretar por su cuenta. Este planteamiento está validado empíricamente en escuelas públicas \cite{rompho2020balanced}.
+La primera es usar un CMI adaptado al sector público \cite{niven2008balanced}. Los indicadores se agrupan en cuatro perspectivas ligadas a la misión del sistema educativo, y cada uno responde a una pregunta concreta de un perfil de usuario (Tabla~\ref{tab:preguntas}). Así, quien consulta el cuadro de mando ve si un objetivo va bien o se desvía, con el estado de cada KPI y su evolución temporal, en lugar de una tabla de cifras que debe interpretar por su cuenta. Este planteamiento está validado empíricamente en escuelas públicas \cite{rompho2020balanced}.
 
 La segunda es el modelo dimensional en estrella \cite{kimball2013data}. Frente a un modelo relacional normalizado, pensado para transacciones, reduce las uniones entre tablas, se comprime mejor en el motor de Power BI y usa conceptos que el usuario reconoce: alumno, centro, año y competencia. Esto permite cruzar cada competencia con el territorio, la titularidad, el hábitat o el género, algo que los informes oficiales no permiten (Sección~\ref{sec:problema}).
 
@@ -447,7 +448,7 @@ RF10 & Aplicar el filtrado cruzado entre los elementos de una página y conserva
 \textbf{ID} & \textbf{Requisito} & \textbf{Origen} \\ \midrule
 RF11 & Calcular los 12 KPIs del catálogo (Tabla~\ref{tab:kpis}) para cualquier combinación de filtros. & E, T, O \\ \addlinespace
 RF12 & Mostrar la distribución del alumnado por nivel de logro (bajo, medio-bajo, medio-alto y alto) en cada competencia. & O \\ \addlinespace
-RF13 & Indicar con un semáforo si el valor de los KPIs principales es favorable, neutro o desfavorable respecto a su referencia. & E, T, O \\ \addlinespace
+RF13 & Indicar el estado de los KPIs principales: si su valor es favorable, neutro o desfavorable respecto a su referencia. & E, T, O \\ \addlinespace
 RF14 & Dejar un indicador en blanco cuando se calcule sobre menos de 30 puntuaciones, para evitar conclusiones sobre grupos muy pequeños. & T, O \\ \addlinespace
 RF15 & Avisar de las limitaciones de los datos junto a las comparaciones temporales: las puntuaciones no están equiparadas entre convocatorias y en 2020 no hubo prueba. & E, T, O \\ \bottomrule
 \end{tabularx}
@@ -518,7 +519,7 @@ Los tres paneles compartirán la misma estructura para que el usuario no tenga q
 El panel estratégico (Figura~\ref{fig:mockup_estrategico}) dará al Departamento de Educación una visión global de Cataluña (RF16):
 \begin{enumerate}
     \item Filtros de año y competencia. El año será de selección única y se abrirá en la última convocatoria.
-    \item Tarjetas con la puntuación media (K01), el alumnado en nivel bajo (K03), la dispersión (K06), la variación respecto a la convocatoria anterior (K10), el porcentaje de competencias que mejoran (K12) y el alumnado evaluado. K01, K03 y K10 llevarán un semáforo que indica si el valor es favorable, neutro o desfavorable (RF13).
+    \item Tarjetas con la puntuación media (K01), el alumnado en nivel bajo (K03), la dispersión (K06), la variación respecto a la convocatoria anterior (K10), el porcentaje de competencias que mejoran (K12) y el alumnado evaluado. K01, K03 y K10 mostrarán su estado, que indica si el valor es favorable, neutro o desfavorable (RF13).
     \item Evolución de K01 por competencia en todas las convocatorias, sea cual sea el año elegido (RF08). El año 2020, sin prueba, aparecerá como un hueco señalado.
     \item Tabla del año elegido con K01, K10, K11 y K03 de cada competencia, para ver de un vistazo cuáles empeoran.
     \item Aviso fijo sobre las limitaciones de los datos (RF15).
@@ -551,7 +552,7 @@ El panel táctico (Figura~\ref{fig:mockup_tactico}) servirá a la inspección pa
 El panel operativo (Figura~\ref{fig:mockup_operativo}) permitirá a una dirección de centro situar su contexto frente a Cataluña (RF18):
 \begin{enumerate}
     \item Filtros de área, titularidad y hábitat para definir el contexto del centro, además del año y la competencia. El panel compara un contexto y no un centro concreto (Sección~\ref{sec:preguntas}).
-    \item Tarjetas con K01 del contexto, su desviación respecto a Cataluña (K07), la media de Cataluña como referencia y el estado con semáforo.
+    \item Tarjetas con K01 del contexto, su desviación respecto a Cataluña (K07), la media de Cataluña como referencia y el estado del KPI.
     \item Puntuación media por subcompetencia (K02), agrupada por competencia (RF07).
     \item Distribución del alumnado por nivel de logro en cada competencia (RF12).
     \item Evolución de K01 del contexto frente a la de Cataluña.
@@ -676,7 +677,7 @@ El trabajo se descompone en 23 tareas codificadas como T1--T23 y agrupadas en si
 
 \subsection{Cuadros de mando (T16--T18)}
 \begin{itemize}
-    \item \textbf{T16 -- Panel estratégico del Departamento (25 h):} visión global del CMI y semáforos por perspectiva. Dependencias: T11, T14 $<$ T16.
+    \item \textbf{T16 -- Panel estratégico del Departamento (25 h):} visión global del CMI y estado de los KPIs por perspectiva. Dependencias: T11, T14 $<$ T16.
     \item \textbf{T17 -- Panel táctico de Inspección (25 h):} comparativas territoriales, de equidad y \textit{drill-down}. Dependencias: T15, T16 $<$ T17.
     \item \textbf{T18 -- Panel operativo de Dirección de centro (20 h):} comparación con centros de contexto similar. Dependencias: T15, T16 $<$ T18.
 \end{itemize}
@@ -1017,7 +1018,7 @@ El modelo tiene seis actores (Figura~\ref{fig:casos_uso}). Los actores principal
 \label{fig:casos_uso}
 \end{figure}
 
-Los paneles táctico y operativo incluyen la comparación con Cataluña (CU07), porque los dos sitúan un territorio o un contexto frente al total. El panel operativo incluye además el desglose por subcompetencias (CU08) y la distribución del alumnado por nivel de logro (CU09), que muestran en qué falla un contexto concreto. El cálculo de los indicadores, el semáforo y la regla de las 30 puntuaciones no forman casos de uso propios, porque el usuario no los pide: el sistema los aplica en cada consulta y se describen dentro de los casos que los usan.
+Los paneles táctico y operativo incluyen la comparación con Cataluña (CU07), porque los dos sitúan un territorio o un contexto frente al total. El panel operativo incluye además el desglose por subcompetencias (CU08) y la distribución del alumnado por nivel de logro (CU09), que muestran en qué falla un contexto concreto. El cálculo de los indicadores, su estado y la regla de las 30 puntuaciones no forman casos de uso propios, porque el usuario no los pide: el sistema los aplica en cada consulta y se describen dentro de los casos que los usan.
 
 La Tabla~\ref{tab:casos_uso} relaciona cada caso de uso con su actor y con los requisitos funcionales que cubre. Cada requisito, de RF01 a RF18, queda cubierto por al menos un caso de uso.
 
@@ -1074,7 +1075,7 @@ Requisitos & RF01--RF05, RNF07, RNF09. \\ \bottomrule
 \textbf{CU02} & \textbf{Consultar el panel estratégico} \\ \midrule
 Actor principal & Departamento de Educación (E). \\ \addlinespace
 Precondición & El modelo tiene al menos una convocatoria cargada (CU01). \\ \addlinespace
-Flujo principal & 1. El usuario abre el panel estratégico.\newline 2. El sistema muestra, para la última convocatoria, la puntuación media, el alumnado en nivel bajo, la dispersión, la variación respecto a la convocatoria anterior, el porcentaje de competencias que mejoran y el alumnado evaluado. La variación lleva semáforo.\newline 3. El sistema muestra la evolución de la puntuación media de cada competencia en todas las convocatorias.\newline 4. El sistema muestra una tabla con los indicadores de cada competencia en la convocatoria elegida. \\ \addlinespace
+Flujo principal & 1. El usuario abre el panel estratégico.\newline 2. El sistema muestra, para la última convocatoria, la puntuación media, el alumnado en nivel bajo, la dispersión, la variación respecto a la convocatoria anterior, el porcentaje de competencias que mejoran y el alumnado evaluado. Se muestra el estado de la variación.\newline 3. El sistema muestra la evolución de la puntuación media de cada competencia en todas las convocatorias.\newline 4. El sistema muestra una tabla con los indicadores de cada competencia en la convocatoria elegida. \\ \addlinespace
 Extensiones & 2a. La convocatoria elegida es la primera de la serie: la variación respecto a la anterior queda en blanco.\newline 2b. El usuario cambia la convocatoria o la competencia: se aplica CU05 y el panel se actualiza. \\ \addlinespace
 Postcondición & Ninguna: la consulta no modifica los datos. \\ \addlinespace
 Requisitos & RF08, RF11, RF13, RF16. \\ \bottomrule
@@ -1110,7 +1111,7 @@ Requisitos & RF09, RF11, RF13, RF17. \\ \bottomrule
 \textbf{CU04} & \textbf{Consultar el panel operativo} \\ \midrule
 Actor principal & Dirección de centro (O). \\ \addlinespace
 Precondición & El modelo tiene al menos una convocatoria cargada (CU01). \\ \addlinespace
-Flujo principal & 1. El usuario abre el panel operativo.\newline 2. El usuario define el contexto de su centro con el área territorial, la titularidad y el hábitat.\newline 3. El sistema muestra la puntuación media del contexto, su desviación respecto a Cataluña y su estado con semáforo (CU07).\newline 4. El sistema muestra la puntuación de cada subcompetencia (CU08) y la distribución del alumnado por nivel de logro (CU09).\newline 5. El sistema muestra la evolución del contexto frente a la de Cataluña, con el aviso sobre la comparabilidad entre convocatorias. \\ \addlinespace
+Flujo principal & 1. El usuario abre el panel operativo.\newline 2. El usuario define el contexto de su centro con el área territorial, la titularidad y el hábitat.\newline 3. El sistema muestra la puntuación media del contexto, su desviación respecto a Cataluña y su estado (CU07).\newline 4. El sistema muestra la puntuación de cada subcompetencia (CU08) y la distribución del alumnado por nivel de logro (CU09).\newline 5. El sistema muestra la evolución del contexto frente a la de Cataluña, con el aviso sobre la comparabilidad entre convocatorias. \\ \addlinespace
 Extensiones & 2a. El usuario solo define una parte del contexto: el sistema calcula los indicadores con los filtros elegidos.\newline 3a. Algún indicador del contexto se calcula sobre menos de 30 puntuaciones: el sistema lo deja en blanco y el usuario puede ampliar el contexto quitando un filtro. \\ \addlinespace
 Postcondición & Ninguna: la consulta no modifica los datos. \\ \addlinespace
 Requisitos & RF07, RF09, RF11--RF14, RF18. \\ \bottomrule
@@ -1164,8 +1165,8 @@ Requisitos & RF08, RF14, RF15. \\ \bottomrule
 \textbf{CU07} & \textbf{Comparar con Cataluña} \\ \midrule
 Actor principal & El del caso que lo incluye: inspección (CU03) o dirección de centro (CU04). \\ \addlinespace
 Precondición & El usuario ha seleccionado un área territorial o ha definido un contexto. \\ \addlinespace
-Flujo principal & 1. El sistema calcula la puntuación media de la selección y la de Cataluña con la misma convocatoria y competencia.\newline 2. El sistema muestra la desviación entre las dos y su estado con semáforo. \\ \addlinespace
-Extensiones & 1a. No hay ningún área ni contexto seleccionado: la desviación vale 0, porque la selección es toda Cataluña, y el semáforo indica la variación respecto a la convocatoria anterior.\newline 1b. La selección tiene menos de 30 puntuaciones: el sistema deja la comparación en blanco. \\ \addlinespace
+Flujo principal & 1. El sistema calcula la puntuación media de la selección y la de Cataluña con la misma convocatoria y competencia.\newline 2. El sistema muestra la desviación entre las dos y su estado. \\ \addlinespace
+Extensiones & 1a. No hay ningún área ni contexto seleccionado: la desviación vale 0, porque la selección es toda Cataluña, y el estado indica la variación respecto a la convocatoria anterior.\newline 1b. La selección tiene menos de 30 puntuaciones: el sistema deja la comparación en blanco. \\ \addlinespace
 Postcondición & Ninguna: la consulta no modifica los datos. \\ \addlinespace
 Requisitos & RF09, RF13, RF14. \\ \bottomrule
 \end{tabularx}
@@ -1314,7 +1315,7 @@ La Figura~\ref{fig:arquitectura} muestra el recorrido de los datos desde el fich
     \item \textbf{Fuente.} El fichero CSV del Portal de Datos Abiertos, que se usa tal como se publica \cite{transparencia_catalunya_2024}.
     \item \textbf{ETL.} Power Query lee el fichero, comprueba que cumple las reglas de la auditoría, unifica los códigos, corrige los errores estructurales y marca la calidad de cada puntuación (RF01--RF05).
     \item \textbf{Modelo dimensional.} Los datos depurados se cargan en el motor en memoria de Power BI, en un esquema en estrella con dos tablas de hechos y seis dimensiones (Sección~\ref{sec:modelo_dimensional}).
-    \item \textbf{Lógica analítica.} Las medidas DAX calculan los 12 KPIs, los semáforos y la regla de las 30 puntuaciones según los filtros activos en cada momento (RF11, RF13, RF14).
+    \item \textbf{Lógica analítica.} Las medidas DAX calculan los 12 KPIs, su estado y la regla de las 30 puntuaciones según los filtros activos en cada momento (RF11, RF13, RF14).
     \item \textbf{Interfaz.} El informe de Power BI contiene los tres paneles, uno por perfil (RF16--RF18), con los filtros sincronizados entre ellos (RF10).
 \end{enumerate}
 
@@ -1412,7 +1413,7 @@ Método de evaluación & Revisión de todos los textos de los tres paneles con u
 \textbf{RNF05} & \textbf{Accesibilidad visual} \\ \midrule
 Requisito de & Usabilidad (accesibilidad). \\ \addlinespace
 Descripción & Los paneles se pueden leer con daltonismo o con baja visión. \\ \addlinespace
-Justificación & Los semáforos y las series de los gráficos se distinguen por el color. Quien no diferencia el rojo del verde, o no lee un texto con poco contraste, perdería esa información. \\ \addlinespace
+Justificación & El estado de los KPIs y las series de los gráficos se distinguen por el color. Quien no diferencia el rojo del verde, o no lee un texto con poco contraste, perdería esa información. \\ \addlinespace
 Criterio de aceptación & Contraste entre el texto y su fondo de al menos 4,5:1 (nivel AA de WCAG 2.1 \cite{w3c_wcag21}) y paletas cuyos colores se distinguen con deuteranopía y con protanopía. \\ \addlinespace
 Método de evaluación & Cálculo de la razón de contraste de cada combinación de color de texto y de fondo con la fórmula de WCAG 2.1, y revisión de capturas de los tres paneles con un simulador de daltonismo. \\ \bottomrule
 \end{tabularx}
@@ -1541,7 +1542,7 @@ La Tabla~\ref{tab:historias} agrupa las historias por perfil. La columna de traz
 \caption{Historias de usuario.}\label{tab:historias}
 \endlastfoot
 \multicolumn{3}{@{}l}{\textit{Perfil estratégico (Departamento de Educación)}} \\
-HU01 & \textit{Como responsable del Departamento de Educación, quiero ver de un vistazo la puntuación media de Cataluña y el porcentaje de alumnado con nivel bajo para saber si las competencias básicas mejoran.}\newline \textbullet{} Al abrir el panel aparecen K01 y K03 de la última convocatoria.\newline \textbullet{} La variación respecto a la convocatoria anterior lleva un semáforo favorable, neutro o desfavorable.\newline \textbullet{} Las medias de Cataluña difieren menos de 0,5 puntos de las oficiales. & CU02\newline RF11, RF13, RF16\newline Imprescindible \\ \addlinespace
+HU01 & \textit{Como responsable del Departamento de Educación, quiero ver de un vistazo la puntuación media de Cataluña y el porcentaje de alumnado con nivel bajo para saber si las competencias básicas mejoran.}\newline \textbullet{} Al abrir el panel aparecen K01 y K03 de la última convocatoria.\newline \textbullet{} La variación respecto a la convocatoria anterior muestra su estado: favorable, neutro o desfavorable.\newline \textbullet{} Las medias de Cataluña difieren menos de 0,5 puntos de las oficiales. & CU02\newline RF11, RF13, RF16\newline Imprescindible \\ \addlinespace
 HU02 & \textit{Como responsable del Departamento de Educación, quiero ver la evolución de cada competencia en todas las convocatorias para detectar tendencias.}\newline \textbullet{} El gráfico muestra de 2009 a 2025 aunque se filtre un año.\newline \textbullet{} 2020 aparece como un hueco señalado.\newline \textbullet{} El aviso sobre la comparabilidad entre convocatorias está a la vista. & CU06\newline RF08, RF15\newline Imprescindible \\ \addlinespace
 HU03 & \textit{Como responsable del Departamento de Educación, quiero saber qué competencias empeoran respecto a la convocatoria anterior para decidir dónde intervenir.}\newline \textbullet{} Una tabla muestra la variación (K10) de cada competencia.\newline \textbullet{} Una tarjeta indica el porcentaje de competencias que mejoran (K12).\newline \textbullet{} En la primera convocatoria la variación queda en blanco. & CU02\newline RF11, RF16\newline Imprescindible \\ \addlinespace
 \multicolumn{3}{@{}l}{\textit{Perfil táctico (inspección y coordinación territorial)}} \\
@@ -1551,7 +1552,7 @@ HU06 & \textit{Como inspector o inspectora, quiero ver la posición de mi área 
 HU07 & \textit{Como inspector o inspectora, quiero seguir la evolución de las áreas aunque haya cambiado la organización territorial para comparar convocatorias.}\newline \textbullet{} Las áreas se agrupan en series comparables entre convocatorias.\newline \textbullet{} Las áreas afectadas por la reorganización de 2024 están señaladas. & CU06\newline RF08, RF15\newline Imprescindible \\ \addlinespace
 \multicolumn{3}{@{}l}{\textit{Perfil operativo (dirección de centro)}} \\
 HU08 & \textit{Como director o directora de un centro, quiero definir el contexto de mi centro para compararme con centros parecidos.}\newline \textbullet{} El panel tiene filtros de área, titularidad y hábitat.\newline \textbullet{} Los indicadores se actualizan en menos de 3 segundos.\newline \textbullet{} Si el contexto tiene menos de 30 puntuaciones, los indicadores quedan en blanco. & CU04, CU05\newline RF06, RF14, RF18\newline Imprescindible \\ \addlinespace
-HU09 & \textit{Como director o directora de un centro, quiero ver la desviación de mi contexto respecto a Cataluña para saber si estamos por encima o por debajo.}\newline \textbullet{} Una tarjeta muestra la desviación (K07) con semáforo.\newline \textbullet{} La media de Cataluña aparece al lado como referencia. & CU07\newline RF09, RF13\newline Imprescindible \\ \addlinespace
+HU09 & \textit{Como director o directora de un centro, quiero ver la desviación de mi contexto respecto a Cataluña para saber si estamos por encima o por debajo.}\newline \textbullet{} Una tarjeta muestra la desviación (K07) con su estado.\newline \textbullet{} La media de Cataluña aparece al lado como referencia. & CU07\newline RF09, RF13\newline Imprescindible \\ \addlinespace
 HU10 & \textit{Como director o directora de un centro, quiero ver la puntuación de cada subcompetencia para saber en qué aspectos concretos hay más carencias.}\newline \textbullet{} Las subcompetencias (K02) se agrupan por competencia.\newline \textbullet{} Al seleccionar una competencia solo se ven sus subcompetencias. & CU08\newline RF07\newline Imprescindible \\ \addlinespace
 HU11 & \textit{Como director o directora de un centro, quiero ver cómo se reparte el alumnado por niveles de logro para estimar cuántos alumnos necesitan refuerzo.}\newline \textbullet{} Cada competencia muestra los cuatro niveles y entre todos suman el 100\%.\newline \textbullet{} Las puntuaciones censuradas o de convocatorias con niveles no comparables no se cuentan. & CU09\newline RF04, RF12\newline Imprescindible \\ \addlinespace
 \multicolumn{3}{@{}l}{\textit{Comunes, de la desarrolladora y opcionales}} \\
@@ -1666,7 +1667,7 @@ Las seis dimensiones dan el contexto en el que se analizan los hechos. Cinco son
 
 \texttt{DimAnio} tiene una fila por año de 2009 a 2025. \texttt{IndiceConvocatoria} numera de 1 a 16 solo los años con prueba y es la base de todas las comparaciones temporales: la convocatoria anterior a 2021 es 2019, no 2020. \texttt{NotaConvocatoria} guarda los avisos de 2020 (sin prueba por la COVID-19) y de 2021 (se compara con 2019).
 
-\texttt{DimContextoCentro} tiene 120 filas, todas las combinaciones de 15 códigos de área territorial (uno de ellos para el área desconocida), 2 titularidades y 4 hábitats, aunque en los datos solo aparecen 85. Generar todas las combinaciones garantiza que cualquier registro encuentre su contexto sin consultar el fichero. La reorganización territorial de 2024 cambió el perímetro de varias áreas, así que la dimensión tiene una columna \texttt{AreaSerieComparable} que las agrupa en series con el mismo perímetro a lo largo del tiempo, y otra, \texttt{AreaConRupturaSerie}, que marca las afectadas. El fichero llama al área \guillemotleft{}Barcelona Comarques\guillemotright{} en 2024 y \guillemotleft{}Barcelonès\guillemotright{} en 2025, con el mismo perímetro y casi el mismo alumnado (5.386 y 5.408 alumnos), y el informe oficial de 2024 ya la publica como \guillemotleft{}Barcelonès\guillemotright{}. Por eso el modelo la muestra como \guillemotleft{}Barcelonès\guillemotright{} desde 2024 y reserva \guillemotleft{}Barcelona Comarques\guillemotright{} para el área anterior, hasta 2023, que tenía otro perímetro (RNF04). Girona pierde en 2024 la parte de la Cerdanya que pasa a Alt Pirineu i Aran, alrededor del 1\,\% de su alumnado. Se mantiene como serie propia porque el efecto sobre su media es de una o dos décimas como máximo, menos que el umbral del semáforo.
+\texttt{DimContextoCentro} tiene 120 filas, todas las combinaciones de 15 códigos de área territorial (uno de ellos para el área desconocida), 2 titularidades y 4 hábitats, aunque en los datos solo aparecen 85. Generar todas las combinaciones garantiza que cualquier registro encuentre su contexto sin consultar el fichero. La reorganización territorial de 2024 cambió el perímetro de varias áreas, así que la dimensión tiene una columna \texttt{AreaSerieComparable} que las agrupa en series con el mismo perímetro a lo largo del tiempo, y otra, \texttt{AreaConRupturaSerie}, que marca las afectadas. El fichero llama al área \guillemotleft{}Barcelona Comarques\guillemotright{} en 2024 y \guillemotleft{}Barcelonès\guillemotright{} en 2025, con el mismo perímetro y casi el mismo alumnado (5.386 y 5.408 alumnos), y el informe oficial de 2024 ya la publica como \guillemotleft{}Barcelonès\guillemotright{}. Por eso el modelo la muestra como \guillemotleft{}Barcelonès\guillemotright{} desde 2024 y reserva \guillemotleft{}Barcelona Comarques\guillemotright{} para el área anterior, hasta 2023, que tenía otro perímetro (RNF04). Girona pierde en 2024 la parte de la Cerdanya que pasa a Alt Pirineu i Aran, alrededor del 1\,\% de su alumnado. Se mantiene como serie propia porque el efecto sobre su media es de una o dos décimas como máximo, menos que el umbral del estado del KPI.
 
 \texttt{DimPerfilAlumno} tiene 182 filas: 2 géneros, 7 combinaciones válidas de edad y situación de edad y 13 valores del mes de nacimiento (los 12 meses y \guillemotleft{}No informado\guillemotright{}). La edad es la del año natural, porque el fichero no trae la fecha de la prueba. En 2010 la edad y el hábitat no son fiables y se marcan así, sin imputarlos.
 
@@ -1800,7 +1801,7 @@ Las reglas que solo añaden marcas informativas por registro quedan fuera del al
 
 \section{Diseño de la lógica analítica}
 \label{sec:diseno_dax}
-La lógica analítica calcula los KPIs del catálogo (Tabla~\ref{tab:kpis}) con medidas DAX, el lenguaje de cálculo de Power BI \cite{ferrari2019definitive}. Una medida no guarda ningún valor: se evalúa cada vez que cambia un filtro, con el contexto que define la selección del usuario (RF11). El modelo tiene 20 medidas en una tabla sin datos, \texttt{\_Medidas}, repartidas en carpetas: una con las medidas base (alumnos evaluados, número de puntuaciones y medias), una por cada perspectiva del CMI y una con los semáforos.
+La lógica analítica calcula los KPIs del catálogo (Tabla~\ref{tab:kpis}) con medidas DAX, el lenguaje de cálculo de Power BI \cite{ferrari2019definitive}. Una medida no guarda ningún valor: se evalúa cada vez que cambia un filtro, con el contexto que define la selección del usuario (RF11). El modelo tiene 20 medidas en una tabla sin datos, \texttt{\_Medidas}, repartidas en carpetas: una con las medidas base (alumnos evaluados, número de puntuaciones y medias), una por cada perspectiva del CMI y una con el estado de los KPIs.
 
 Todas las medidas siguen las mismas reglas:
 \begin{itemize}
@@ -1909,9 +1910,9 @@ Tres KPIs necesitan una aclaración sobre la calidad de los datos:
 
 Los KPIs se han comprobado con la validación independiente en Python, que los calcula con otra implementación a partir del mismo fichero. Las 72 medias de Cataluña por competencia y convocatoria cumplen el criterio de aceptación de 0,5 puntos frente a las oficiales (RNF06), con una diferencia máxima de 0,30. La validación usa además un umbral de alerta de 0,2: 70 de las 72 medias quedan dentro, y las dos restantes (inglés 2016, +0,24; francés 2024, +0,30) están explicadas en el informe de calidad.
 
-\subsection{Semáforos y referencias}
+\subsection{Estado de los KPIs y referencias}
 \label{sec:semaforos}
-Un semáforo indica si el valor de un KPI es favorable, neutro o desfavorable respecto a una referencia (RF13). Hay tres, uno para K01, otro para K03 y otro para K10, y cada uno se muestra en los paneles donde su referencia tiene sentido (Tabla~\ref{tab:semaforos}).
+El estado de un KPI indica si su valor es favorable, neutro o desfavorable respecto a una referencia (RF13). Se calcula para tres KPIs, K01, K03 y K10, y cada uno se muestra en los paneles donde su referencia tiene sentido (Tabla~\ref{tab:semaforos}).
 
 \begin{table}[H]
 \centering
@@ -1919,18 +1920,18 @@ Un semáforo indica si el valor de un KPI es favorable, neutro o desfavorable re
 \setstretch{1.0}\renewcommand{\arraystretch}{1.1}
 \begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{2.0cm} X >{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}p{3.2cm} @{}}
 \toprule
-\textbf{Semáforo} & \textbf{Referencia} & \textbf{Umbral} & \textbf{Panel} \\ \midrule
+\textbf{Estado} & \textbf{Referencia} & \textbf{Umbral} & \textbf{Panel} \\ \midrule
 Estado K01 & Con un área o un contexto seleccionado, Cataluña (K07). Sin selección, la convocatoria anterior (K10). & $\pm 1$ punto con K07; $\pm 0{,}5$ puntos con K10 & Táctico y operativo \\ \addlinespace
 Estado K03 & K03 de Cataluña. & $\pm 2$ puntos porcentuales & Táctico y operativo \\ \addlinespace
 Estado K10 & Cero: la variación respecto a la convocatoria anterior. & $\pm 0{,}5$ puntos & Estratégico (tarjeta y tabla por competencia) \\ \bottomrule
 \end{tabularx}
-\caption{Semáforos: referencia, umbral y panel en que se muestran.}
+\caption{Estado de los KPIs: referencia, umbral y panel en que se muestra.}
 \label{tab:semaforos}
 \end{table}
 
-En el panel estratégico no hay un territorio con el que comparar, porque muestra toda Cataluña. Allí el semáforo de K01 coincidiría con el de K10 y el de K03 valdría siempre neutro, ya que compararía Cataluña consigo misma, así que solo se muestra el de K10. Tampoco hay un semáforo temporal de K03: el porcentaje por debajo de un corte fijo depende mucho de la dificultad de cada prueba (en ciencias pasa del 13,2\,\% al 26,9\,\% de 2024 a 2025) y las pruebas no están equiparadas.
+En el panel estratégico no hay un territorio con el que comparar, porque muestra toda Cataluña. Allí el estado de K01 coincidiría con el de K10 y el de K03 valdría siempre neutro, ya que compararía Cataluña consigo misma, así que solo se muestra el de K10. Tampoco hay un estado temporal de K03: el porcentaje por debajo de un corte fijo depende mucho de la dificultad de cada prueba (en ciencias pasa del 13,2\,\% al 26,9\,\% de 2024 a 2025) y las pruebas no están equiparadas.
 
-Cada semáforo es una medida que devuelve 1, 0 o $-1$. Una cadena de formato la muestra como \guillemotleft{}$\blacktriangle$ Favorable\guillemotright{}, \guillemotleft{}$\bullet$ Neutro\guillemotright{} o \guillemotleft{}$\blacktriangledown$ Desfavorable\guillemotright{}. El estado se lee por el símbolo y la palabra, sin depender del color (RNF05), y no hace falta formato condicional. Los umbrales son propuestas del TFG. Están en las medidas, así que se pueden ajustar sin cambiar el modelo.
+Cada estado es una medida que devuelve 1, 0 o $-1$. Una cadena de formato la muestra como \guillemotleft{}$\blacktriangle$ Favorable\guillemotright{}, \guillemotleft{}$\bullet$ Neutro\guillemotright{} o \guillemotleft{}$\blacktriangledown$ Desfavorable\guillemotright{}. El estado se lee por el símbolo y la palabra, sin depender del color (RNF05), y no hace falta formato condicional. Los umbrales son propuestas del TFG. Están en las medidas, así que se pueden ajustar sin cambiar el modelo.
 
 Los niveles de logro usan cortes fijos en 55, 70 y 85 puntos, comunes a todas las competencias y convocatorias. Son niveles internos del TFG, porque el fichero no trae los niveles oficiales. Cada corte cae dentro de la horquilla oficial: nivel mínimo entre 50 y 60, nivel óptimo en 70 y nivel alto entre 80 y 90 \cite{csase_resultats}. Se han comparado con los porcentajes oficiales de 35 combinaciones de competencia y año (2018--2025). Con el corte en 55, el error medio en el nivel bajo es de 2,70 puntos porcentuales y el sesgo, de $-0{,}14$. Con un corte en 50 el sesgo sería de $-4{,}39$, y con uno en 60, de $+5{,}22$. Unos cortes distintos para cada año reproducirían mejor los porcentajes oficiales, pero dependerían de una tabla externa que habría que mantener a mano cada año (RNF09). Las convocatorias en las que el corte fijo no es fiable tienen la marca de nivel no comparable y no cuentan en K03.
 
@@ -1945,7 +1946,7 @@ La interfaz es el informe de Power BI con los tres paneles, uno por perfil (RF16
 Los tres paneles mantienen la estructura del prototipo para que el usuario no tenga que aprender una disposición nueva en cada uno:
 \begin{itemize}
     \item Arriba, una cabecera con el título del panel y, en la misma franja, los segmentadores desplegables.
-    \item Debajo, una fila de tarjetas con los KPIs principales y sus semáforos.
+    \item Debajo, una fila de tarjetas con los KPIs principales y su estado.
     \item En el centro, los gráficos y las tablas, que ocupan el resto del lienzo.
     \item Un aviso fijo sobre las limitaciones de los datos (RF15): las puntuaciones no están equiparadas, 2020 no tuvo prueba y 2021 se compara con 2019. En el panel estratégico va al pie, junto con la advertencia de que los niveles de logro son internos del TFG; en los otros dos, en el subtítulo de la cabecera.
 \end{itemize}
@@ -1954,7 +1955,7 @@ Cada página tiene un lienzo de 1280 $\times$ 720 píxeles y todos los elementos
 
 Los segmentadores de una misma columna están sincronizados entre los paneles: al cambiar de panel se conservan el año, la competencia, el área territorial, la titularidad, el hábitat y el género elegidos (RF10). El año es de selección única y se abre en la última convocatoria, 2025. Dentro de cada panel, seleccionar un elemento de un gráfico filtra o resalta los demás (CU05). Hay dos excepciones, configuradas en las interacciones del informe. El segmentador de año no filtra los gráficos de evolución, que muestran siempre todas las convocatorias (RF08). El segmentador de área no filtra las barras de desviación por área, que muestran siempre todas las áreas (RF09). En los gráficos de evolución el eje muestra también los años sin datos, de modo que 2020 aparece como un hueco y la línea no une 2019 con 2021.
 
-Para la accesibilidad (RNF05), los semáforos se leen por el símbolo y la palabra (Sección~\ref{sec:semaforos}), y no solo por el color. Los cuatro niveles de logro usan una paleta divergente de naranja a violeta de ColorBrewer (PuOr) \cite{harrower2003colorbrewer}, que se distingue con deuteranopía y con protanopía. Cada elemento visual tiene un texto alternativo para los lectores de pantalla. El texto usa la fuente Segoe UI, con el título de la cabecera en 16 puntos y los subtítulos en gris, y la palabra \guillemotleft{}Aviso\guillemotright{} en rojo oscuro. Toda la interfaz está en castellano, con los términos de los informes oficiales (RNF04).
+Para la accesibilidad (RNF05), el estado de los KPIs se lee por el símbolo y la palabra (Sección~\ref{sec:semaforos}), y no solo por el color. Los cuatro niveles de logro usan una paleta divergente de naranja a violeta de ColorBrewer (PuOr) \cite{harrower2003colorbrewer}, que se distingue con deuteranopía y con protanopía. Cada elemento visual tiene un texto alternativo para los lectores de pantalla. El texto usa la fuente Segoe UI, con el título de la cabecera en 16 puntos y los subtítulos en gris, y la palabra \guillemotleft{}Aviso\guillemotright{} en rojo oscuro. Toda la interfaz está en castellano, con los términos de los informes oficiales (RNF04).
 
 \subsection{Diseño final de los paneles}
 \label{sec:paneles}
@@ -1967,7 +1968,7 @@ Las Figuras~\ref{fig:panel_estrategico} a \ref{fig:panel_operativo} muestran la 
 \label{fig:panel_estrategico}
 \end{figure}
 
-El panel estratégico (Figura~\ref{fig:panel_estrategico}) tiene los segmentadores de año y competencia y siete tarjetas: K01, K03, K06, K10 con su semáforo en una tarjeta propia, K12 y el alumnado evaluado. El gráfico de líneas muestra K01 de cada competencia en todas las convocatorias, y la tabla resume K01, K10 con su semáforo, K11 y K03 de cada competencia en la convocatoria elegida.
+El panel estratégico (Figura~\ref{fig:panel_estrategico}) tiene los segmentadores de año y competencia y siete tarjetas: K01, K03, K06, K10 con su estado en una tarjeta propia, K12 y el alumnado evaluado. El gráfico de líneas muestra K01 de cada competencia en todas las convocatorias, y la tabla resume K01, K10 con su estado, K11 y K03 de cada competencia en la convocatoria elegida.
 
 \begin{figure}[H]
 \centering
@@ -1976,7 +1977,7 @@ El panel estratégico (Figura~\ref{fig:panel_estrategico}) tiene los segmentador
 \label{fig:panel_tactico}
 \end{figure}
 
-El panel táctico (Figura~\ref{fig:panel_tactico}) añade los segmentadores de área territorial y de género. Las tarjetas muestran las brechas (K04, K05 y K08), la posición del área (K09) y los semáforos de K01 y K03 del área frente a Cataluña. Las barras ordenan las áreas por su desviación respecto a Cataluña (K07), con la puntuación media y la posición en la descripción emergente. La matriz cruza el área con la titularidad, y el gráfico de evolución agrupa las áreas en series comparables.
+El panel táctico (Figura~\ref{fig:panel_tactico}) añade los segmentadores de área territorial y de género. Las tarjetas muestran las brechas (K04, K05 y K08), la posición del área (K09) y el estado de K01 y K03 del área frente a Cataluña. Las barras ordenan las áreas por su desviación respecto a Cataluña (K07), con la puntuación media y la posición en la descripción emergente. La matriz cruza el área con la titularidad, y el gráfico de evolución agrupa las áreas en series comparables.
 
 \begin{figure}[H]
 \centering
@@ -1985,17 +1986,17 @@ El panel táctico (Figura~\ref{fig:panel_tactico}) añade los segmentadores de �
 \label{fig:panel_operativo}
 \end{figure}
 
-El panel operativo (Figura~\ref{fig:panel_operativo}) tiene cinco segmentadores en una fila propia, porque el contexto del centro necesita tres (área, titularidad y hábitat) además del año y la competencia. Las tarjetas comparan K01 del contexto con la media de Cataluña, con la desviación (K07) y los semáforos de K01 y K03. Los gráficos muestran K02 por subcompetencia, la distribución por nivel de logro y la evolución del contexto frente a la de Cataluña.
+El panel operativo (Figura~\ref{fig:panel_operativo}) tiene cinco segmentadores en una fila propia, porque el contexto del centro necesita tres (área, titularidad y hábitat) además del año y la competencia. Las tarjetas comparan K01 del contexto con la media de Cataluña, con la desviación (K07) y el estado de K01 y K03. Los gráficos muestran K02 por subcompetencia, la distribución por nivel de logro y la evolución del contexto frente a la de Cataluña.
 
 El diseño final cambia el prototipo en los puntos siguientes. Todos se deben a lo que se aprendió al construir las medidas y al revisar el informe con los requisitos:
 \begin{enumerate}
-    \item En el panel estratégico solo lleva semáforo la variación (K10). El prototipo lo ponía también en K01 y K03, pero sin un territorio con el que comparar el de K01 repetiría el de K10 y el de K03 valdría siempre neutro (Sección~\ref{sec:semaforos}). Los semáforos de K01 y K03 están en los paneles táctico y operativo, donde se comparan con Cataluña.
-    \item El panel táctico añade dos tarjetas con los semáforos de K01 y K03 del área y un segmentador de género, porque es el panel de la equidad. K04 ignora este filtro, ya que compara los dos géneros.
+    \item En el panel estratégico solo se muestra el estado de la variación (K10). El prototipo lo ponía también en K01 y K03, pero sin un territorio con el que comparar el de K01 repetiría el de K10 y el de K03 valdría siempre neutro (Sección~\ref{sec:semaforos}). El estado de K01 y K03 está en los paneles táctico y operativo, donde se comparan con Cataluña.
+    \item El panel táctico añade dos tarjetas con el estado de K01 y K03 del área y un segmentador de género, porque es el panel de la equidad. K04 ignora este filtro, ya que compara los dos géneros.
     \item La titularidad y el hábitat solo tienen segmentador en el panel operativo, y el género, en el táctico. RF06 los pedía en los tres paneles; en los demás se pueden aplicar desde el panel de filtros de Power BI, y con la sincronización se conservan al volver al panel que los tiene.
     \item La distribución por nivel de logro solo está en el panel operativo (RF12). El estratégico muestra K03 en una tarjeta y en la tabla por competencia; K03 es el tramo bajo de esa distribución.
     \item En los paneles táctico y operativo el aviso está en la cabecera y no al pie, para dejar más altura a los gráficos.
     \item Al seleccionar un área en el panel táctico, las barras de desviación siguen mostrando todas las áreas y no destacan la elegida. La posición y el estado del área aparecen en las tarjetas. Destacar la barra exigiría reglas de formato condicional que no se pueden comprobar fuera de Power BI Desktop.
-    \item Sin ningún área ni contexto seleccionado, la desviación respecto a Cataluña vale 0, porque la selección es toda Cataluña, y el semáforo de K01 pasa a indicar la variación respecto a la convocatoria anterior.
+    \item Sin ningún área ni contexto seleccionado, la desviación respecto a Cataluña vale 0, porque la selección es toda Cataluña, y el estado de K01 pasa a indicar la variación respecto a la convocatoria anterior.
 \end{enumerate}
 
 \section{Organización del repositorio}

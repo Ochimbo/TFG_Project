@@ -102,7 +102,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Semáforo: ±1 punto; sin contexto, variación interanual (±0,5)'"
+                  "Value": "'Umbral: ±1 punto; sin contexto, variación interanual (±0,5)'"
                 }
               }
             }

@@ -3,3 +3,5 @@ main.pdf
 *.blg
 *.aux
 *.bbl
+# Versión con los comentarios del Drive: se sube al Drive, no se versiona
+*_Drive.docx

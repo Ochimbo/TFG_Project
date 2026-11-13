@@ -102,7 +102,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Semáforo: ±2 puntos porcentuales'"
+                  "Value": "'Umbral: ±2 puntos porcentuales'"
                 }
               }
             }

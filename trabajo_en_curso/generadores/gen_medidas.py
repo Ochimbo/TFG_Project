@@ -8,7 +8,7 @@ F_REND = "1. Rendimiento académico"
 F_EQUI = "2. Equidad e inclusión"
 F_TERR = "3. Territorio y entorno"
 F_PROG = "4. Eficiencia y progreso"
-F_SEMA = "5. Semáforos"
+F_SEMA = "5. Estado de los KPIs"
 
 FMT_PUNT = "0.0"
 FMT_PCT = "0.0%"
@@ -495,8 +495,8 @@ RETURN
         folder=F_SEMA,
         fmt=FMT_SEMAFORO,
         desc=[
-            "Semáforo de K01: 1 favorable, 0 neutro, -1 desfavorable; el formato lo muestra como ▲ Favorable, "
-            "● Neutro o ▼ Desfavorable. Con algún filtro de DimContextoCentro (área, naturaleza o hábitat) compara "
+            "Estado de K01: 1 favorable, 0 neutro, -1 desfavorable; el formato lo muestra como ▲ Favorable, "
+            "● Neutro o ▼ Desfavorable. Con algún filtro de DimContextoCentro (área, titularidad o hábitat) compara "
             "con Cataluña mediante K07 (>= 1 -> 1; <= -1 -> -1; resto 0). Sin filtro de contexto de centro usa K10 "
             "(>= 0,5 -> 1; <= -0,5 -> -1; resto 0), que exige un solo año con convocatoria. BLANK si el "
             "indicador usado está en blanco. Cuando usa K10, las puntuaciones no están equiparadas entre "
@@ -525,7 +525,7 @@ RETURN
         folder=F_SEMA,
         fmt=FMT_SEMAFORO,
         desc=[
-            "Semáforo de K03: compara el % en nivel bajo del contexto con el de Cataluña (sin filtros de "
+            "Estado de K03: compara el % en nivel bajo del contexto con el de Cataluña (sin filtros de "
             "DimContextoCentro). Diferencia <= -2 puntos porcentuales -> 1 (▲ Favorable); >= +2 puntos "
             "porcentuales -> -1 (▼ Desfavorable); resto 0 (● Neutro). Sin ningún filtro de contexto de centro "
             "compara Cataluña consigo misma y vale 0: tiene sentido en los paneles táctico y operativo, no en el "
@@ -556,7 +556,7 @@ RETURN
         folder=F_SEMA,
         fmt=FMT_SEMAFORO,
         desc=[
-            "Semáforo de K10: >= 0,5 puntos -> 1 (▲ Favorable); <= -0,5 -> -1 (▼ Desfavorable); resto 0 "
+            "Estado de K10: >= 0,5 puntos -> 1 (▲ Favorable); <= -0,5 -> -1 (▼ Desfavorable); resto 0 "
             "(● Neutro). BLANK si K10 está en blanco.",
             NO_EQ,
         ],
