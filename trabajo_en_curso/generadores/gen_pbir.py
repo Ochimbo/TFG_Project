@@ -374,7 +374,7 @@ def page3():
     v = []
     v.append(header("p3_cabecera", L.pos(16, 8, 1248, 40),
                     "Visión operativa - Dirección de centro",
-                    "Seleccione el contexto del centro (área, naturaleza, hábitat) para compararlo con Cataluña. " + AVISO))
+                    "Seleccione el contexto del centro (área, titularidad, hábitat) para compararlo con Cataluña. " + AVISO))
     w = 243.2
     xs = [16 + i * (w + 8) for i in range(5)]
     v.append(slicer("p3_seg_area", L.pos(round(xs[0], 1), 52, w, 60), f_area(), "Área territorial", "AreaTerritorial"))

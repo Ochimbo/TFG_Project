@@ -32,7 +32,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Seleccione el contexto del centro (área, naturaleza, hábitat) para compararlo con Cataluña. Puntuaciones no equiparadas entre convocatorias; 2020 sin prueba (COVID-19) y 2021 se compara con 2019",
+                    "value": "Seleccione el contexto del centro (área, titularidad, hábitat) para compararlo con Cataluña. Puntuaciones no equiparadas entre convocatorias; 2020 sin prueba (COVID-19) y 2021 se compara con 2019",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "10pt",
@@ -66,7 +66,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Visión operativa - Dirección de centro. Seleccione el contexto del centro (área, naturaleza, hábitat) para compararlo con Cataluña. Puntuaciones no equiparadas entre convocatorias; 2020 sin prueba (COVID-19) y 2021 se compara con 2019'"
+                  "Value": "'Visión operativa - Dirección de centro. Seleccione el contexto del centro (área, titularidad, hábitat) para compararlo con Cataluña. Puntuaciones no equiparadas entre convocatorias; 2020 sin prueba (COVID-19) y 2021 se compara con 2019'"
                 }
               }
             }

@@ -221,7 +221,7 @@ Con estos datos, el TFG construye un Cuadro de Mando Integral en Power BI pensad
 El conjunto de datos de las evaluaciones de 6.\textordmasculine{} de primaria se publica como una única tabla plana de 32 columnas y más de un millón de filas \cite{transparencia_catalunya_2024}, mientras que los resultados oficiales se difunden mediante informes estáticos en PDF \cite{csase_resultats}. Esta situación presenta cuatro problemas:
 \begin{enumerate}
     \item \textbf{Difícil de usar sin conocimientos técnicos:} el fichero en bruto ocupa 240 MB y es muy difícil de manejar para directores, inspectores o docentes.
-    \item \textbf{No permite cruzar variables:} no es inmediato cruzar el rendimiento en cada competencia con la naturaleza del centro, el hábitat, el área territorial o el género.
+    \item \textbf{No permite cruzar variables:} no es inmediato cruzar el rendimiento en cada competencia con la titularidad del centro, el hábitat, el área territorial o el género.
     \item \textbf{Las medias esconden carencias:} las puntuaciones globales esconden diferencias entre subcompetencias (p.\,ej., comprensión lectora frente a expresión escrita).
     \item \textbf{No hay seguimiento de objetivos:} ninguna herramienta relaciona los indicadores con objetivos estratégicos ni permite seguir su evolución y detectar desviaciones.
 \end{enumerate}
@@ -238,7 +238,7 @@ La Tabla~\ref{tab:stakeholders} resume los actores implicados, distinguiendo a q
 \textbf{Actor} & \textbf{Rol} & \textbf{Necesidad principal} \\ \midrule
 \textbf{Departamento de Educación} & Destinatario y propietario de los datos & Seguir la evolución de las competencias básicas en Cataluña y orientar la política educativa. \\ \addlinespace
 \textbf{Inspección y coordinación territorial} & Usuario (nivel táctico) & Detectar brechas territoriales y de equidad para priorizar recursos de refuerzo. \\ \addlinespace
-\textbf{Dirección de centro} & Usuario (nivel operativo) & Comparar sus resultados con los de centros de contexto similar (naturaleza, hábitat, territorio). \\ \addlinespace
+\textbf{Dirección de centro} & Usuario (nivel operativo) & Comparar sus resultados con los de centros de contexto similar (titularidad, hábitat, territorio). \\ \addlinespace
 \textbf{Alumnado, familias y sociedad} & Beneficiarios indirectos & Mejores decisiones educativas y mayor transparencia sobre el sistema público. \\ \addlinespace
 \textbf{Directoras del TFG} & Supervisión y validación & Asegurar el rigor técnico y metodológico del proyecto. \\ \addlinespace
 \textbf{Desarrolladora (estudiante)} & Diseño e implementación & Construir la solución completa: ETL, modelo dimensional, KPIs y cuadros de mando. \\ \bottomrule
@@ -446,7 +446,7 @@ RF10 & Aplicar el filtrado cruzado entre los elementos de una página y conserva
 \toprule
 \textbf{ID} & \textbf{Requisito} & \textbf{Origen} \\ \midrule
 RF11 & Calcular los 12 KPIs del catálogo (Tabla~\ref{tab:kpis}) para cualquier combinación de filtros. & E, T, O \\ \addlinespace
-RF12 & Mostrar la distribución del alumnado por nivel de logro (bajo, medio-bajo, medio-alto y alto) en cada competencia. & E, O \\ \addlinespace
+RF12 & Mostrar la distribución del alumnado por nivel de logro (bajo, medio-bajo, medio-alto y alto) en cada competencia. & O \\ \addlinespace
 RF13 & Indicar con un semáforo si el valor de los KPIs principales es favorable, neutro o desfavorable respecto a su referencia. & E, T, O \\ \addlinespace
 RF14 & Dejar un indicador en blanco cuando se calcule sobre menos de 30 puntuaciones, para evitar conclusiones sobre grupos muy pequeños. & T, O \\ \addlinespace
 RF15 & Avisar de las limitaciones de los datos junto a las comparaciones temporales: las puntuaciones no están equiparadas entre convocatorias y en 2020 no hubo prueba. & E, T, O \\ \bottomrule
@@ -557,11 +557,11 @@ El panel operativo (Figura~\ref{fig:mockup_operativo}) permitirá a una direcci�
     \item Evolución de K01 del contexto frente a la de Cataluña.
 \end{enumerate}
 
-Estos bocetos se revisarán con las directoras y servirán de punto de partida para el diseño de la interfaz.
+Estos bocetos son el punto de partida del diseño de la interfaz. El diseño final de los paneles y lo que cambia respecto a ellos se recogen en la Sección~\ref{sec:paneles}.
 
 \section{Obstáculos y riesgos}
 \label{sec:riesgos}
-Una primera exploración del dataset ya ha revelado problemas concretos de calidad: códigos que cambian entre convocatorias (\textit{Públic/Pública}, \textit{H/Home}, \textit{D/Dona}), 13.357 registros de 2024 con valores de hábitat corruptos (\textit{Fins a 10001}, \textit{Fins a 10002}\ldots, típicos de un arrastre en una hoja de cálculo), la ausencia de la convocatoria 2020 y competencias que solo existen en algunos años (inglés desde 2010; conocimiento del medio y expresión oral desde 2018). Además, el dataset no incluye un identificador de centro, por lo que el panel operativo ofrecerá una comparación de referencia por contexto y no los resultados de un centro concreto. La Tabla~\ref{tab:riesgos} resume los riesgos identificados; sus planes alternativos se detallan en la Sección~\ref{sec:planesB}.
+Una primera exploración del dataset ya ha revelado problemas concretos de calidad: códigos que cambian entre convocatorias (\textit{Públic/Pública}, \textit{H/Home}, \textit{D/Dona}), 13.357 registros de 2024 con valores de hábitat corruptos (\textit{Fins a 10001}, \textit{Fins a 10002}\ldots, típicos de un arrastre en una hoja de cálculo), la ausencia de la convocatoria 2020 y competencias que solo existen en algunos años (inglés desde 2010; ciencias y comprensión oral de catalán y castellano desde 2018). Además, el dataset no incluye un identificador de centro, por lo que el panel operativo ofrecerá una comparación de referencia por contexto y no los resultados de un centro concreto. La Tabla~\ref{tab:riesgos} resume los riesgos identificados; sus planes alternativos se detallan en la Sección~\ref{sec:planesB}.
 
 \begin{table}[H]
 \centering
@@ -1074,7 +1074,7 @@ Requisitos & RF01--RF05, RNF07, RNF09. \\ \bottomrule
 \textbf{CU02} & \textbf{Consultar el panel estratégico} \\ \midrule
 Actor principal & Departamento de Educación (E). \\ \addlinespace
 Precondición & El modelo tiene al menos una convocatoria cargada (CU01). \\ \addlinespace
-Flujo principal & 1. El usuario abre el panel estratégico.\newline 2. El sistema muestra, para la última convocatoria, la puntuación media, el alumnado en nivel bajo, la dispersión, la variación respecto a la convocatoria anterior, el porcentaje de competencias que mejoran y el alumnado evaluado. La puntuación media, el alumnado en nivel bajo y la variación llevan semáforo.\newline 3. El sistema muestra la evolución de la puntuación media de cada competencia en todas las convocatorias.\newline 4. El sistema muestra una tabla con los indicadores de cada competencia en la convocatoria elegida. \\ \addlinespace
+Flujo principal & 1. El usuario abre el panel estratégico.\newline 2. El sistema muestra, para la última convocatoria, la puntuación media, el alumnado en nivel bajo, la dispersión, la variación respecto a la convocatoria anterior, el porcentaje de competencias que mejoran y el alumnado evaluado. La variación lleva semáforo.\newline 3. El sistema muestra la evolución de la puntuación media de cada competencia en todas las convocatorias.\newline 4. El sistema muestra una tabla con los indicadores de cada competencia en la convocatoria elegida. \\ \addlinespace
 Extensiones & 2a. La convocatoria elegida es la primera de la serie: la variación respecto a la anterior queda en blanco.\newline 2b. El usuario cambia la convocatoria o la competencia: se aplica CU05 y el panel se actualiza. \\ \addlinespace
 Postcondición & Ninguna: la consulta no modifica los datos. \\ \addlinespace
 Requisitos & RF08, RF11, RF13, RF16. \\ \bottomrule
@@ -1092,7 +1092,7 @@ Requisitos & RF08, RF11, RF13, RF16. \\ \bottomrule
 \textbf{CU03} & \textbf{Consultar el panel táctico} \\ \midrule
 Actor principal & Inspección y coordinación territorial (T). \\ \addlinespace
 Precondición & El modelo tiene al menos una convocatoria cargada (CU01). \\ \addlinespace
-Flujo principal & 1. El usuario abre el panel táctico.\newline 2. El sistema muestra, para la última convocatoria, la brecha de género, la brecha entre centros públicos y privados, la diferencia entre municipios urbanos y rurales y la desviación de cada área respecto a Cataluña.\newline 3. El usuario selecciona un área territorial.\newline 4. El sistema muestra la posición del área entre todas las áreas y compara sus resultados con Cataluña (CU07). El gráfico de desviaciones sigue mostrando todas las áreas.\newline 5. El sistema muestra la evolución de la puntuación media, con las áreas agrupadas en series comparables entre convocatorias. \\ \addlinespace
+Flujo principal & 1. El usuario abre el panel táctico.\newline 2. El sistema muestra, para la última convocatoria, la brecha de género, la brecha entre centros públicos y privados, la diferencia entre municipios urbanos y rurales y la desviación de cada área respecto a Cataluña.\newline 3. El usuario selecciona un área territorial.\newline 4. El sistema muestra la posición del área entre todas las áreas y compara sus resultados con Cataluña (CU07), con el estado de la puntuación media y del alumnado en nivel bajo. El gráfico de desviaciones sigue mostrando todas las áreas.\newline 5. El sistema muestra la evolución de la puntuación media, con las áreas agrupadas en series comparables entre convocatorias. \\ \addlinespace
 Extensiones & 3a. El usuario no selecciona ningún área: los indicadores se calculan para el total de Cataluña y la posición del área queda en blanco.\newline 3b. El usuario cambia la convocatoria, la competencia u otro filtro: se aplica CU05 y el panel se actualiza. \\ \addlinespace
 Postcondición & Ninguna: la consulta no modifica los datos. \\ \addlinespace
 Requisitos & RF09, RF11, RF13, RF17. \\ \bottomrule
@@ -1165,7 +1165,7 @@ Requisitos & RF08, RF14, RF15. \\ \bottomrule
 Actor principal & El del caso que lo incluye: inspección (CU03) o dirección de centro (CU04). \\ \addlinespace
 Precondición & El usuario ha seleccionado un área territorial o ha definido un contexto. \\ \addlinespace
 Flujo principal & 1. El sistema calcula la puntuación media de la selección y la de Cataluña con la misma convocatoria y competencia.\newline 2. El sistema muestra la desviación entre las dos y su estado con semáforo. \\ \addlinespace
-Extensiones & 1a. No hay ningún área ni contexto seleccionado: la desviación queda en blanco.\newline 1b. La selección tiene menos de 30 puntuaciones: el sistema deja la comparación en blanco. \\ \addlinespace
+Extensiones & 1a. No hay ningún área ni contexto seleccionado: la desviación vale 0, porque la selección es toda Cataluña, y el semáforo indica la variación respecto a la convocatoria anterior.\newline 1b. La selección tiene menos de 30 puntuaciones: el sistema deja la comparación en blanco. \\ \addlinespace
 Postcondición & Ninguna: la consulta no modifica los datos. \\ \addlinespace
 Requisitos & RF09, RF13, RF14. \\ \bottomrule
 \end{tabularx}
@@ -1201,7 +1201,7 @@ Requisitos & RF07, RF14. \\ \bottomrule
 Actor principal & Dirección de centro (O), desde CU04. \\ \addlinespace
 Precondición & El usuario ha definido el contexto de su centro (CU04). \\ \addlinespace
 Flujo principal & 1. El sistema muestra, para cada competencia, el porcentaje del alumnado del contexto en cada nivel de logro: bajo, medio-bajo, medio-alto y alto. \\ \addlinespace
-Extensiones & 1a. Hay puntuaciones marcadas como no válidas: no se cuentan en ningún nivel.\newline 1b. La competencia tiene menos de 30 puntuaciones en el contexto: su distribución queda en blanco. \\ \addlinespace
+Extensiones & 1a. Hay puntuaciones censuradas o de una convocatoria con niveles no comparables: no se cuentan en ningún nivel.\newline 1b. La competencia tiene menos de 30 puntuaciones en el contexto: su distribución queda en blanco. \\ \addlinespace
 Postcondición & Ninguna: la consulta no modifica los datos. \\ \addlinespace
 Requisitos & RF04, RF12, RF14. \\ \bottomrule
 \end{tabularx}
@@ -1541,11 +1541,11 @@ La Tabla~\ref{tab:historias} agrupa las historias por perfil. La columna de traz
 \caption{Historias de usuario.}\label{tab:historias}
 \endlastfoot
 \multicolumn{3}{@{}l}{\textit{Perfil estratégico (Departamento de Educación)}} \\
-HU01 & \textit{Como responsable del Departamento de Educación, quiero ver de un vistazo la puntuación media de Cataluña y el porcentaje de alumnado con nivel bajo para saber si las competencias básicas mejoran.}\newline \textbullet{} Al abrir el panel aparecen K01 y K03 de la última convocatoria.\newline \textbullet{} Cada tarjeta lleva un semáforo favorable, neutro o desfavorable.\newline \textbullet{} Las medias de Cataluña difieren menos de 0,5 puntos de las oficiales. & CU02\newline RF11, RF13, RF16\newline Imprescindible \\ \addlinespace
+HU01 & \textit{Como responsable del Departamento de Educación, quiero ver de un vistazo la puntuación media de Cataluña y el porcentaje de alumnado con nivel bajo para saber si las competencias básicas mejoran.}\newline \textbullet{} Al abrir el panel aparecen K01 y K03 de la última convocatoria.\newline \textbullet{} La variación respecto a la convocatoria anterior lleva un semáforo favorable, neutro o desfavorable.\newline \textbullet{} Las medias de Cataluña difieren menos de 0,5 puntos de las oficiales. & CU02\newline RF11, RF13, RF16\newline Imprescindible \\ \addlinespace
 HU02 & \textit{Como responsable del Departamento de Educación, quiero ver la evolución de cada competencia en todas las convocatorias para detectar tendencias.}\newline \textbullet{} El gráfico muestra de 2009 a 2025 aunque se filtre un año.\newline \textbullet{} 2020 aparece como un hueco señalado.\newline \textbullet{} El aviso sobre la comparabilidad entre convocatorias está a la vista. & CU06\newline RF08, RF15\newline Imprescindible \\ \addlinespace
 HU03 & \textit{Como responsable del Departamento de Educación, quiero saber qué competencias empeoran respecto a la convocatoria anterior para decidir dónde intervenir.}\newline \textbullet{} Una tabla muestra la variación (K10) de cada competencia.\newline \textbullet{} Una tarjeta indica el porcentaje de competencias que mejoran (K12).\newline \textbullet{} En la primera convocatoria la variación queda en blanco. & CU02\newline RF11, RF16\newline Imprescindible \\ \addlinespace
 \multicolumn{3}{@{}l}{\textit{Perfil táctico (inspección y coordinación territorial)}} \\
-HU04 & \textit{Como inspector o inspectora, quiero comparar cada área territorial con la media de Cataluña para detectar las que se alejan.}\newline \textbullet{} Un gráfico muestra la desviación (K07) de todas las áreas.\newline \textbullet{} Al seleccionar un área se siguen viendo las demás y la elegida queda destacada. & CU03, CU07\newline RF09, RF17\newline Imprescindible \\ \addlinespace
+HU04 & \textit{Como inspector o inspectora, quiero comparar cada área territorial con la media de Cataluña para detectar las que se alejan.}\newline \textbullet{} Un gráfico muestra la desviación (K07) de todas las áreas.\newline \textbullet{} Al seleccionar un área se siguen viendo las demás, y su posición y su estado aparecen en las tarjetas. & CU03, CU07\newline RF09, RF17\newline Imprescindible \\ \addlinespace
 HU05 & \textit{Como inspector o inspectora, quiero conocer las brechas de género, titularidad y hábitat para detectar problemas de equidad.}\newline \textbullet{} El panel muestra K04, K05 y K08 con el filtro activo.\newline \textbullet{} El signo de cada brecha indica a favor de qué grupo es.\newline \textbullet{} Una brecha calculada sobre menos de 30 puntuaciones queda en blanco. & CU03\newline RF11, RF14, RF17\newline Imprescindible \\ \addlinespace
 HU06 & \textit{Como inspector o inspectora, quiero ver la posición de mi área entre todas para decidir dónde priorizar el refuerzo.}\newline \textbullet{} Al seleccionar un área aparece su posición (K09) sobre el total de áreas.\newline \textbullet{} Sin área seleccionada, la posición queda en blanco. & CU03\newline RF17\newline Imprescindible \\ \addlinespace
 HU07 & \textit{Como inspector o inspectora, quiero seguir la evolución de las áreas aunque haya cambiado la organización territorial para comparar convocatorias.}\newline \textbullet{} Las áreas se agrupan en series comparables entre convocatorias.\newline \textbullet{} Las áreas afectadas por la reorganización de 2024 están señaladas. & CU06\newline RF08, RF15\newline Imprescindible \\ \addlinespace
@@ -1553,7 +1553,7 @@ HU07 & \textit{Como inspector o inspectora, quiero seguir la evolución de las �
 HU08 & \textit{Como director o directora de un centro, quiero definir el contexto de mi centro para compararme con centros parecidos.}\newline \textbullet{} El panel tiene filtros de área, titularidad y hábitat.\newline \textbullet{} Los indicadores se actualizan en menos de 3 segundos.\newline \textbullet{} Si el contexto tiene menos de 30 puntuaciones, los indicadores quedan en blanco. & CU04, CU05\newline RF06, RF14, RF18\newline Imprescindible \\ \addlinespace
 HU09 & \textit{Como director o directora de un centro, quiero ver la desviación de mi contexto respecto a Cataluña para saber si estamos por encima o por debajo.}\newline \textbullet{} Una tarjeta muestra la desviación (K07) con semáforo.\newline \textbullet{} La media de Cataluña aparece al lado como referencia. & CU07\newline RF09, RF13\newline Imprescindible \\ \addlinespace
 HU10 & \textit{Como director o directora de un centro, quiero ver la puntuación de cada subcompetencia para saber en qué aspectos concretos hay más carencias.}\newline \textbullet{} Las subcompetencias (K02) se agrupan por competencia.\newline \textbullet{} Al seleccionar una competencia solo se ven sus subcompetencias. & CU08\newline RF07\newline Imprescindible \\ \addlinespace
-HU11 & \textit{Como director o directora de un centro, quiero ver cómo se reparte el alumnado por niveles de logro para estimar cuántos alumnos necesitan refuerzo.}\newline \textbullet{} Cada competencia muestra los cuatro niveles y entre todos suman el 100\%.\newline \textbullet{} Las puntuaciones marcadas como no válidas no se cuentan. & CU09\newline RF04, RF12\newline Imprescindible \\ \addlinespace
+HU11 & \textit{Como director o directora de un centro, quiero ver cómo se reparte el alumnado por niveles de logro para estimar cuántos alumnos necesitan refuerzo.}\newline \textbullet{} Cada competencia muestra los cuatro niveles y entre todos suman el 100\%.\newline \textbullet{} Las puntuaciones censuradas o de convocatorias con niveles no comparables no se cuentan. & CU09\newline RF04, RF12\newline Imprescindible \\ \addlinespace
 \multicolumn{3}{@{}l}{\textit{Comunes, de la desarrolladora y opcionales}} \\
 HU12 & \textit{Como usuario del CMI, quiero que se mantenga la selección de año, competencia y área al cambiar de panel para no tener que repetir los filtros.}\newline \textbullet{} Al cambiar de panel, los filtros de año, competencia y área conservan su valor.\newline \textbullet{} Cada panel cabe en una pantalla sin desplazamiento. & CU05, CU10\newline RF10, RNF03\newline Imprescindible \\ \addlinespace
 HU13 & \textit{Como desarrolladora, quiero incorporar una convocatoria nueva sustituyendo el fichero para no tener que rediseñar el modelo cada año.}\newline \textbullet{} La actualización solo requiere cambiar el fichero y, si acaso, parámetros documentados.\newline \textbullet{} El número de registros por convocatoria coincide con el del fichero. & CU01\newline RF01, RNF09\newline Imprescindible \\ \addlinespace
@@ -1566,79 +1566,479 @@ HU15 & \textit{Como inspector o inspectora, quiero consultar el CMI desde el nav
 % ------------------------------------------
 \chapter{Diseño}
 \label{cap:diseno}
-\textit{Apartado en preparación.}
-% Introducción del capítulo: qué contiene y de dónde parte. Hay un apartado por cada etapa de la arquitectura
-% general (Sección 7.3): modelo dimensional, ETL, lógica analítica e interfaz, más la organización del repositorio.
-% El modelo dimensional va antes que la ETL porque la ETL se diseña para cargarlo.
 % Nombres vinculantes: trabajo_en_curso/week2/DECISIONES.md, sección «Nombres».
+El diseño describe cómo se construye el sistema especificado en el Capítulo~\ref{cap:especificacion}. Tiene un apartado por cada etapa de la arquitectura general (Sección~\ref{sec:arquitectura}): el modelo dimensional, la ETL, la lógica analítica y la interfaz. El modelo dimensional va primero porque la ETL se diseña para cargarlo. El último apartado describe la organización del repositorio, donde se guardan todos los ficheros del proyecto.
+
+El capítulo recoge las decisiones de diseño y su justificación. El detalle completo está en cuatro documentos del repositorio (Sección~\ref{sec:organizacion_proyecto}): el informe de calidad de los datos, el documento del modelo con el diccionario de datos, las fichas de los KPIs y la guía de uso. Las cifras de filas y de resultados proceden del modelo implementado y se han comprobado con la validación independiente en Python.
 
 \section{Diseño del modelo dimensional}
 \label{sec:modelo_dimensional}
-% Es el modelo de la base de datos del sistema. El diseño conceptual ya está hecho: es el modelo conceptual de la
-% Sección 7.2 (sec:modelo_conceptual). Aquí no se repite ni se abre un apartado de «diseño conceptual»: se remite
-% a él en la primera frase y se parte de sus clases y de sus restricciones de integridad (Tabla tab:restricciones).
+El modelo dimensional es la base de datos del sistema: las tablas que la ETL carga en Power BI y sobre las que se calculan los KPIs. Parte del modelo conceptual de la Sección~\ref{sec:modelo_conceptual}, que es el diseño conceptual del sistema, y de sus restricciones de integridad (Tabla~\ref{tab:restricciones}). El diseño sigue el método de Kimball \cite{kimball2013data}. Primero se traducen las clases a tablas de hechos y dimensiones. Después se fija la granularidad de cada tabla de hechos y se definen las dimensiones. Al final, las columnas se documentan en el diccionario de datos.
+
+El subobjetivo SO3 preveía cuatro dimensiones: tiempo, alumno, contexto del centro y competencia. El diseño añade dos, el nivel de logro y la calidad del dato. Las restricciones RI3 y RI4 y el requisito RF04 obligan a guardar en cada puntuación su nivel y sus marcas de calidad, y como dimensiones se pueden filtrar igual que el resto.
 
 \subsection{Diseño lógico: esquema en estrella}
 \label{sec:diseno_logico}
-% Traducción del modelo conceptual a tablas. Contenido: tabla de correspondencia (clase o asociación del modelo
-% conceptual -> tabla de hechos o dimensión), decisiones de la traducción (qué clases se funden o se dividen y
-% por qué; Indicador y Perspectiva no son tablas, se resuelven en la lógica analítica), figura del esquema en
-% estrella (diagrama en estrella, en imagenes/diseno/) con las relaciones y su cardinalidad, y cómo garantiza el
-% diseño cada restricción de integridad (RI1--RI7).
+El diseño lógico traduce el modelo conceptual a tablas. La Tabla~\ref{tab:correspondencia} indica en qué tabla acaba cada clase o asociación y cómo se traduce.
+
+{\small\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{longtable}{@{} >{\raggedright\arraybackslash}p{3.5cm} >{\raggedright\arraybackslash}p{3.6cm} p{7.2cm} @{}}
+\toprule
+\textbf{Modelo conceptual} & \textbf{Tabla} & \textbf{Traducción} \\ \midrule
+\endfirsthead
+\toprule
+\textbf{Modelo conceptual} & \textbf{Tabla} & \textbf{Traducción} \\ \midrule
+\endhead
+\bottomrule
+\caption{Correspondencia entre el modelo conceptual y el modelo dimensional.}\label{tab:correspondencia}
+\endlastfoot
+\textit{Evaluación} & \texttt{FactEvaluacion} y \texttt{DimPerfilAlumno} & Cada evaluación es una fila de hechos. Sus atributos (género, edad, situación de edad y mes de nacimiento) pasan a una dimensión con todas las combinaciones posibles. El código de alumno no se carga (RNF08). \\ \addlinespace
+\textit{Puntuación} (clase asociativa) & \texttt{FactPuntuacion} & Cada puntuación no nula es una fila de hechos con las claves de su evaluación y de su elemento evaluado, el valor y las claves del nivel de logro y de la calidad. \\ \addlinespace
+\textit{Convocatoria} & \texttt{DimAnio} & Una fila por año de 2009 a 2025, incluido 2020, que no tiene evaluaciones. \\ \addlinespace
+\textit{ContextoDeCentro} y \textit{ÁreaTerritorial} & \texttt{DimContextoCentro} & Las dos clases se funden en una dimensión con todas las combinaciones de área, titularidad y hábitat. Los atributos del área (serie comparable y ruptura de serie) son columnas de esa dimensión. \\ \addlinespace
+\textit{ElementoEvaluado}, \textit{Competencia}, \textit{Subcompetencia} y \guillemotleft{}se desglosa en\guillemotright{} & \texttt{DimCompetencia} & La jerarquía se aplana en una tabla con una fila por columna de puntuación del fichero (24). \texttt{EsGlobal} distingue las competencias de las subcompetencias y \texttt{Materia} agrupa cada subcompetencia en su competencia. \\ \addlinespace
+\textit{NivelDeLogro} y \guillemotleft{}se clasifica en\guillemotright{} & \texttt{DimNivelLogro} & Los cuatro niveles más un miembro \guillemotleft{}No aplica\guillemotright{} que reciben las subcompetencias, de modo que la clave del nivel nunca es nula. \\ \addlinespace
+Marcas de calidad de \textit{Puntuación} & \texttt{DimCalidadDato} & Las cuatro marcas se codifican en una sola clave, una máscara de 4 bits, y la dimensión enumera sus 16 combinaciones. \\ \addlinespace
+\textit{Indicador} y \textit{Perspectiva} & Ninguna & Cada indicador es una medida DAX y cada perspectiva, una carpeta de medidas (Sección~\ref{sec:diseno_dax}). \\
+\end{longtable}}
+
+La traducción sigue tres criterios. El primero es fundir en la dimensión las clases que solo describen a otra. \textit{ÁreaTerritorial} solo se usa a través del contexto del centro, así que sus atributos se repiten en \texttt{DimContextoCentro} en lugar de formar una tabla encadenada. El esquema queda así en estrella y no en copo de nieve, que es la forma que recomienda Kimball para el análisis \cite{kimball2013data}. Lo mismo ocurre con la especialización de \textit{ElementoEvaluado}, que se convierte en un atributo.
+
+El segundo criterio es que ninguna fila de hechos tenga una clave nula. Cada ausencia se representa con un miembro propio de la dimensión: el nivel \guillemotleft{}No aplica\guillemotright{}, el área \guillemotleft{}Desconocida\guillemotright{}, el hábitat \guillemotleft{}No fiable\guillemotright{} o la situación de edad \guillemotleft{}Desconocida\guillemotright{}. Así cualquier filtro sobre una dimensión cuenta todas las filas de hechos.
+
+El tercero es usar claves deterministas. Cada clave se calcula con una fórmula a partir de los códigos del fichero; por ejemplo, la del contexto es $\mathit{AreaCodigo}\cdot 100 + \mathit{NaturalezaCodigo}\cdot 10 + \mathit{HabitatCodigo}$. Los hechos y las dimensiones se enlazan sin combinar consultas, y una convocatoria nueva no cambia ninguna clave existente (RNF09).
+
+La Figura~\ref{fig:esquema_estrella} muestra el esquema en estrella resultante: dos tablas de hechos y seis dimensiones unidas por nueve relaciones. Todas las relaciones son de muchos a uno, están activas y filtran en un solo sentido, de la dimensión a los hechos. \texttt{DimAnio}, \texttt{DimContextoCentro} y \texttt{DimPerfilAlumno} son dimensiones conformadas: las comparten las dos tablas de hechos, de modo que un filtro de año, de contexto o de perfil se aplica a las dos. \texttt{DimCompetencia}, \texttt{DimNivelLogro} y \texttt{DimCalidadDato} solo se relacionan con \texttt{FactPuntuacion}, porque describen puntuaciones y no evaluaciones. Las dos tablas de hechos no se relacionan entre sí.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{imagenes/diseno/esquema_estrella.png}
+\caption{Esquema en estrella del modelo dimensional (claves y columnas principales).}
+\label{fig:esquema_estrella}
+\end{figure}
+
+La Tabla~\ref{tab:ri_diseno} indica cómo garantiza el diseño cada restricción de integridad de la Tabla~\ref{tab:restricciones}. Cada una se comprueba además con una prueba de la validación independiente, que se ejecuta sobre las tablas que produce la réplica de la ETL.
+
+\begin{table}[H]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} p{1.1cm} X @{}}
+\toprule
+\textbf{ID} & \textbf{Cómo se garantiza en el modelo dimensional} \\ \midrule
+RI1 & Cada dimensión tiene una clave determinista única, y ningún hecho apunta a una clave que no exista. El contexto se identifica por la combinación codificada de área, titularidad y hábitat. \\ \addlinespace
+RI2 & \texttt{DimCompetencia} guarda el periodo de vigencia de cada elemento (\texttt{AnioInicio}, \texttt{AnioFin}). Ninguna puntuación queda fuera de ese periodo, y el año de inicio coincide con el primer año con datos de cada columna. \\ \addlinespace
+RI3 & La ETL asigna el nivel 0 \guillemotleft{}No aplica\guillemotright{} a toda subcompetencia y un nivel de 1 a 4 a toda competencia, según su valor. \\ \addlinespace
+RI4 & \texttt{DimNivelLogro} guarda los límites de cada nivel. La ETL incluye el límite inferior y excluye el superior: 54,99 queda en el nivel bajo y 55,00 en el medio-bajo. \\ \addlinespace
+RI5 & \texttt{DimAnio} marca 2020 sin convocatoria y los hechos no tienen ninguna fila de ese año. \\ \addlinespace
+RI6 & La ETL deja la edad en blanco si queda fuera de 10 a 14 años. \\ \addlinespace
+RI7 & La carga se detiene si una puntuación no está entre 0 y 100 (Sección~\ref{sec:reglas_limpieza}). \\ \bottomrule
+\end{tabularx}
+\caption{Restricciones de integridad en el modelo dimensional.}
+\label{tab:ri_diseno}
+\end{table}
 
 \subsection{Tablas de hechos}
 \label{sec:tablas_hechos}
-% Granularidad de FactEvaluacion y FactPuntuacion, columnas que contienen y por qué hay dos tablas de hechos.
+El modelo tiene dos tablas de hechos, una por cada proceso que se mide: la participación del alumnado en la prueba y el resultado obtenido en cada competencia. La Tabla~\ref{tab:hechos} indica la granularidad de cada una, es decir, qué representa una fila.
+
+\begin{table}[H]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{2.7cm} X >{\raggedright\arraybackslash}p{2.0cm} >{\raggedright\arraybackslash}p{4.6cm} @{}}
+\toprule
+\textbf{Tabla} & \textbf{Granularidad} & \textbf{Filas} & \textbf{Columnas} \\ \midrule
+\texttt{FactEvaluacion} & Un registro del fichero: un alumno evaluado en una convocatoria. & 1.102.324 & \texttt{EvaluacionID}, \texttt{AnioKey}, \texttt{ContextoKey}, \texttt{PerfilKey}, \texttt{TieneCodigoAlumno}, \texttt{CompetenciasEvaluadas}. \\ \addlinespace
+\texttt{FactPuntuacion} & Una puntuación no nula de un registro en una de las 24 columnas de puntuación. & 17.728.085 (4.769.851 de competencias) & \texttt{AnioKey}, \texttt{ContextoKey}, \texttt{PerfilKey}, \texttt{CompetenciaKey}, \texttt{NivelKey}, \texttt{CalidadKey}, \texttt{Puntuacion}. \\ \bottomrule
+\end{tabularx}
+\caption{Granularidad de las tablas de hechos.}
+\label{tab:hechos}
+\end{table}
+
+\texttt{FactPuntuacion} se obtiene despivotando las 24 columnas de puntuación del fichero: cada columna pasa a ser una fila con la clave de su elemento evaluado. Así la competencia es una dimensión más y una sola medida sirve para las 24 columnas, en lugar de repetir cada KPI por columna. Según la convocatoria, la tabla tiene de 589.644 filas (2009) a 1.466.352 (2019), porque el número de subcompetencias evaluadas cambia de un año a otro. No guarda el identificador de la evaluación, que ninguna medida necesita y que añadiría 17,7 millones de valores distintos al modelo.
+
+\texttt{FactEvaluacion} existe para contar el alumnado. Si se contara a partir de las puntuaciones, el resultado dependería de la competencia filtrada y de cuántas subcompetencias tiene cada una. Como \texttt{FactEvaluacion} no se relaciona con \texttt{DimCompetencia}, el número de alumnos evaluados es el mismo sea cual sea la competencia elegida. \texttt{CompetenciasEvaluadas} cuenta las competencias con puntuación de cada alumno, y \texttt{TieneCodigoAlumno} indica si el registro original tenía código, sin guardarlo (RNF08).
 
 \subsection{Dimensiones}
 \label{sec:dimensiones}
-% Año, contexto del centro, perfil del alumno, competencia, nivel de logro y calidad del dato; claves y jerarquías.
+Las seis dimensiones dan el contexto en el que se analizan los hechos. Cinco son estáticas: la ETL las genera a partir de tablas de códigos escritas en Power Query y no leen el fichero. La sexta, \texttt{DimAnio}, se deriva de los años presentes en el fichero, para que una convocatoria nueva aparezca sin cambiar nada (RNF09).
+
+\texttt{DimAnio} tiene una fila por año de 2009 a 2025. \texttt{IndiceConvocatoria} numera de 1 a 16 solo los años con prueba y es la base de todas las comparaciones temporales: la convocatoria anterior a 2021 es 2019, no 2020. \texttt{NotaConvocatoria} guarda los avisos de 2020 (sin prueba por la COVID-19) y de 2021 (se compara con 2019).
+
+\texttt{DimContextoCentro} tiene 120 filas, todas las combinaciones de 15 códigos de área territorial (uno de ellos para el área desconocida), 2 titularidades y 4 hábitats, aunque en los datos solo aparecen 85. Generar todas las combinaciones garantiza que cualquier registro encuentre su contexto sin consultar el fichero. La reorganización territorial de 2024 cambió el perímetro de varias áreas, así que la dimensión tiene una columna \texttt{AreaSerieComparable} que las agrupa en series con el mismo perímetro a lo largo del tiempo, y otra, \texttt{AreaConRupturaSerie}, que marca las afectadas. El fichero llama al área \guillemotleft{}Barcelona Comarques\guillemotright{} en 2024 y \guillemotleft{}Barcelonès\guillemotright{} en 2025, con el mismo perímetro y casi el mismo alumnado (5.386 y 5.408 alumnos), y el informe oficial de 2024 ya la publica como \guillemotleft{}Barcelonès\guillemotright{}. Por eso el modelo la muestra como \guillemotleft{}Barcelonès\guillemotright{} desde 2024 y reserva \guillemotleft{}Barcelona Comarques\guillemotright{} para el área anterior, hasta 2023, que tenía otro perímetro (RNF04). Girona pierde en 2024 la parte de la Cerdanya que pasa a Alt Pirineu i Aran, alrededor del 1\,\% de su alumnado. Se mantiene como serie propia porque el efecto sobre su media es de una o dos décimas como máximo, menos que el umbral del semáforo.
+
+\texttt{DimPerfilAlumno} tiene 182 filas: 2 géneros, 7 combinaciones válidas de edad y situación de edad y 13 valores del mes de nacimiento (los 12 meses y \guillemotleft{}No informado\guillemotright{}). La edad es la del año natural, porque el fichero no trae la fecha de la prueba. En 2010 la edad y el hábitat no son fiables y se marcan así, sin imputarlos.
+
+\texttt{DimCompetencia} tiene 24 filas, una por columna de puntuación: 6 competencias y 18 subcompetencias. Además del periodo de vigencia, guarda el inicio del periodo de diseño estable de la prueba (\texttt{PeriodoDisenoInicio}), que limita las comparaciones temporales (Sección~\ref{sec:fichas_kpis}), y marca el francés como competencia informativa, porque lo hace una muestra muy pequeña (entre 243 y 505 alumnos al año).
+
+\texttt{DimNivelLogro} tiene los cuatro niveles internos del TFG (bajo, medio-bajo, medio-alto y alto, con cortes en 55, 70 y 85) y el miembro \guillemotleft{}No aplica\guillemotright{}. Los cortes se justifican en la Sección~\ref{sec:semaforos}.
+
+\texttt{DimCalidadDato} tiene las 16 combinaciones de las cuatro marcas de calidad que asigna la ETL (RF04): no válida (bit 1), censurada (bit 2), escala no comparable en la serie (bit 4) y nivel no comparable (bit 8). Cada puntuación lleva una sola clave en lugar de cuatro columnas de 17,7 millones de filas, y cada KPI decide qué marcas excluye. La Sección~\ref{sec:reglas_limpieza} indica qué celdas recibe cada marca.
+
+Las dimensiones tienen dos jerarquías. En \texttt{DimCompetencia}, cada competencia agrupa sus subcompetencias, y en \texttt{DimContextoCentro}, cada serie comparable agrupa sus áreas territoriales. Los atributos de texto se ordenan con una columna numérica oculta, de modo que las áreas, los niveles o las situaciones de edad aparecen en su orden lógico y no en el alfabético.
 
 \subsection{Diccionario de datos}
 \label{sec:diccionario_datos}
-% Tablas, columnas, tipos y descripción. Incluye las decisiones físicas en Power BI (modo de almacenamiento, tipos,
-% columnas ocultas y de ordenación).
+La Tabla~\ref{tab:diccionario} recoge las columnas visibles de las dimensiones, que son las que el usuario ve en los filtros y en los gráficos. Las claves, los códigos y las columnas de orden están ocultos, igual que todas las columnas de las tablas de hechos (Tabla~\ref{tab:hechos}), que solo se usan a través de las medidas. El diccionario completo, con todas las columnas, sus tipos y su origen, está en el documento del modelo del repositorio, y cada tabla y cada columna tiene además una descripción dentro del propio modelo de Power BI.
+
+{\small\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{longtable}{@{} >{\raggedright\arraybackslash}p{4.2cm} >{\raggedright\arraybackslash}p{1.6cm} p{8.5cm} @{}}
+\toprule
+\textbf{Columna} & \textbf{Tipo} & \textbf{Descripción} \\ \midrule
+\endfirsthead
+\toprule
+\textbf{Columna} & \textbf{Tipo} & \textbf{Descripción} \\ \midrule
+\endhead
+\bottomrule
+\caption{Diccionario de datos: columnas visibles de las dimensiones.}\label{tab:diccionario}
+\endlastfoot
+\multicolumn{3}{@{}l}{\textit{DimAnio}} \\
+\texttt{Anio} & Entero & Año de la convocatoria (2009--2025). \\
+\texttt{Curso} & Texto & Curso escolar, por ejemplo \guillemotleft{}2024-2025\guillemotright{}. \\
+\texttt{TieneConvocatoria} & Booleano & Falso en 2020, año sin prueba. \\
+\texttt{EsUltimaConvocatoria} & Booleano & Verdadero en la última convocatoria cargada. \\
+\texttt{NotaConvocatoria} & Texto & Aviso de 2020 y de 2021; vacío en el resto. \\ \addlinespace
+\multicolumn{3}{@{}l}{\textit{DimContextoCentro}} \\
+\texttt{AreaTerritorial} & Texto & Área territorial (15 valores, con \guillemotleft{}Desconocida\guillemotright{}). \\
+\texttt{AreaPerimetro2025} & Texto & Área a la que corresponde el territorio con la organización de 2025. \\
+\texttt{AreaSerieComparable} & Texto & Serie de perímetro constante a la que pertenece el área. \\
+\texttt{AreaConRupturaSerie} & Booleano & Verdadero en las áreas afectadas por la reorganización de 2024. \\
+\texttt{RupturaHabitat2024} & Booleano & Verdadero en Girona y en Maresme - Vallès Oriental, que cambian la clasificación del hábitat en 2024. \\
+\texttt{Naturaleza} & Texto & Titularidad del centro: Pública o Privada (incluye la concertada). En la interfaz se rotula \guillemotleft{}Titularidad\guillemotright{}. \\
+\texttt{Habitat} & Texto & Tamaño del municipio: hasta 10.000, de 10.001 a 100.000 o más de 100.000 habitantes, o \guillemotleft{}No fiable\guillemotright{}. \\ \addlinespace
+\multicolumn{3}{@{}l}{\textit{DimPerfilAlumno}} \\
+\texttt{Genero} & Texto & Niña o Niño. \\
+\texttt{EdadAnioNatural} & Entero & Edad en el año de la convocatoria (10--14) o en blanco. \\
+\texttt{SituacionEdad} & Texto & Adelantado, edad teórica (12 años), retraso de 1 o de 2 años, no fiable (2010) o desconocida. \\
+\texttt{MesNacimiento} & Entero & Mes de nacimiento (1--12) o en blanco. \\
+\texttt{TrimestreNacimiento} & Texto & T1 a T4 o \guillemotleft{}No informado\guillemotright{}. \\ \addlinespace
+\multicolumn{3}{@{}l}{\textit{DimCompetencia}} \\
+\texttt{CampoOrigen} & Texto & Columna del fichero de la que procede la puntuación. \\
+\texttt{CodigoMateria} & Texto & Columna de la puntuación global de la competencia. \\
+\texttt{Materia} & Texto & Competencia (lengua catalana, lengua castellana, matemáticas, lengua inglesa, lengua francesa o ciencias). En la interfaz se rotula \guillemotleft{}Competencia\guillemotright{}. \\
+\texttt{Subcompetencia} & Texto & Nombre de la subcompetencia o \guillemotleft{}Global\guillemotright{}. \\
+\texttt{EsGlobal} & Booleano & Verdadero en las 6 competencias. \\
+\texttt{AnioInicio}, \texttt{AnioFin} & Entero & Periodo de vigencia de la columna (RI2). \\
+\texttt{PeriodoDisenoInicio} & Entero & Primer año con el diseño de prueba actual: 2017 o 2018. \\
+\texttt{EsInformativa} & Booleano & Verdadero en lengua francesa. \\ \addlinespace
+\multicolumn{3}{@{}l}{\textit{DimNivelLogro}} \\
+\texttt{Nivel} & Texto & No aplica (subcompetencia), Bajo, Medio-bajo, Medio-alto o Alto. \\
+\texttt{LimiteInferior}, \texttt{LimiteSuperior} & Decimal & Límites del nivel: 0, 55, 70, 85 y 100. \\ \addlinespace
+\multicolumn{3}{@{}l}{\textit{DimCalidadDato}} \\
+\texttt{NoValida}, \texttt{Censurada}, \texttt{NoComparableSerie}, \texttt{NivelNoComparable} & Booleano & Marcas de calidad de la puntuación (Sección~\ref{sec:reglas_limpieza}). \\
+\texttt{DescripcionCalidad} & Texto & \guillemotleft{}Válido\guillemotright{} o la lista de problemas de la puntuación. \\
+\end{longtable}}
+
+Las columnas \texttt{Materia} y \texttt{Naturaleza} conservan su nombre técnico en el modelo, pero la interfaz las rotula \guillemotleft{}Competencia\guillemotright{} y \guillemotleft{}Titularidad\guillemotright{}, que son los términos de los informes oficiales (RNF04). Cambiar el nombre de las columnas obligaría a modificar la ETL, las medidas y la validación sin ninguna ventaja para el usuario.
+
+El modelo se implementa en Power BI con estas decisiones físicas:
+\begin{itemize}
+    \item Modo de importación: los datos se cargan en el motor en memoria de Power BI y las consultas de los paneles no vuelven a leer el fichero.
+    \item Claves enteras sin resumen automático, y \texttt{Puntuacion} como decimal fijo, que evita los errores de redondeo binario al sumar 17,7 millones de valores.
+    \item Las medidas implícitas están desactivadas: el usuario solo puede usar las medidas definidas, que aplican las reglas de la Sección~\ref{sec:diseno_dax}.
+    \item Cultura es-ES en el modelo y en la lectura del fichero, que usa la coma como separador decimal.
+    \item Cada atributo de texto con orden propio se ordena por una columna oculta con un único valor por texto.
+\end{itemize}
 
 \section{Diseño de la ETL}
 \label{sec:diseno_etl}
+La ETL lee el fichero publicado, lo comprueba, lo limpia y carga las tablas del modelo dimensional (RF01--RF05). Se escribe en Power Query, el lenguaje de transformación de Power BI, y aplica las reglas de limpieza que salieron de la auditoría de los datos (tarea T7), documentadas en el informe de calidad con los identificadores R01 a R34.
 
 \subsection{Flujo de consultas}
 \label{sec:flujo_consultas}
-% Orden de las consultas de Power Query: lectura, tabla intermedia, dimensiones y hechos.
+La ETL se organiza en consultas que se ejecutan en este orden:
+\begin{enumerate}
+    \item \texttt{RutaDatos}: parámetro con la ruta del fichero CSV. Es lo único que se cambia para cargar el fichero en otro equipo.
+    \item \texttt{stg\_Evaluaciones}: tabla intermedia (\textit{staging}) que no se carga en el modelo. Lee el fichero, comprueba su estructura y sus valores, unifica los códigos, corrige las columnas rotadas y calcula las claves de las dimensiones. Contiene casi todas las reglas de limpieza.
+    \item Dimensiones: \texttt{DimAnio} se deriva de los años de \texttt{stg\_Evaluaciones}; las otras cinco son tablas de códigos escritas en la propia consulta.
+    \item Hechos: \texttt{FactEvaluacion} toma las columnas de la evaluación. \texttt{FactPuntuacion} despivota las 24 columnas de puntuación y asigna a cada puntuación su competencia, su nivel de logro y su clave de calidad.
+    \item \texttt{\_Medidas}: tabla vacía que solo agrupa las medidas DAX (Sección~\ref{sec:diseno_dax}).
+\end{enumerate}
+
+Ninguna consulta combina tablas (\textit{merge}): como las claves se calculan con fórmulas (Sección~\ref{sec:diseno_logico}), cada tabla de hechos tiene sus claves sin buscarlas en las dimensiones. Las tres consultas que dependen de \texttt{stg\_Evaluaciones} vuelven a leer el fichero, de modo que una actualización lo lee tres veces. Es el coste de no guardar una copia intermedia, y permite actualizar el modelo solo con sustituir el fichero (RNF09). La guía de uso del repositorio explica cómo cambiar la ruta y qué hacer en la primera actualización.
 
 \subsection{Reglas de limpieza}
 \label{sec:reglas_limpieza}
-% Reglas de limpieza de la auditoría que aplica la ETL, en qué orden, qué comprobaciones detienen la carga y qué
-% hace el sistema cuando una falla (RF01--RF05). «Validación» se reserva para la comprobación del sistema
-% construido (Sección 4.3 y validación independiente en Python).
+La Tabla~\ref{tab:reglas_etl} resume las reglas de limpieza en el orden en que las aplica la ETL. La última columna indica si la regla puede detener la carga. El informe de calidad describe cada regla, las filas a las que afecta y la evidencia que la justifica.
+
+{\small\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{longtable}{@{} p{10.2cm} >{\raggedright\arraybackslash}p{2.1cm} >{\raggedright\arraybackslash}p{2.0cm} @{}}
+\toprule
+\textbf{Paso} & \textbf{Regla} & \textbf{Detiene la carga} \\ \midrule
+\endfirsthead
+\toprule
+\textbf{Paso} & \textbf{Regla} & \textbf{Detiene la carga} \\ \midrule
+\endhead
+\bottomrule
+\caption{Reglas de limpieza que aplica la ETL, en orden.}\label{tab:reglas_etl}
+\endlastfoot
+\multicolumn{3}{@{}l}{\textit{Tabla intermedia (\texttt{stg\_Evaluaciones})}} \\
+Lectura del fichero como texto y comprobación de que la cabecera tiene exactamente las 32 columnas esperadas. & R34 (en parte) & Sí \\ \addlinespace
+Identificador de la evaluación: posición del registro en el fichero, antes de cualquier filtro. & R01 & No \\ \addlinespace
+Eliminación de espacios y conversión de las cadenas vacías en valores nulos. & R05 & No \\ \addlinespace
+Conversión de las 24 puntuaciones con la coma decimal; un valor no numérico o fuera de 0 a 100 es un error. & R02 & Sí \\ \addlinespace
+Corrección de las columnas rotadas: lengua castellana en 2017 y lengua francesa en 2016. & R03, R04 & No \\ \addlinespace
+Unificación de los códigos de género, titularidad y hábitat, que cambian entre convocatorias (por ejemplo, \textit{Públic} y \textit{Pública}); un código no previsto es un error. & R09--R11 & Sí \\ \addlinespace
+Código del área territorial; el área vacía pasa a \guillemotleft{}Desconocida\guillemotright{} y un nombre no previsto es un error. & R13, R14 & Sí \\ \addlinespace
+Hábitat \guillemotleft{}No fiable\guillemotright{} en 2010 y en 29 registros de Baix Llobregat de 2014. & R12 & No \\ \addlinespace
+Edad en el año natural, mes de nacimiento y situación de edad; la edad queda en blanco si falta, si la fecha es dudosa o si está fuera de 10 a 14 años. & R16--R19, R21 & No \\ \addlinespace
+Claves de año, contexto y perfil; el código de alumno se descarta y solo se guarda si existía. & R06 & No \\ \addlinespace
+\multicolumn{3}{@{}l}{\textit{Tabla de hechos \texttt{FactPuntuacion}}} \\
+Despivotado de las 24 columnas de puntuación, sin los valores nulos. & R33 & No \\ \addlinespace
+Nivel de logro: 1 a 4 en las competencias según los cortes 55, 70 y 85; 0 en las subcompetencias. & R29 & No \\ \addlinespace
+Marcas de calidad: no válida (expresión escrita de inglés 2015), censurada (puntuaciones acumuladas en un suelo artificial: expresión escrita de catalán 2018, y global y dos subcompetencias de inglés 2015), escala no comparable en la serie y nivel no comparable (inglés 2015 y 2016, matemáticas 2015 y 2019, catalán 2018 y francés 2022). & R25--R28 & No \\
+\end{longtable}}
+
+Las comprobaciones que detienen la carga generan un error con el nombre de la regla, el valor y el identificador del registro. Power BI, por defecto, carga una celda con error como vacía y solo muestra un aviso, así que la ETL busca los registros con error y, si encuentra alguno, hace fallar la consulta entera. La actualización se detiene, el modelo conserva los datos de la carga anterior y Power BI muestra el mensaje de la regla incumplida (RF05, CU01). Con el fichero actual no se dispara ninguna: no hay valores fuera de rango ni códigos no previstos.
+
+El informe de calidad proponía mandar los códigos no previstos a una categoría \guillemotleft{}Desconocido\guillemotright{} y fijar el número de registros del fichero. La ETL detiene la carga en el primer caso, porque un código nuevo no debe pasar inadvertido (RF05), y no fija el número de registros, porque eso impediría cargar una convocatoria nueva (RNF09). El recuento de registros por convocatoria y la corrección de las columnas rotadas se comprueban en la validación independiente, no en la carga.
+
+La puntuación global de cada competencia se carga tal como se publica y no se recalcula. En ciencias, los pesos publicados (42, 25 y 33\,\%) no reproducen la global del fichero, que es la media simple de las tres subcompetencias en el 100\,\% de los registros. Las medias oficiales también salen de la global publicada, así que recalcularla rompería la conciliación con ellas (RNF06).
+
+Las reglas que solo añaden marcas informativas por registro quedan fuera del alcance mínimo y se documentan como extensiones en el documento del modelo del repositorio. Son, por ejemplo, la marca de código de alumno repetido en un mismo año (R07), la de repetición probable de curso (R08) y la de global incoherente con sus subcompetencias (R23).
 
 \section{Diseño de la lógica analítica}
 \label{sec:diseno_dax}
+La lógica analítica calcula los KPIs del catálogo (Tabla~\ref{tab:kpis}) con medidas DAX, el lenguaje de cálculo de Power BI \cite{ferrari2019definitive}. Una medida no guarda ningún valor: se evalúa cada vez que cambia un filtro, con el contexto que define la selección del usuario (RF11). El modelo tiene 20 medidas en una tabla sin datos, \texttt{\_Medidas}, repartidas en carpetas: una con las medidas base (alumnos evaluados, número de puntuaciones y medias), una por cada perspectiva del CMI y una con los semáforos.
+
+Todas las medidas siguen las mismas reglas:
+\begin{itemize}
+    \item Los KPIs de competencia solo usan las puntuaciones globales (\texttt{EsGlobal} verdadero). El filtro se añade al del usuario sin sustituirlo.
+    \item \guillemotleft{}Cataluña\guillemotright{} es el mismo cálculo sin ningún filtro de \texttt{DimContextoCentro}, conservando los de año, competencia y perfil.
+    \item Un KPI queda en blanco si se calcula sobre menos de 30 puntuaciones (RF14). La regla se aplica en las medidas de base y las demás la heredan (Sección~\ref{sec:semaforos}).
+    \item Las comparaciones temporales navegan por \texttt{IndiceConvocatoria} y no restan un año, así que 2021 se compara con 2019. Solo usan las competencias cuyo diseño de prueba no ha cambiado desde la convocatoria de referencia.
+\end{itemize}
 
 \subsection{Fichas de los KPIs}
 \label{sec:fichas_kpis}
-% Una ficha por KPI: definición, fórmula DAX, filtros que respeta y perspectiva.
+La Tabla~\ref{tab:fichas_kpis} es la ficha resumida de cada KPI, agrupada por perspectiva. Indica cómo se calcula, qué filtros respeta o sustituye, qué puntuaciones excluye y en qué panel aparece. Las fichas completas, con el sentido favorable, los casos en blanco y la fórmula DAX de cada medida, están en el documento de fichas de los KPIs del repositorio.
+
+{\small\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{longtable}{@{} >{\raggedright\arraybackslash}p{2.6cm} p{5.9cm} p{4.3cm} >{\raggedright\arraybackslash}p{1.1cm} @{}}
+\toprule
+\textbf{KPI} & \textbf{Cálculo} & \textbf{Filtros y exclusiones} & \textbf{Panel} \\ \midrule
+\endfirsthead
+\toprule
+\textbf{KPI} & \textbf{Cálculo} & \textbf{Filtros y exclusiones} & \textbf{Panel} \\ \midrule
+\endhead
+\bottomrule
+\caption{Fichas resumidas de los KPIs.}\label{tab:fichas_kpis}
+\endlastfoot
+\multicolumn{4}{@{}l}{\textit{Rendimiento académico}} \\
+K01 Puntuación media & Media de las puntuaciones globales. Sin filtro de competencia, promedia todas las competencias. & Respeta todos los filtros. & E, T, O \\ \addlinespace
+K02 Puntuación por subcompetencia & Media de las puntuaciones de las subcompetencias. & Excluye las no válidas. Para series temporales hay que filtrar las escalas no comparables. & O \\ \addlinespace
+K03 \% de alumnado en nivel bajo & Porcentaje de puntuaciones globales por debajo de 55. Con una competencia seleccionada equivale al porcentaje de alumnado. & Excluye las censuradas y las de nivel no comparable. Ignora el filtro de nivel. & E \\ \addlinespace
+\multicolumn{4}{@{}l}{\textit{Equidad e inclusión}} \\
+K04 Brecha de género & K01 de los niños menos K01 de las niñas. Positivo: los niños puntúan más. & Sustituye el filtro de género. & T \\ \addlinespace
+K05 Brecha pública--privada & K01 de los centros públicos menos K01 de los privados, concertados incluidos. & Sustituye el filtro de titularidad. & T \\ \addlinespace
+K06 Dispersión & Desviación típica poblacional de las puntuaciones globales. & Excluye las censuradas. & E \\ \addlinespace
+\multicolumn{4}{@{}l}{\textit{Territorio y entorno}} \\
+K07 Desviación respecto a Cataluña & K01 de la selección menos K01 de Cataluña. Sin área ni contexto seleccionados vale 0. & Respeta año, competencia y perfil. & T, O \\ \addlinespace
+K08 Diferencia urbano--rural & K01 en municipios de más de 100.000 habitantes menos K01 en los de hasta 10.000. & Sustituye el filtro de hábitat. 2010 queda en blanco. & T \\ \addlinespace
+K09 Posición del área & Posición del área por K01, de mayor a menor; los empates comparten posición. & Requiere una sola área. No cuenta el área desconocida ni el francés solo. & T \\ \addlinespace
+\multicolumn{4}{@{}l}{\textit{Eficiencia y progreso}} \\
+K10 Variación interanual & K01 de la convocatoria menos K01 de la anterior. & Requiere un solo año. Solo competencias con diseño estable. Desde 2018. & E \\ \addlinespace
+K11 Tendencia de 5 convocatorias & Diferencia de K01 entre la convocatoria y la cuarta anterior, dividida entre 4. & Igual que K10. Desde 2022. & E \\ \addlinespace
+K12 \% de competencias que mejoran & Porcentaje de competencias con K10 de 1 punto o más sobre las que tienen K10. & Sin el francés. Desde 2018. & E \\
+\end{longtable}}
+
+Las fórmulas de K01 y K10 muestran cómo se aplican las reglas comunes. K01 aplica el mínimo de 30 puntuaciones y el filtro de las globales. \texttt{KEEPFILTERS} añade la condición sin quitar la competencia que haya elegido el usuario.
+
+\par\vspace{2ex}\noindent\begin{minipage}{\textwidth}\small\setstretch{1.0}
+\begin{verbatim}
+K01 Puntuación media competencia =
+VAR _n = [Puntuaciones globales]
+RETURN
+    IF (
+        _n >= 30,
+        CALCULATE (
+            AVERAGE ( FactPuntuacion[Puntuacion] ),
+            KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () )
+        )
+    )
+\end{verbatim}
+\end{minipage}\par\vspace{2.5ex}
+
+K03 sigue el mismo esquema con dos condiciones más: excluye las puntuaciones censuradas y las de nivel no comparable, y quita el filtro de nivel de logro para que el porcentaje no cambie si el usuario filtra un nivel.
+
+K10 busca la convocatoria anterior por su índice y compara las dos medias con las mismas competencias: las que tienen un diseño de prueba estable desde la convocatoria anterior.
+
+\par\vspace{2ex}\noindent\begin{minipage}{\textwidth}\footnotesize\setstretch{1.0}
+\begin{verbatim}
+K10 Variación interanual =
+VAR _i =
+  CALCULATE (
+    SELECTEDVALUE ( DimAnio[IndiceConvocatoria] ),
+    KEEPFILTERS ( DimAnio[TieneConvocatoria] = TRUE () )
+  )
+RETURN
+  IF (
+    _i > 1,
+    VAR _anioAnterior =
+      CALCULATE (
+        MAX ( DimAnio[Anio] ),
+        REMOVEFILTERS ( DimAnio ),
+        DimAnio[IndiceConvocatoria] = _i - 1
+      )
+    VAR _actual =
+      CALCULATE (
+        [K01 Puntuación media competencia],
+        KEEPFILTERS ( DimCompetencia[PeriodoDisenoInicio] <= _anioAnterior )
+      )
+    VAR _anterior =
+      CALCULATE (
+        [K01 Puntuación media competencia],
+        REMOVEFILTERS ( DimAnio ),
+        DimAnio[IndiceConvocatoria] = _i - 1,
+        KEEPFILTERS ( DimCompetencia[PeriodoDisenoInicio] <= _anioAnterior )
+      )
+    RETURN
+      IF ( NOT ISBLANK ( _actual ) && NOT ISBLANK ( _anterior ),
+           _actual - _anterior )
+  )
+\end{verbatim}
+\end{minipage}\par\vspace{2.5ex}
+
+Tres KPIs necesitan una aclaración sobre la calidad de los datos:
+\begin{itemize}
+    \item K03 y K06 excluyen las puntuaciones censuradas, que son las de una columna y un año con muchas puntuaciones acumuladas en un mismo valor mínimo. En inglés 2015, el 12,9\,\% de las globales vale exactamente 48,79; una desviación típica calculada sobre esa acumulación sería un artefacto. Catalán 2018 tiene la cola baja comprimida pero ninguna acumulación, así que se marca con nivel no comparable: K03 la excluye y K06 la incluye con una advertencia en la descripción de la medida.
+    \item K10, K11 y K12 solo comparan competencias cuya prueba no ha cambiado de diseño. El periodo de diseño estable empieza en 2017 en matemáticas, inglés y francés, y en 2018 en catalán, castellano y ciencias. Por eso K10 y K12 tienen valor desde 2018 y K11 desde 2022.
+    \item Las puntuaciones no están equiparadas entre convocatorias, porque las pruebas no comparten preguntas de anclaje. La diferencia entre dos años mezcla el cambio de rendimiento con el de dificultad de la prueba, así que K10, K11 y K12 son orientativos y los paneles lo advierten (RF15).
+\end{itemize}
+
+Los KPIs se han comprobado con la validación independiente en Python, que los calcula con otra implementación a partir del mismo fichero. Las 72 medias de Cataluña por competencia y convocatoria cumplen el criterio de aceptación de 0,5 puntos frente a las oficiales (RNF06), con una diferencia máxima de 0,30. La validación usa además un umbral de alerta de 0,2: 70 de las 72 medias quedan dentro, y las dos restantes (inglés 2016, +0,24; francés 2024, +0,30) están explicadas en el informe de calidad.
 
 \subsection{Semáforos y referencias}
 \label{sec:semaforos}
-% Umbrales del semáforo, referencia de cada KPI y regla de las 30 puntuaciones (RF13, RF14).
+Un semáforo indica si el valor de un KPI es favorable, neutro o desfavorable respecto a una referencia (RF13). Hay tres, uno para K01, otro para K03 y otro para K10, y cada uno se muestra en los paneles donde su referencia tiene sentido (Tabla~\ref{tab:semaforos}).
+
+\begin{table}[H]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{2.0cm} X >{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}p{3.2cm} @{}}
+\toprule
+\textbf{Semáforo} & \textbf{Referencia} & \textbf{Umbral} & \textbf{Panel} \\ \midrule
+Estado K01 & Con un área o un contexto seleccionado, Cataluña (K07). Sin selección, la convocatoria anterior (K10). & $\pm 1$ punto con K07; $\pm 0{,}5$ puntos con K10 & Táctico y operativo \\ \addlinespace
+Estado K03 & K03 de Cataluña. & $\pm 2$ puntos porcentuales & Táctico y operativo \\ \addlinespace
+Estado K10 & Cero: la variación respecto a la convocatoria anterior. & $\pm 0{,}5$ puntos & Estratégico (tarjeta y tabla por competencia) \\ \bottomrule
+\end{tabularx}
+\caption{Semáforos: referencia, umbral y panel en que se muestran.}
+\label{tab:semaforos}
+\end{table}
+
+En el panel estratégico no hay un territorio con el que comparar, porque muestra toda Cataluña. Allí el semáforo de K01 coincidiría con el de K10 y el de K03 valdría siempre neutro, ya que compararía Cataluña consigo misma, así que solo se muestra el de K10. Tampoco hay un semáforo temporal de K03: el porcentaje por debajo de un corte fijo depende mucho de la dificultad de cada prueba (en ciencias pasa del 13,2\,\% al 26,9\,\% de 2024 a 2025) y las pruebas no están equiparadas.
+
+Cada semáforo es una medida que devuelve 1, 0 o $-1$. Una cadena de formato la muestra como \guillemotleft{}$\blacktriangle$ Favorable\guillemotright{}, \guillemotleft{}$\bullet$ Neutro\guillemotright{} o \guillemotleft{}$\blacktriangledown$ Desfavorable\guillemotright{}. El estado se lee por el símbolo y la palabra, sin depender del color (RNF05), y no hace falta formato condicional. Los umbrales son propuestas del TFG. Están en las medidas, así que se pueden ajustar sin cambiar el modelo.
+
+Los niveles de logro usan cortes fijos en 55, 70 y 85 puntos, comunes a todas las competencias y convocatorias. Son niveles internos del TFG, porque el fichero no trae los niveles oficiales. Cada corte cae dentro de la horquilla oficial: nivel mínimo entre 50 y 60, nivel óptimo en 70 y nivel alto entre 80 y 90 \cite{csase_resultats}. Se han comparado con los porcentajes oficiales de 35 combinaciones de competencia y año (2018--2025). Con el corte en 55, el error medio en el nivel bajo es de 2,70 puntos porcentuales y el sesgo, de $-0{,}14$. Con un corte en 50 el sesgo sería de $-4{,}39$, y con uno en 60, de $+5{,}22$. Unos cortes distintos para cada año reproducirían mejor los porcentajes oficiales, pero dependerían de una tabla externa que habría que mantener a mano cada año (RNF09). Las convocatorias en las que el corte fijo no es fiable tienen la marca de nivel no comparable y no cuentan en K03.
+
+La regla de las 30 puntuaciones (RF14) se aplica en K01, K02, K03, K06 y en la medida de la distribución por nivel de logro. Las demás medidas usan K01 y la heredan: una brecha o una variación queda en blanco si cualquiera de sus dos términos lo está. Por ejemplo, el francés del Vallès Occidental en 2025 queda en blanco porque tiene 24 puntuaciones, mientras que el de toda Cataluña ese año se muestra, con 243. En la distribución por nivel el mínimo se cuenta sobre el total de la competencia y no sobre cada nivel, de modo que un nivel con pocas puntuaciones no desaparece de una distribución válida. Esa medida aplica las mismas exclusiones que K03, así que el tramo bajo del gráfico coincide con K03.
 
 \section{Diseño de la interfaz}
 \label{sec:diseno_interfaz}
+La interfaz es el informe de Power BI con los tres paneles, uno por perfil (RF16--RF18). Parte del prototipo de la Sección~\ref{sec:mockups} y lo concreta con los elementos visuales de Power BI y con las medidas de la Sección~\ref{sec:diseno_dax}. Primero se describe lo que comparten los tres paneles y después el diseño final de cada uno, con los cambios respecto al prototipo.
 
 \subsection{Estructura común y navegación}
 \label{sec:estructura_comun}
-% Distribución común de los paneles, filtros sincronizados, paleta y accesibilidad (RF10, RNF02--RNF05).
+Los tres paneles mantienen la estructura del prototipo para que el usuario no tenga que aprender una disposición nueva en cada uno:
+\begin{itemize}
+    \item Arriba, una cabecera con el título del panel y, en la misma franja, los segmentadores desplegables.
+    \item Debajo, una fila de tarjetas con los KPIs principales y sus semáforos.
+    \item En el centro, los gráficos y las tablas, que ocupan el resto del lienzo.
+    \item Un aviso fijo sobre las limitaciones de los datos (RF15): las puntuaciones no están equiparadas, 2020 no tuvo prueba y 2021 se compara con 2019. En el panel estratégico va al pie, junto con la advertencia de que los niveles de logro son internos del TFG; en los otros dos, en el subtítulo de la cabecera.
+\end{itemize}
+
+Cada página tiene un lienzo de 1280 $\times$ 720 píxeles y todos los elementos quedan dentro: el borde derecho más alejado está en el píxel 1264 y el inferior en el 708 (RNF03). Para cambiar de panel se usan las pestañas de página de Power BI (CU10).
+
+Los segmentadores de una misma columna están sincronizados entre los paneles: al cambiar de panel se conservan el año, la competencia, el área territorial, la titularidad, el hábitat y el género elegidos (RF10). El año es de selección única y se abre en la última convocatoria, 2025. Dentro de cada panel, seleccionar un elemento de un gráfico filtra o resalta los demás (CU05). Hay dos excepciones, configuradas en las interacciones del informe. El segmentador de año no filtra los gráficos de evolución, que muestran siempre todas las convocatorias (RF08). El segmentador de área no filtra las barras de desviación por área, que muestran siempre todas las áreas (RF09). En los gráficos de evolución el eje muestra también los años sin datos, de modo que 2020 aparece como un hueco y la línea no une 2019 con 2021.
+
+Para la accesibilidad (RNF05), los semáforos se leen por el símbolo y la palabra (Sección~\ref{sec:semaforos}), y no solo por el color. Los cuatro niveles de logro usan una paleta divergente de naranja a violeta de ColorBrewer (PuOr) \cite{harrower2003colorbrewer}, que se distingue con deuteranopía y con protanopía. Cada elemento visual tiene un texto alternativo para los lectores de pantalla. El texto usa la fuente Segoe UI, con el título de la cabecera en 16 puntos y los subtítulos en gris, y la palabra \guillemotleft{}Aviso\guillemotright{} en rojo oscuro. Toda la interfaz está en castellano, con los términos de los informes oficiales (RNF04).
 
 \subsection{Diseño final de los paneles}
 \label{sec:paneles}
-% Diseño definitivo de cada panel y cambios respecto al prototipo de la Sección 3.5.
+Las Figuras~\ref{fig:panel_estrategico} a \ref{fig:panel_operativo} muestran la disposición final de cada panel. Se generan con un script a partir de los ficheros del informe, de modo que cada caja tiene la posición, el tamaño, el título y los campos del elemento visual real. La guía de uso del repositorio explica cómo se usa cada panel.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{imagenes/diseno/panel_estrategico.png}
+\caption{Disposición final del panel estratégico (Departamento de Educación).}
+\label{fig:panel_estrategico}
+\end{figure}
+
+El panel estratégico (Figura~\ref{fig:panel_estrategico}) tiene los segmentadores de año y competencia y siete tarjetas: K01, K03, K06, K10 con su semáforo en una tarjeta propia, K12 y el alumnado evaluado. El gráfico de líneas muestra K01 de cada competencia en todas las convocatorias, y la tabla resume K01, K10 con su semáforo, K11 y K03 de cada competencia en la convocatoria elegida.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{imagenes/diseno/panel_tactico.png}
+\caption{Disposición final del panel táctico (inspección y coordinación territorial).}
+\label{fig:panel_tactico}
+\end{figure}
+
+El panel táctico (Figura~\ref{fig:panel_tactico}) añade los segmentadores de área territorial y de género. Las tarjetas muestran las brechas (K04, K05 y K08), la posición del área (K09) y los semáforos de K01 y K03 del área frente a Cataluña. Las barras ordenan las áreas por su desviación respecto a Cataluña (K07), con la puntuación media y la posición en la descripción emergente. La matriz cruza el área con la titularidad, y el gráfico de evolución agrupa las áreas en series comparables.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{imagenes/diseno/panel_operativo.png}
+\caption{Disposición final del panel operativo (dirección de centro).}
+\label{fig:panel_operativo}
+\end{figure}
+
+El panel operativo (Figura~\ref{fig:panel_operativo}) tiene cinco segmentadores en una fila propia, porque el contexto del centro necesita tres (área, titularidad y hábitat) además del año y la competencia. Las tarjetas comparan K01 del contexto con la media de Cataluña, con la desviación (K07) y los semáforos de K01 y K03. Los gráficos muestran K02 por subcompetencia, la distribución por nivel de logro y la evolución del contexto frente a la de Cataluña.
+
+El diseño final cambia el prototipo en los puntos siguientes. Todos se deben a lo que se aprendió al construir las medidas y al revisar el informe con los requisitos:
+\begin{enumerate}
+    \item En el panel estratégico solo lleva semáforo la variación (K10). El prototipo lo ponía también en K01 y K03, pero sin un territorio con el que comparar el de K01 repetiría el de K10 y el de K03 valdría siempre neutro (Sección~\ref{sec:semaforos}). Los semáforos de K01 y K03 están en los paneles táctico y operativo, donde se comparan con Cataluña.
+    \item El panel táctico añade dos tarjetas con los semáforos de K01 y K03 del área y un segmentador de género, porque es el panel de la equidad. K04 ignora este filtro, ya que compara los dos géneros.
+    \item La titularidad y el hábitat solo tienen segmentador en el panel operativo, y el género, en el táctico. RF06 los pedía en los tres paneles; en los demás se pueden aplicar desde el panel de filtros de Power BI, y con la sincronización se conservan al volver al panel que los tiene.
+    \item La distribución por nivel de logro solo está en el panel operativo (RF12). El estratégico muestra K03 en una tarjeta y en la tabla por competencia; K03 es el tramo bajo de esa distribución.
+    \item En los paneles táctico y operativo el aviso está en la cabecera y no al pie, para dejar más altura a los gráficos.
+    \item Al seleccionar un área en el panel táctico, las barras de desviación siguen mostrando todas las áreas y no destacan la elegida. La posición y el estado del área aparecen en las tarjetas. Destacar la barra exigiría reglas de formato condicional que no se pueden comprobar fuera de Power BI Desktop.
+    \item Sin ningún área ni contexto seleccionado, la desviación respecto a Cataluña vale 0, porque la selección es toda Cataluña, y el semáforo de K01 pasa a indicar la variación respecto a la convocatoria anterior.
+\end{enumerate}
 
 \section{Organización del repositorio}
 \label{sec:organizacion_proyecto}
-% Estructura de carpetas del repositorio: proyecto .pbip, generadores, validación independiente en Python y
-% memoria; control de versiones (RNF10). No repite la arquitectura general (Sección 7.3), que describe las etapas
-% del sistema y no sus ficheros.
+Todos los ficheros del proyecto están en un repositorio de Git alojado en GitHub. La Figura~\ref{fig:repositorio} muestra sus carpetas principales. La arquitectura general (Sección~\ref{sec:arquitectura}) describe las etapas del sistema; este apartado indica en qué ficheros está cada una.
+
+\begin{figure}[!htbp]
+\par\vspace{1ex}\noindent\begin{minipage}{\textwidth}\footnotesize\setstretch{1.0}
+\begin{verbatim}
+TFG_Project/
+  Datos.zip                    fichero de origen comprimido
+  Documentation/
+    Docu_Final/Memoria/        memoria en LaTeX, figuras y compilar.sh (PDF y .docx)
+    Docu_Final/Docu_Parcial/   informe de calidad, modelo y diccionario,
+                               fichas de los KPIs, guía de uso
+    Reuniones/, GEP/           notas de las reuniones y entregas de gestión
+  PowerBI/                     proyecto de Power BI en formato .pbip (generado)
+    CMI_Educacion_Primaria.SemanticModel/   modelo semántico en TMDL: tablas,
+                                            consultas M, relaciones y medidas
+    CMI_Educacion_Primaria.Report/          informe en PBIR: 3 páginas y 41 visuales
+  trabajo_en_curso/
+    generadores/               scripts que generan el modelo, las medidas,
+                               el informe y las figuras de la memoria
+    herramientas/              comprobación del modelo, las consultas y el informe
+  validacion/                  validación independiente en Python: réplica de la
+                               ETL, pruebas de integridad y KPIs de referencia
+\end{verbatim}
+\end{minipage}\par\vspace{1ex}
+\caption{Carpetas principales del repositorio.}
+\label{fig:repositorio}
+\end{figure}
+
+El proyecto de Power BI se guarda en formato \texttt{.pbip}, que separa el modelo semántico y el informe en ficheros de texto. El modelo se guarda en TMDL (\textit{Tabular Model Definition Language}), con un fichero por tabla. El informe se guarda en PBIR, con un fichero JSON por página y otro por elemento visual. Así cualquier cambio en una consulta, una medida o un visual aparece en el historial de Git como una diferencia de texto, y el repositorio no contiene ningún fichero \texttt{.pbix} (RNF10). Los datos no se versionan: \texttt{Datos.csv} ocupa 240 MB y se obtiene del fichero comprimido o del Portal de Datos Abiertos.
+
+La carpeta \texttt{PowerBI/} no se edita a mano. Los scripts de \texttt{generadores/} escriben el modelo, las consultas, las medidas y el informe a partir de una sola fuente, de modo que un cambio se hace una vez y se regenera todo lo que depende de él. Los generadores conservan lo que Power BI Desktop añade al guardar el proyecto, como la configuración regional y la ruta local del fichero. Un cambio sigue siempre el mismo recorrido:
+\begin{enumerate}
+    \item Se modifica el generador o la consulta M correspondiente y se regenera el proyecto.
+    \item Se ejecuta la validación independiente: la réplica de la ETL, las 31 pruebas de integridad y el cálculo de los KPIs de referencia, que se comparan con las medias oficiales.
+    \item Se comprueban los ficheros generados con las bibliotecas y los esquemas oficiales de Microsoft: el modelo con TOM (\textit{Tabular Object Model}), las consultas con el analizador de Power Query y el informe con los esquemas JSON de PBIR.
+    \item Se abre el proyecto en Power BI Desktop y se actualizan los datos.
+\end{enumerate}
+
+En la versión actual, el modelo pasa la validación de TOM sin errores, con 9 tablas, 20 medidas y 9 relaciones. Las 11 consultas M son correctas, los 49 ficheros del informe cumplen los esquemas y se superan las 31 pruebas de integridad. La comprobación de los paneles en Power BI Desktop se recogerá con el resto de la validación (Sección~\ref{sec:validacion}).
 
 % ------------------------------------------
 % CAPÍTULO 9: SOSTENIBILIDAD

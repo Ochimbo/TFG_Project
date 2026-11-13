@@ -13,7 +13,7 @@ RAIZ = Path(__file__).resolve().parents[2]
 SALIDA = RAIZ / "Documentation/Docu_Final/Memoria/Latex_Memoria/imagenes/diseno"
 
 E = 2
-ANCHO, ALTO = 1280, 820
+ANCHO, ALTO = 1280, 790
 # Lato: carpeta de Linux (paquete fonts-lato) o de Windows; se usa la primera que exista
 FUENTES = next((c for c in ("/usr/share/fonts/truetype/lato/", "C:/Windows/Fonts/",
                             str(Path.home() / "AppData/Local/Microsoft/Windows/Fonts") + "/")
@@ -24,6 +24,7 @@ CABECERA = (232, 232, 232)
 CABECERA_HECHOS = (200, 200, 200)
 LINEA_ATRIB = 22
 ALTO_CAB = 52
+TRAMO = 30
 
 img = Image.new("RGB", (ANCHO * E, ALTO * E), "white")
 d = ImageDraw.Draw(img)
@@ -68,11 +69,16 @@ class Tabla:
 
 
 def relacion(p_muchos, p_uno):
-    """Línea entre la FK (lado muchos, «*») y la PK (lado uno, «1»)."""
-    d.line(r(*p_muchos, *p_uno), fill=TINTA, width=2 * E)
-    for (x, y), m, otro in ((p_muchos, "*", p_uno), (p_uno, "1", p_muchos)):
-        sx = 1 if otro[0] > x else -1
-        texto(x + sx * 14, y - 12, m, 16)
+    """Línea entre la FK (lado muchos, «*») y la PK (lado uno, «1»).
+
+    Sale de cada tabla con un tramo horizontal corto, sobre el que se escribe la cardinalidad, para que las
+    marcas de filas contiguas no se mezclen con las líneas."""
+    sx = 1 if p_uno[0] > p_muchos[0] else -1
+    a = (p_muchos[0] + sx * TRAMO, p_muchos[1])
+    b = (p_uno[0] - sx * TRAMO, p_uno[1])
+    d.line(r(*p_muchos, *a, *b, *p_uno), fill=TINTA, width=2 * E, joint="curve")
+    texto(p_muchos[0] + sx * TRAMO / 2, p_muchos[1] - 9, "*", 16)
+    texto(p_uno[0] - sx * TRAMO / 2, p_uno[1] - 11, "1", 15)
 
 
 # Columnas: dimensiones solo de FactPuntuacion | FactPuntuacion | dimensiones conformadas | FactEvaluacion

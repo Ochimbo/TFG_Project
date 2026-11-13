@@ -266,6 +266,13 @@ Texto propuesto para el formulario de contacto del Portal de Dades Obertes (conj
 > 3. En 2024, 13.357 valores de `HÀBITAT` son un texto autoincrementado («Fins a 10001» … «Fins a 23357») en lugar de la categoría «Fins a 10000».
 > 4. En ciencias (`PMED`, 2018–2025) la puntuación global es la media simple de las tres subcompetencias en el 100 % de los 496.745 registros con las cuatro puntuaciones (diferencia máxima 0,01), mientras que el Quadern d'avaluació 68 publica los pesos 42 % / 25 % / 33 %.
 
+## D-D06 Coherencia de los capítulos 1 a 7 con el diseño final
+- Problema: tras el capítulo 8, varios apartados describían un comportamiento distinto del implementado: semáforos de K01 y K03 en el panel estratégico (CU02, HU01), desviación «en blanco» sin selección (CU07 1a), barra destacada al elegir un área (HU04), exclusión de puntuaciones «no válidas» en la distribución por nivel (CU09 1a, HU11), RF12 con origen E aunque la distribución solo está en el operativo, competencias de 2018 mal nombradas (3.6), «naturaleza» en lugar de «titularidad» (1.3, tabla de agentes y cabecera del panel operativo).
+- Opciones: (a) dejar los capítulos y explicar las diferencias en el 8.4.2; (b) corregir los apartados que describen el sistema y dejar en el 8.4.2 solo los cambios respecto al prototipo (3.5).
+- Decisión: (b), a petición de la estudiante (13/11/2026). Se aplican los textos propuestos en D-12 (2, 3), D-13 (1, 2, 3) y D-16 (1, 2, 3); CU03 menciona además el estado de K01 y K03. El prototipo del 3.5 y sus mockups no se tocan: son bocetos previos y el 8.4.2 explica qué cambia respecto a ellos. SO3 se mantiene (objetivo inicial) y el 8.1 explica las dos dimensiones añadidas.
+- Justificación: los casos de uso, las historias y los requisitos especifican el sistema, así que deben coincidir con lo construido; el prototipo es un documento de partida y sus diferencias con el diseño son esperables.
+- Cambios aplicados: `main.tex` (1.3, tabla de agentes, RF12, 3.6, CU02, CU03, CU07, CU09, HU01, HU04, HU11, 8.4.2), `gen_pbir.py` (cabecera del panel operativo), informe regenerado (solo cambia `p3_cabecera/visual.json`), `gen_paneles_diseno.py` y `panel_operativo.png` regenerado.
+
 ## Datos para el capítulo 8 (diseño)
 
 Esta sección reúne, con cifras comprobadas sobre el repositorio y sobre `Datos.csv` el 12/11/2026, todo lo que el capítulo 8 de la memoria necesita. Quien escriba el capítulo solo necesita esta sección y `Docu_Parcial/02`, `03` y `04`; los nombres son los de la sección «Nombres» de este fichero. La memoria no debe copiar las tablas enteras del diccionario: basta con las columnas visibles y su significado, y remitir a los documentos para el detalle. Las medidas y los visuales de esta sección se han extraído con un script de los ficheros reales (`gen_medidas.py` y los `visual.json` del informe), no copiados a mano.
@@ -929,3 +936,41 @@ Control de versiones (RNF10): todo el proyecto Power BI está en texto (TMDL y J
 ### Cifras de validación para citar (12/11/2026)
 
 `etl_referencia.py`: 8 tablas, 1.102.324 evaluaciones y 17.728.085 puntuaciones en 9,3 s. `test_modelo.py`: 31 de 31 tests. `kpis_referencia.py`: 7 CSV; 72 de 72 medias dentro de 0,5 (máximo 0,30), 70 de 72 dentro de 0,2. `tmdlcheck` (TOM): 9 tablas, 20 medidas, 9 relaciones, `Model.Validate()` 0 errores. `validar_m.py`: 11 de 11 bloques M correctos. `validar_pbir.py`: 49 ficheros validados contra 7 esquemas, 41 visuales, 27 campos referenciados (9 columnas, 18 medidas), 0 errores y 0 avisos. `verificar_claves.py`: 0 fallos (dimensiones reconstruidas desde el M idénticas al parquet; 0 combinaciones huérfanas en el dominio de staging; 85 contextos y 169 perfiles observados en los hechos).
+
+<!-- D-D01 en adelante: agente de diseño (capítulo 8, issues #11 y #13), 13/11/2026. Progreso en PROGRESO_diseno.md. -->
+
+## D-D01 `ÁreaTerritorial` en la correspondencia del diseño lógico
+- Problema: el modelo conceptual (7.2, `modelo_conceptual.png`) tiene una clase `ÁreaTerritorial` asociada a `ContextoDeCentro`, pero la tabla de correspondencia de «Datos para el capítulo 8» (D-17) no la nombra.
+- Opciones: (a) omitirla; (b) añadir una dimensión de áreas encadenada a `DimContextoCentro` (copo de nieve); (c) decir que se funde con `ContextoDeCentro` en `DimContextoCentro`.
+- Decisión: (c). En la Tabla `tab:correspondencia` del 8.1.1 la fila es «ContextoDeCentro y ÁreaTerritorial → DimContextoCentro»; sus atributos `serieComparable` y `conRupturaDeSerie` son las columnas `AreaSerieComparable` y `AreaConRupturaSerie`.
+- Justificación: es lo que hace el modelo implementado (`m_DimContextoCentro.m`); Kimball recomienda dimensiones desnormalizadas en lugar de copos de nieve, y con 15 áreas repetir sus atributos en 120 filas no cuesta nada. Sin cambios en el modelo.
+- Cambios aplicados: `main.tex` (8.1.1).
+
+## D-D02 Contenido de la figura del esquema en estrella
+- Problema: la figura debe dibujar las 8 tablas, sus claves y las 9 relaciones; con todas las columnas (hasta 13 por dimensión) no se leería al ancho de la página.
+- Opciones: (a) todas las columnas; (b) solo las claves; (c) claves y las columnas principales, con el diccionario (8.1.4) como referencia completa.
+- Decisión: (c). Cada caja lleva el nombre, «hechos» o «dimensión» con su número de filas, la clave primaria (PK) o las claves externas (FK) y de 1 a 4 columnas principales. Cada relación sale de la fila de la FK y llega a la de la PK, con «*» en el lado de los hechos y «1» en el de la dimensión. La leyenda indica que filtran en un solo sentido. `EvaluacionID` no se marca como PK porque ninguna relación la usa. Las dimensiones solo de `FactPuntuacion` van a la izquierda y las conformadas entre los dos hechos, de modo que ninguna línea se cruza.
+- Justificación: legibilidad a 15 cm de ancho, y el diccionario ya lista todas las columnas.
+- Cambios aplicados: `trabajo_en_curso/generadores/gen_esquema_estrella.py` (nuevo), `Latex_Memoria/imagenes/diseno/esquema_estrella.png`.
+
+## D-D03 Fichas de los KPIs: tabla compacta y tres fórmulas DAX
+- Problema: el comentario guía del 8.3.1 pedía «una ficha por KPI: definición, fórmula DAX, filtros que respeta y perspectiva»; 12 fichas completas con su DAX (y las 20 medidas) ocuparían más de 10 páginas y repetirían `03_Fichas_KPI.md`.
+- Opciones: (a) 12 fichas en tablas `[H]`; (b) una `longtable` con una fila por KPI agrupada por perspectiva y el DAX de unas pocas medidas representativas; (c) solo remitir al documento.
+- Decisión: (b). Tabla `tab:fichas_kpis` (KPI, cálculo, filtros y exclusiones, panel) y el DAX de K01 (mínimo de 30 y filtro de globales) y K10 (navegación por `IndiceConvocatoria` y periodo de diseño); K03 se describe en una frase (en la primera versión iba también su DAX, que se quitó para acercar el capítulo a la extensión orientativa). Las fórmulas se copian de `gen_medidas.py` sin cambiar nada; solo K10 se reindenta con dos espacios por nivel y va en `\footnotesize` para que ninguna línea pase de 80 caracteres. Las fichas completas quedan en `03_Fichas_KPI.md`.
+- Justificación: extensión orientativa del capítulo (12–18 páginas) y la regla de no repetir contenido de otro documento.
+- Cambios aplicados: `main.tex` (8.3.1).
+
+## D-D04 Disposición final de los paneles generada desde el informe
+- Problema: el 8.4.2 debe mostrar el diseño final de los paneles, pero no hay capturas de Power BI Desktop (el informe no se ha vuelto a abrir desde el 15/10/2026) y dibujar bocetos nuevos a mano podría no coincidir con el informe.
+- Opciones: (a) solo texto; (b) capturas (requieren Power BI Desktop); (c) figuras generadas a partir de los `visual.json` del informe.
+- Decisión: (c). Nuevo `trabajo_en_curso/generadores/gen_paneles_diseno.py`, que lee la posición, el tipo, el título, el subtítulo y los campos de cada visual y los dibuja a escala sobre el lienzo de 1280 × 720 (`imagenes/diseno/panel_estrategico.png`, `panel_tactico.png`, `panel_operativo.png`). Las cabeceras y el aviso reproducen el texto del informe.
+- Justificación: la figura no puede contradecir el informe porque sale de él, y se regenera si el informe cambia. Cuando haya capturas reales de Power BI Desktop pueden sustituirlas o acompañarlas (lo decide la estudiante).
+- Cambios aplicados: generador nuevo, tres PNG, `main.tex` (8.4.2).
+- Observación: la cabecera del panel operativo dice «(área, naturaleza, hábitat)», mientras que el segmentador y la memoria dicen «Titularidad» (D-15). Es un texto de `gen_pbir.py`; no se ha tocado porque queda fuera del capítulo 8. Propuesta: cambiarlo por «(área, titularidad, hábitat)» y regenerar el informe y la figura.
+
+## D-D05 Fuente de la paleta de los niveles de logro
+- Problema: el 8.4.1 dice que la paleta PuOr de ColorBrewer se distingue con deuteranopía y protanopía (RNF05), y la memoria no tenía ninguna referencia de ColorBrewer.
+- Opciones: (a) sin cita; (b) citar la web; (c) citar el artículo de ColorBrewer.
+- Decisión: (c). `harrower2003colorbrewer`: M. Harrower y C. A. Brewer, «ColorBrewer.org: An Online Tool for Selecting Colour Schemes for Maps», The Cartographic Journal, 40(1), 27–37, 2003, DOI 10.1179/000870403235002042 (comprobado en Crossref el 13/11/2026).
+- Justificación: es la publicación de referencia de la herramienta. El cumplimiento de RNF05 se comprobará en la validación; el texto no lo da por comprobado.
+- Cambios aplicados: `bibliografia.bib`, `main.tex` (8.4.1).
