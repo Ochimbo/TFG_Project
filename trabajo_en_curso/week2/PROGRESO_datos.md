@@ -104,7 +104,7 @@ Desktop el 15/10/2026, commit `6adfe70`, pero sin registro). Con la versión act
    2025 = 22,7 / 21,4 / 27,8 / 28,2 %; la leyenda no muestra «No aplica»; con un contexto de menos de 30 puntuaciones el
    gráfico queda vacío.
 4. Hueco de 2020 (D-14): en los tres gráficos de líneas 2020 aparece en el eje sin punto y la línea se corta entre 2019 y 2021.
-5. Año por defecto (D-19): los tres segmentadores de año arrancan en 2025 con el filtro en `filterConfig`; si Desktop lo
+5. Año por defecto (D-D08, corrige D-19): el filtro en `filterConfig` dejaba la lista del segmentador solo con 2025 (detectado en Power BI Desktop el 14/11/2026). Ahora la selección va en `objects.general.filter` y el filtro de objeto visual solo quita 2020. Comprobado por la estudiante en Power BI Desktop el 14/11/2026: funciona. Antes decía: comprobar que la lista muestra 2009–2025 sin 2020 y que arranca en 2025; si Desktop lo
    descarta también así, habrá que fijarlo desde Desktop y registrar cómo lo guarda.
 6. Segmentador de género del táctico (D-15): filtra todos los visuales de la página salvo K04; etiquetas «Competencia» y
    «Titularidad» visibles.

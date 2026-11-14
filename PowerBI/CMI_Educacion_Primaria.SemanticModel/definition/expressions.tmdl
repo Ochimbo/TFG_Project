@@ -308,3 +308,4 @@ expression stg_Evaluaciones =
 	queryGroup: Staging
 
 	annotation PBI_ResultType = Table
+

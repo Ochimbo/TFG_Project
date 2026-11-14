@@ -5,6 +5,16 @@
     "tipo": "Column"
   },
   {
+    "Entity": "DimAnio",
+    "Property": "TieneConvocatoria",
+    "tipo": "Column"
+  },
+  {
+    "Entity": "DimAnio",
+    "Property": "TipoConvocatoria",
+    "tipo": "Column"
+  },
+  {
     "Entity": "DimCompetencia",
     "Property": "Materia",
     "tipo": "Column"

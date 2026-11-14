@@ -130,7 +130,8 @@ check(all(mapa.get(f"{c}|{a}", 0) == k for c, a, k in obs), f"CalidadKey del M =
 # ---- DimAnio (lógica del M sobre los años del parquet)
 anios = sorted(r[0] for r in con.execute(f"select distinct AnioKey from '{SAL}/FactEvaluacion.parquet'").fetchall())
 notas = literal(M["partition_DimAnio"], "Notas")
-dim_anio = [(a, a, f"{a-1}-{a}", a in anios, anios.index(a) + 1 if a in anios else None, a == max(anios), notas.get(str(a), ""))
+dim_anio = [(a, a, f"{a-1}-{a}", a in anios, "Con prueba" if a in anios else "Sin prueba",
+             anios.index(a) + 1 if a in anios else None, a == max(anios), notas.get(str(a), ""))
             for a in range(2009, max(anios) + 1)]
 check(dim_anio == [tuple(r) for r in pq["DimAnio"]], f"DimAnio (lógica M) == parquet ({len(dim_anio)} filas)")
 claves_anio = {r[0] for r in dim_anio}

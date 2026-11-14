@@ -98,7 +98,7 @@ R23/R24 flags de global incoherente/recortada, comprobación de nº fijo de fila
 ## 3. Tablas
 
 ### DimAnio (M: años 2009..max(Anio de los datos), 2020 incluido sin datos)
-AnioKey int64 (=Anio) | Anio int64 | Curso string "(Anio-1)-Anio" | TieneConvocatoria boolean |
+AnioKey int64 (=Anio) | Anio int64 | Curso string "(Anio-1)-Anio" | TieneConvocatoria boolean | TipoConvocatoria string ("Con prueba"/"Sin prueba", D-D08) |
 IndiceConvocatoria int64 (1..N solo en años con datos; null en 2020) | EsUltimaConvocatoria boolean |
 NotaConvocatoria string ("Sin prueba por la COVID-19" en 2020; "Primera convocatoria tras la COVID-19 (se compara con 2019)" en 2021; "" resto)
 

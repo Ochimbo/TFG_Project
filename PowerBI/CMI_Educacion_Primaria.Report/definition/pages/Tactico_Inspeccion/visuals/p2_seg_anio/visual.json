@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "p2_seg_anio",
   "position": {
     "x": 504,
@@ -28,8 +28,8 @@
               },
               "queryRef": "DimAnio.Anio",
               "nativeQueryRef": "Año",
-              "displayName": "Año",
-              "active": true
+              "active": true,
+              "displayName": "Año"
             }
           ]
         }
@@ -73,6 +73,11 @@
               }
             }
           }
+        }
+      ],
+      "general": [
+        {
+          "properties": {}
         }
       ]
     },
@@ -121,7 +126,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "f_p2_seg_anio_defecto",
+        "name": "f_p2_seg_anio_solo",
         "field": {
           "Column": {
             "Expression": {
@@ -129,7 +134,7 @@
                 "Entity": "DimAnio"
               }
             },
-            "Property": "Anio"
+            "Property": "TieneConvocatoria"
           }
         },
         "type": "Categorical",
@@ -154,7 +159,7 @@
                             "Source": "f"
                           }
                         },
-                        "Property": "Anio"
+                        "Property": "TieneConvocatoria"
                       }
                     }
                   ],
@@ -162,7 +167,7 @@
                     [
                       {
                         "Literal": {
-                          "Value": "2025L"
+                          "Value": "true"
                         }
                       }
                     ]

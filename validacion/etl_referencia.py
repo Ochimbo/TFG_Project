@@ -405,11 +405,12 @@ def construir_dimensiones(con: duckdb.DuckDBPyConnection) -> None:
         "SELECT DISTINCT Anio FROM stg_evaluaciones ORDER BY 1").fetchall()]
     ultimo = max(anios_datos)
     indice = {a: i for i, a in enumerate(anios_datos, start=1)}   # 1..N solo con datos
-    filas = [(a, a, f"{a - 1}-{a}", a in indice, indice.get(a), a == ultimo,
+    filas = [(a, a, f"{a - 1}-{a}", a in indice, "Con prueba" if a in indice else "Sin prueba",
+              indice.get(a), a == ultimo,
               NOTAS_CONVOCATORIA.get(a, "")) for a in range(2009, ultimo + 1)]
     _crear_tabla(con, "DimAnio", filas, pa.schema([
         ("AnioKey", i64), ("Anio", i64), ("Curso", txt), ("TieneConvocatoria", bln),
-        ("IndiceConvocatoria", i64), ("EsUltimaConvocatoria", bln), ("NotaConvocatoria", txt)]))
+        ("TipoConvocatoria", txt), ("IndiceConvocatoria", i64), ("EsUltimaConvocatoria", bln), ("NotaConvocatoria", txt)]))
 
     # DimContextoCentro: producto cartesiano áreas (15) x naturaleza (2) x hábitat (4) = 120.
     filas = []

@@ -3,11 +3,11 @@
   "name": "p3_linea_k01_cataluna",
   "position": {
     "x": 852,
-    "y": 228,
-    "z": 14000,
-    "height": 480,
+    "y": 290,
+    "z": 15000,
+    "height": 418,
     "width": 412,
-    "tabOrder": 14000
+    "tabOrder": 15000
   },
   "visual": {
     "visualType": "lineChart",

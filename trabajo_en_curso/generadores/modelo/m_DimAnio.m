@@ -9,6 +9,7 @@ let
     ],
     // Una fila por año de 2009 al último con datos, 2020 incluido. IndiceConvocatoria numera
     // 1..N solo los años con prueba: las comparaciones temporales usan este índice, no Anio - 1.
+    // TipoConvocatoria repite TieneConvocatoria en texto para el segmentador que quita 2020 de la evolución.
     Filas = List.Transform(
         {2009..UltimoAnio},
         (anio) =>
@@ -21,6 +22,7 @@ let
                     anio,
                     Text.From(anio - 1) & "-" & Text.From(anio),
                     TieneDatos,
+                    if TieneDatos then "Con prueba" else "Sin prueba",
                     if TieneDatos then Posicion + 1 else null,
                     anio = UltimoAnio,
                     Record.FieldOrDefault(Notas, Text.From(anio), "")
@@ -32,6 +34,7 @@ let
             Anio = Int64.Type,
             Curso = text,
             TieneConvocatoria = logical,
+            TipoConvocatoria = text,
             IndiceConvocatoria = Int64.Type,
             EsUltimaConvocatoria = logical,
             NotaConvocatoria = text

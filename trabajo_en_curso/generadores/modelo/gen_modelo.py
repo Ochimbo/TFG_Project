@@ -54,6 +54,7 @@ TABLAS = {
         ("Anio", "int64", False, None, "Año natural de la convocatoria (columna ANY del origen)."),
         ("Curso", "string", False, "Anio", "Curso escolar de la convocatoria, p. ej. 2016-2017."),
         ("TieneConvocatoria", "boolean", False, None, "VERDADERO si ese año hubo prueba y hay datos (FALSO en 2020)."),
+        ("TipoConvocatoria", "string", False, None, "Con prueba o Sin prueba (2020). La usa el segmentador que quita 2020 de los gráficos de evolución; los KPIs temporales ya lo saltan mediante IndiceConvocatoria."),
         ("IndiceConvocatoria", "int64", True, None, "Número de orden 1..N de las convocatorias con datos (vacío en 2020). Las comparaciones temporales usan este índice, no Anio - 1."),
         ("EsUltimaConvocatoria", "boolean", False, None, "VERDADERO en el último año con datos."),
         ("NotaConvocatoria", "string", False, None, "Advertencia sobre la convocatoria (2020 sin prueba; 2021 se compara con 2019)."),

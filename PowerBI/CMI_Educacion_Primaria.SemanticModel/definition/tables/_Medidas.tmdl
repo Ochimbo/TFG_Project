@@ -93,29 +93,6 @@ table _Medidas
 		displayFolder: 1. Rendimiento académico
 		lineageTag: 9993eeb8-5b42-5423-b618-439d2333524c
 
-	/// Número de puntuaciones globales en el nivel de logro del contexto (DimNivelLogro en el eje o la leyenda), con las mismas exclusiones que K03: celdas censuradas (DimCalidadDato[Censurada]) y convocatorias con nivel no comparable (DimCalidadDato[NivelNoComparable]). BLANK si la competencia tiene menos de 30 puntuaciones globales en total, sumando todos los niveles (RF14). Es la base del gráfico de distribución por nivel: su tramo Bajo coincide con K03 por construcción. Niveles internos del TFG (cortes 55/70/85), no los niveles oficiales.
-	measure 'Puntuaciones por nivel de logro' =
-			VAR _total =
-			    CALCULATE (
-			        COUNTROWS ( FactPuntuacion ),
-			        KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () ),
-			        KEEPFILTERS ( DimCalidadDato[Censurada] = FALSE () ),
-			        KEEPFILTERS ( DimCalidadDato[NivelNoComparable] = FALSE () ),
-			        REMOVEFILTERS ( DimNivelLogro )
-			    )
-			VAR _nivel =
-			    CALCULATE (
-			        COUNTROWS ( FactPuntuacion ),
-			        KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () ),
-			        KEEPFILTERS ( DimCalidadDato[Censurada] = FALSE () ),
-			        KEEPFILTERS ( DimCalidadDato[NivelNoComparable] = FALSE () )
-			    )
-			RETURN
-			    IF ( _total >= 30, _nivel )
-		formatString: #,0
-		displayFolder: 1. Rendimiento académico
-		lineageTag: 58ea587f-4ba5-5009-8f0d-29ea7fd32148
-
 	/// K04. Diferencia de K01 entre niños y niñas (Niño - Niña). Sustituye cualquier filtro de género del contexto (DimPerfilAlumno[Genero] y su columna de orden GeneroCodigo). Positivo: los niños puntúan más. BLANK si alguno de los dos grupos no llega al mínimo de 30 puntuaciones globales.
 	measure 'K04 Brecha de género (Niños - Niñas)' =
 			VAR _ninos =
@@ -423,6 +400,29 @@ table _Medidas
 		displayFolder: 5. Estado de los KPIs
 		lineageTag: aa48fe15-95f5-5051-a862-3e6b6d073aa7
 
+	/// Número de puntuaciones globales en el nivel de logro del contexto (DimNivelLogro en el eje o la leyenda), con las mismas exclusiones que K03: celdas censuradas (DimCalidadDato[Censurada]) y convocatorias con nivel no comparable (DimCalidadDato[NivelNoComparable]). BLANK si la competencia tiene menos de 30 puntuaciones globales en total, sumando todos los niveles (RF14). Es la base del gráfico de distribución por nivel: su tramo Bajo coincide con K03 por construcción. Niveles internos del TFG (cortes 55/70/85), no los niveles oficiales.
+	measure 'Puntuaciones por nivel de logro' =
+			VAR _total =
+			    CALCULATE (
+			        COUNTROWS ( FactPuntuacion ),
+			        KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () ),
+			        KEEPFILTERS ( DimCalidadDato[Censurada] = FALSE () ),
+			        KEEPFILTERS ( DimCalidadDato[NivelNoComparable] = FALSE () ),
+			        REMOVEFILTERS ( DimNivelLogro )
+			    )
+			VAR _nivel =
+			    CALCULATE (
+			        COUNTROWS ( FactPuntuacion ),
+			        KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () ),
+			        KEEPFILTERS ( DimCalidadDato[Censurada] = FALSE () ),
+			        KEEPFILTERS ( DimCalidadDato[NivelNoComparable] = FALSE () )
+			    )
+			RETURN
+			    IF ( _total >= 30, _nivel )
+		formatString: #,0
+		displayFolder: 1. Rendimiento académico
+		lineageTag: 58ea587f-4ba5-5009-8f0d-29ea7fd32148
+
 	column Columna
 		dataType: string
 		isHidden
@@ -437,3 +437,4 @@ table _Medidas
 				    Origen = #table(type table [Columna = text], {})
 				in
 				    Origen
+

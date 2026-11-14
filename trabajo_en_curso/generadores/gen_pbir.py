@@ -87,13 +87,23 @@ class Layout:
         return {"x": x, "y": y, "z": self.n * 1000, "height": h, "width": w, "tabOrder": self.n * 1000}
 
 
-def slicer(name, pos, field, display, sync_group, single=False, default_in=None):
+def slicer(name, pos, field, display, sync_group, single=False, default_in=None, solo=None):
+    """Segmentador desplegable.
+
+    default_in: valores seleccionados al abrir el informe. Se guardan como selección del segmentador
+    (objects.general.filter), igual que en los ejemplos oficiales de PBIR. No deben ir en filterConfig:
+    un filtro de objeto visual sobre un segmentador restringe la lista de valores que ofrece (D-D08).
+    solo: (campo, valores) para restringir a propósito los valores de la lista (filtro de objeto visual).
+    """
     objects = {
         "data": [{"properties": {"mode": lit("'Dropdown'")}}],
         "header": [{"properties": {"show": lit("false")}}],
     }
     if single:
         objects["selection"] = [{"properties": {"singleSelect": lit("true")}}]
+    if default_in is not None:
+        seleccion = categorical_filter(f"f_{name}_seleccion", field, default_in)["filter"]
+        objects["general"] = [{"properties": {"filter": {"filter": seleccion}}}]
     vis = {
         "visualType": "slicer",
         "query": {"queryState": {"Values": {"projections": [proj(field, display, active=True)]}}},
@@ -102,11 +112,20 @@ def slicer(name, pos, field, display, sync_group, single=False, default_in=None)
         "syncGroup": {"groupName": sync_group, "fieldChanges": True, "filterChanges": True},
         "drillFilterOtherVisuals": True,
     }
-    # Selección por defecto: como filtro Categorical del propio visual, que es donde Power BI Desktop
-    # guarda la selección de un segmentador (D-19). La forma anterior, objects.general.filter, la descartó
-    # Desktop al guardar el proyecto.
-    filters = [categorical_filter(f"f_{name}_defecto", field, default_in)] if default_in is not None else None
+    filters = [categorical_filter(f"f_{name}_solo", solo[0], solo[1])] if solo else None
     return visual(name, pos, vis, filters)
+
+
+def slicer_anio(name, pos):
+    """Segmentador de año: un solo año, 2025 al abrir y sin 2020 en la lista (no hubo prueba)."""
+    return slicer(name, pos, f_anio(), "Año", "Anio", single=True, default_in=ANIO_DEFECTO,
+                  solo=(col("DimAnio", "TieneConvocatoria"), ["true"]))
+
+
+def slicer_evolucion(name, pos):
+    """Segmentador para quitar 2020 de los gráficos de evolución (D-D08). Sin selección, 2020 sale como hueco;
+    con «Con prueba» desaparece del eje. Los KPIs temporales saltan 2020 en ambos casos (IndiceConvocatoria)."""
+    return slicer(name, pos, col("DimAnio", "TipoConvocatoria"), "Años en la evolución", "TipoConvocatoria")
 
 
 def card(name, pos, measure, title, subtitle=None, alt=None):
@@ -267,7 +286,7 @@ def page1():
     v.append(header("p1_cabecera", L.pos(16, 8, 860, 60),
                     "Cuadro de Mando Integral - Educación primaria de Cataluña",
                     "Visión estratégica (Departamento de Educación): resultados de la convocatoria seleccionada y evolución"))
-    v.append(slicer("p1_seg_anio", L.pos(884, 8, 186, 60), f_anio(), "Año", "Anio", single=True, default_in=ANIO_DEFECTO))
+    v.append(slicer_anio("p1_seg_anio", L.pos(884, 8, 186, 60)))
     v.append(slicer("p1_seg_materia", L.pos(1078, 8, 186, 60), f_materia(), ETQ_COMPETENCIA, "Materia"))
     # Semáforo (D-12): en el panel estratégico no hay territorio de referencia, así que solo K10 lleva
     # semáforo (Estado K10); K01 y K03 lo llevan en los paneles táctico y operativo, frente a Cataluña.
@@ -281,7 +300,8 @@ def page1():
         ("p1_tarjeta_alumnos", "Alumnos evaluados", "Alumnos evaluados", "Registros de evaluación"),
     ]
     fila_tarjetas(L, v, cards, 76, 100)
-    v.append(line_chart("p1_linea_k01_materia", L.pos(16, 188, 724, 462),
+    v.append(slicer_evolucion("p1_seg_evolucion", L.pos(16, 188, 240, 56)))
+    v.append(line_chart("p1_linea_k01_materia", L.pos(16, 250, 724, 400),
                         (f_anio(), "Año"), [("K01 Puntuación media competencia", "Puntuación media (K01)")],
                         "Evolución de la puntuación media (K01) por competencia",
                         series=(f_materia(), ETQ_COMPETENCIA),
@@ -321,7 +341,7 @@ def page2():
     v.append(header("p2_cabecera", L.pos(16, 8, 480, 60),
                     "Visión táctica - Inspección educativa",
                     "Comparación territorial y equidad. " + AVISO))
-    v.append(slicer("p2_seg_anio", L.pos(504, 8, 184, 60), f_anio(), "Año", "Anio", single=True, default_in=ANIO_DEFECTO))
+    v.append(slicer_anio("p2_seg_anio", L.pos(504, 8, 184, 60)))
     v.append(slicer("p2_seg_materia", L.pos(696, 8, 184, 60), f_materia(), ETQ_COMPETENCIA, "Materia"))
     v.append(slicer("p2_seg_area", L.pos(888, 8, 184, 60), f_area(), "Área territorial", "AreaTerritorial"))
     # Filtro de género (RF06, CU05; D-15). K04 lo sustituye por diseño; afecta al resto de visuales del panel.
@@ -355,7 +375,8 @@ def page2():
             "Matriz con la puntuación media por área territorial y titularidad del centro"),
         "drillFilterOtherVisuals": True,
     }))
-    v.append(line_chart("p2_linea_k01_serie", L.pos(852, 188, 412, 520),
+    v.append(slicer_evolucion("p2_seg_evolucion", L.pos(852, 188, 240, 56)))
+    v.append(line_chart("p2_linea_k01_serie", L.pos(852, 250, 412, 458),
                         (f_anio(), "Año"), [("K01 Puntuación media competencia", "Puntuación media (K01)")],
                         "Evolución de K01 por serie territorial comparable",
                         series=(col("DimContextoCentro", "AreaSerieComparable"), "Serie territorial comparable"),
@@ -380,7 +401,7 @@ def page3():
     v.append(slicer("p3_seg_area", L.pos(round(xs[0], 1), 52, w, 60), f_area(), "Área territorial", "AreaTerritorial"))
     v.append(slicer("p3_seg_naturaleza", L.pos(round(xs[1], 1), 52, w, 60), col("DimContextoCentro", "Naturaleza"), ETQ_TITULARIDAD, "Naturaleza"))
     v.append(slicer("p3_seg_habitat", L.pos(round(xs[2], 1), 52, w, 60), col("DimContextoCentro", "Habitat"), "Hábitat", "Habitat"))
-    v.append(slicer("p3_seg_anio", L.pos(round(xs[3], 1), 52, w, 60), f_anio(), "Año", "Anio", single=True, default_in=ANIO_DEFECTO))
+    v.append(slicer_anio("p3_seg_anio", L.pos(round(xs[3], 1), 52, w, 60)))
     v.append(slicer("p3_seg_materia", L.pos(round(xs[4], 1), 52, w, 60), f_materia(), ETQ_COMPETENCIA, "Materia"))
     cards = [
         ("p3_tarjeta_k01", "K01 Puntuación media competencia", "Puntuación media del contexto (K01)", "Competencias globales"),
@@ -428,7 +449,8 @@ def page3():
             "Barras apiladas al 100 % con la proporción de puntuaciones globales en cada nivel de logro por competencia"),
         "drillFilterOtherVisuals": True,
     }, filters=filtros))
-    v.append(line_chart("p3_linea_k01_cataluna", L.pos(852, 228, 412, 480),
+    v.append(slicer_evolucion("p3_seg_evolucion", L.pos(852, 228, 240, 56)))
+    v.append(line_chart("p3_linea_k01_cataluna", L.pos(852, 290, 412, 418),
                         (f_anio(), "Año"),
                         [("K01 Puntuación media competencia", "Contexto seleccionado (K01)"),
                          ("Puntuación media Cataluña", "Cataluña")],

@@ -36,7 +36,7 @@ cultureInfo es-ES
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "Materia": {
+			          "Competencia": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -221,19 +221,7 @@ cultureInfo es-ES
 			          "ConceptualProperty": "Puntuaciones globales"
 			        }
 			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Puntuaciones globales": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
+			      "State": "Generated"
 			    },
 			    "table_medidas.k02_puntuación_media_subcompetencia": {
 			      "Definition": {
@@ -329,7 +317,7 @@ cultureInfo es-ES
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "Naturaleza": {
+			          "Titularidad": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -372,6 +360,90 @@ cultureInfo es-ES
 			      "Terms": [
 			        {
 			          "Nivel de logro": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "dimanio.tipoconvocatoria": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "DimAnio",
+			          "ConceptualProperty": "TipoConvocatoria"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Años en la evolución": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_medidas.estado_k10": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Medidas",
+			          "ConceptualProperty": "Estado K10"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Estado K10": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_medidas.puntuaciones_por_nivel_de_logro": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Medidas",
+			          "ConceptualProperty": "Puntuaciones por nivel de logro"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Puntuaciones por nivel de logro": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "dimperfilalumno.genero": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "DimPerfilAlumno",
+			          "ConceptualProperty": "Genero"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Género": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",

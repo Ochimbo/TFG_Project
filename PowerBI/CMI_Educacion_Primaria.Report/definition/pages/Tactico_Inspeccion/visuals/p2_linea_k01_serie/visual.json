@@ -3,11 +3,11 @@
   "name": "p2_linea_k01_serie",
   "position": {
     "x": 852,
-    "y": 188,
-    "z": 14000,
-    "height": 520,
+    "y": 250,
+    "z": 15000,
+    "height": 458,
     "width": 412,
-    "tabOrder": 14000
+    "tabOrder": 15000
   },
   "visual": {
     "visualType": "lineChart",

@@ -376,9 +376,11 @@ def test_2020_sin_datos():
     for hecho in ("FactEvaluacion", "FactPuntuacion"):
         n = uno(f"SELECT count(*) FROM {hecho} WHERE AnioKey = 2020")
         assert n == 0, f"{hecho} tiene {n:,} filas de 2020 (no hubo prueba por la COVID-19)"
-    fila = filas("""SELECT TieneConvocatoria, IndiceConvocatoria, NotaConvocatoria
+    fila = filas("""SELECT TieneConvocatoria, TipoConvocatoria, IndiceConvocatoria, NotaConvocatoria
                     FROM DimAnio WHERE AnioKey = 2020""")
-    assert fila == [(False, None, "Sin prueba por la COVID-19")], f"DimAnio 2020 incorrecto: {fila}"
+    assert fila == [(False, "Sin prueba", None, "Sin prueba por la COVID-19")], f"DimAnio 2020 incorrecto: {fila}"
+    otros = uno("SELECT count(*) FROM DimAnio WHERE AnioKey <> 2020 AND TipoConvocatoria <> 'Con prueba'")
+    assert otros == 0, f"DimAnio: {otros} años con datos sin TipoConvocatoria = 'Con prueba'"
 
 
 def test_indice_convocatoria_consecutivo():

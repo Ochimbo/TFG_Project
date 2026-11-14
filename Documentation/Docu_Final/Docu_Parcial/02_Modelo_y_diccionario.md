@@ -102,6 +102,7 @@ erDiagram
         int64 Anio
         string Curso
         boolean TieneConvocatoria
+        string TipoConvocatoria
         int64 IndiceConvocatoria
         boolean EsUltimaConvocatoria
         string NotaConvocatoria
@@ -235,6 +236,7 @@ Origen: derivada de los años distintos de `stg_Evaluaciones`; genera un miembro
 | `Anio` | int64 | Visible | Año natural de la convocatoria. | Columna `ANY`. |
 | `Curso` | string | Visible | Curso escolar, p. ej. «2016-2017». Se ordena por `Anio`. | `(Anio − 1) & "-" & Anio`. |
 | `TieneConvocatoria` | boolean | Visible | VERDADERO si ese año hubo prueba y hay datos (FALSO en 2020). | R22. |
+| `TipoConvocatoria` | string | Visible | «Con prueba» o «Sin prueba» (2020). La usa el segmentador «Años en la evolución» para quitar 2020 de los gráficos de líneas. | D-D08. |
 | `IndiceConvocatoria` | int64 | Oculta | Número de orden 1..N de las convocatorias con datos; vacío en 2020. | R22; base de las comparaciones temporales. |
 | `EsUltimaConvocatoria` | boolean | Visible | VERDADERO en el último año con datos. | `Anio` = máximo de los datos. |
 | `NotaConvocatoria` | string | Visible | Advertencia: «Sin prueba por la COVID-19» (2020); «Primera convocatoria tras la COVID-19 (se compara con 2019)» (2021); vacía en el resto. | R22. |

@@ -71,6 +71,15 @@ table DimAnio
 
 		annotation SummarizationSetBy = User
 
+	/// Con prueba o Sin prueba (2020). La usa el segmentador que quita 2020 de los gráficos de evolución; los KPIs temporales ya lo saltan mediante IndiceConvocatoria.
+	column TipoConvocatoria
+		dataType: string
+		lineageTag: 88ec9e18-dddb-5ff5-9558-574af0f5a85b
+		summarizeBy: none
+		sourceColumn: TipoConvocatoria
+
+		annotation SummarizationSetBy = User
+
 	partition DimAnio = m
 		mode: import
 		queryGroup: Dimensiones
@@ -86,6 +95,7 @@ table DimAnio
 				    ],
 				    // Una fila por año de 2009 al último con datos, 2020 incluido. IndiceConvocatoria numera
 				    // 1..N solo los años con prueba: las comparaciones temporales usan este índice, no Anio - 1.
+				    // TipoConvocatoria repite TieneConvocatoria en texto para el segmentador que quita 2020 de la evolución.
 				    Filas = List.Transform(
 				        {2009..UltimoAnio},
 				        (anio) =>
@@ -98,6 +108,7 @@ table DimAnio
 				                    anio,
 				                    Text.From(anio - 1) & "-" & Text.From(anio),
 				                    TieneDatos,
+				                    if TieneDatos then "Con prueba" else "Sin prueba",
 				                    if TieneDatos then Posicion + 1 else null,
 				                    anio = UltimoAnio,
 				                    Record.FieldOrDefault(Notas, Text.From(anio), "")
@@ -109,6 +120,7 @@ table DimAnio
 				            Anio = Int64.Type,
 				            Curso = text,
 				            TieneConvocatoria = logical,
+				            TipoConvocatoria = text,
 				            IndiceConvocatoria = Int64.Type,
 				            EsUltimaConvocatoria = logical,
 				            NotaConvocatoria = text
@@ -119,3 +131,4 @@ table DimAnio
 				    Resultado
 
 	annotation PBI_ResultType = Table
+
