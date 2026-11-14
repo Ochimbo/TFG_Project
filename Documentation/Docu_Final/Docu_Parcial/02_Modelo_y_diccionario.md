@@ -163,7 +163,7 @@ erDiagram
     Medidas {
         measure K01_a_K12
         measure Base_4
-        measure Semaforos_3
+        measure Estado_KPI_3
     }
 ```
 

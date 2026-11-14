@@ -279,7 +279,7 @@ Texto propuesto para el formulario de contacto del Portal de Dades Obertes (conj
 - Opciones: para (1), «estado del KPI», «indicador de alerta» o mantener «semáforo» con definición; para (3), mover el 7.2.1 al 8.1.1 o dejarlo.
 - Decisión (de la estudiante, 13/11/2026): (1) «estado del KPI» en toda la memoria (33 frases), en la interfaz (subtítulos «Umbral: …» en lugar de «Semáforo: …»), en la carpeta de medidas («5. Estado de los KPIs») y en las descripciones de las medidas; definición nueva en 1.2. Los labels `sec:semaforos` y `tab:semaforos` no cambian porque no se ven. (2) Una frase en el resumen, el resum y el abstract. (3) El OCL se queda en el 7.2.1 hasta decidirlo con la issue #14. (4) Sin cambios. Resumen: «las 72 medias difieren de las oficiales en 0,30 puntos como máximo».
 - Justificación: «estado» es el término de Power BI (las medidas ya se llamaban `Estado K01`) y no necesita metáfora; el OCL lo pidió Carme en el 7.2 (issue #9) y la ubicación depende del mismo criterio que la issue #14.
-- Cambios aplicados: `main.tex`, `gen_pbir.py`, `gen_medidas.py`, informe y `_Medidas.tmdl` regenerados (solo textos), `gen_paneles_diseno.py` y figuras regeneradas. Pendiente: `Docu_Parcial/02`, `03` y `04` siguen diciendo «semáforo».
+- Cambios aplicados: `main.tex`, `gen_pbir.py`, `gen_medidas.py`, informe y `_Medidas.tmdl` regenerados (solo textos), `gen_paneles_diseno.py` y figuras regeneradas. `Docu_Parcial/02` (diagrama de `_Medidas`) y `04` (título del apartado de control) cambiados el 14/11/2026; las demás apariciones son el nombre del fichero `semaforos_2025.csv`, que se mantiene porque lo genera `kpis_referencia.py`.
 
 ## Datos para el capítulo 8 (diseño)
 

@@ -127,7 +127,7 @@ Los valores esperados proceden del contrato de diseño (§6) y de la réplica Py
 
 Para el conjunto de materias en 2025 (`kpi_global_por_anio.csv`): K01 = 72,50; K03 = 17,80 %; K06 = 18,00; K10 = −1,66; K11 = −0,62; K12 = 40,0 %. La tarjeta *Estado K10* de la página 1 debe mostrar «▼ Desfavorable» (K10 = −1,66) y, en la tabla por competencia, «▼ Desfavorable» en catalán, matemáticas y ciencias y «▲ Favorable» en castellano, inglés y francés (`semaforos_2025.csv`, fila `(Cataluña)`).
 
-**Semáforos por área (página 2, `semaforos_2025.csv`).** Con el Barcelonès seleccionado, *Estado K01* y *Estado K03* deben mostrar «▼ Desfavorable» en las cinco competencias con datos; con el Consorci d'Educació de Barcelona, *Estado K01* «▲ Favorable» en las cinco y *Estado K03* «▲ Favorable» solo en inglés (12,08 % frente a 15,36 %) y «● Neutro» en el resto. Sin área seleccionada, *Estado K03* muestra «● Neutro» (Cataluña frente a sí misma).
+**Estado de los KPIs por área (página 2, `semaforos_2025.csv`).** Con el Barcelonès seleccionado, *Estado K01* y *Estado K03* deben mostrar «▼ Desfavorable» en las cinco competencias con datos; con el Consorci d'Educació de Barcelona, *Estado K01* «▲ Favorable» en las cinco y *Estado K03* «▲ Favorable» solo en inglés (12,08 % frente a 15,36 %) y «● Neutro» en el resto. Sin área seleccionada, *Estado K03* muestra «● Neutro» (Cataluña frente a sí misma).
 
 **Distribución por nivel (página 3, `kpi_niveles_2025.csv`).** Sin filtros de contexto, matemáticas 2025 debe repartirse en 22,7 % Bajo, 21,4 % Medio-bajo, 27,8 % Medio-alto y 28,2 % Alto (15.179, 14.331, 18.620 y 18.865 puntuaciones); el tramo Bajo coincide con K03.
 
