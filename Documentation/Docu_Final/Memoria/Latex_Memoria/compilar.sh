@@ -4,7 +4,8 @@
 #      DRIVE_DOCX=<.docx descargado del Drive> ./compilar.sh
 #        genera además Memoria_..._Drive.docx con los comentarios de las directoras copiados del Drive, para subirlo
 #        como nueva versión del mismo archivo (Gestionar versiones) sin perder los hilos. Si un título comentado ha
-#        cambiado, pasar DRIVE_RENOMBRA="texto antiguo=texto nuevo".
+#        cambiado, pasar DRIVE_RENOMBRA="texto antiguo=texto nuevo"; para añadir un comentario propio,
+#        DRIVE_NUEVO="texto del párrafo=comentario".
 set -euo pipefail
 
 cd "$(dirname "$0")"
@@ -55,6 +56,8 @@ if [ -n "${DRIVE_DOCX:-}" ]; then
     done
     [ -n "$PY" ] || { echo "No se encuentra Python para copiar los comentarios del Drive" >&2; exit 1; }
     ARGS=()
-    [ -n "${DRIVE_RENOMBRA:-}" ] && ARGS=(--renombra "$DRIVE_RENOMBRA")
+    [ -n "${DRIVE_RENOMBRA:-}" ] && ARGS+=(--renombra "$DRIVE_RENOMBRA")
+    # DRIVE_NUEVO="texto del párrafo=comentario": añade un comentario nuevo de la estudiante (una sola vez)
+    [ -n "${DRIVE_NUEVO:-}" ] && ARGS+=(--nuevo "$DRIVE_NUEVO")
     "$PY" -I -X utf8 docx/copiar_comentarios.py "$DRIVE_DOCX" "$NOMBRE.docx" "${NOMBRE}_Drive.docx" "${ARGS[@]}"
 fi

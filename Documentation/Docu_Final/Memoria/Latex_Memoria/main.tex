@@ -152,6 +152,7 @@
 % RESUMEN (CASTELLANO, CATALÁN E INGLÉS)
 % ------------------------------------------
 \chapter*{Resumen}
+\begin{revisado}
 Este Trabajo de Final de Grado diseña e implementa un Cuadro de Mando Integral (CMI) en Power BI para dar soporte a la toma de decisiones en la educación primaria de Cataluña. La fuente son los microdatos abiertos de la evaluación de 6.\textordmasculine{} de primaria que publica la Generalitat: más de 1,1 millones de registros de las convocatorias de 2009 a 2025, con las puntuaciones por competencia y subcompetencia y variables del alumno y del centro. El estado del arte muestra que el CMI se ha aplicado sobre todo en la universidad y muy poco en primaria, y que ninguna de las herramientas disponibles para estos datos relaciona los indicadores con objetivos.
 
 Estos datos se publican en una sola tabla plana y los resultados oficiales solo se difunden en informes PDF, de modo que no se pueden cruzar por territorio, tipo de centro o género ni seguir su evolución. Antes de modelarlos se auditó su calidad y aparecieron problemas que alteran los resultados si no se tratan, como columnas de puntuación rotadas en 2016 y 2017, columnas desalineadas en 2010, cambios de codificación entre convocatorias y la reorganización territorial de 2024. Las reglas de limpieza resultantes se aplican en una ETL con Power Query, que carga un modelo dimensional en estrella con dos tablas de hechos.
@@ -160,9 +161,11 @@ Sobre este modelo se define un catálogo de 12 indicadores clave (KPI), organiza
 
 \vspace{0.5cm}
 \noindent\textbf{Palabras clave:} Cuadro de Mando Integral, \textit{Business Intelligence}, Power BI, calidad de datos, modelo dimensional, evaluación educativa, datos abiertos.
+\end{revisado}
 
 \begin{otherlanguage}{catalan}
 \chapter*{Resum}
+\begin{revisado}
 Aquest Treball de Final de Grau dissenya i implementa un Quadre de Comandament Integral (QCI) en Power BI per donar suport a la presa de decisions en l'educació primària de Catalunya. La font són les microdades obertes de l'avaluació de sisè de primària que publica la Generalitat: més d'1,1 milions de registres de les convocatòries de 2009 a 2025, amb les puntuacions per competència i subcompetència i variables de l'alumne i del centre. L'estat de l'art mostra que el QCI s'ha aplicat sobretot a la universitat i molt poc a primària, i que cap de les eines disponibles per a aquestes dades no relaciona els indicadors amb objectius.
 
 Aquestes dades es publiquen en una sola taula plana i els resultats oficials només es difonen en informes PDF, de manera que no es poden creuar per territori, tipus de centre o gènere ni seguir-ne l'evolució. Abans de modelar-les se'n va auditar la qualitat i van aparèixer problemes que alteren els resultats si no es tracten, com ara columnes de puntuació rotades el 2016 i el 2017, columnes desalineades el 2010, canvis de codificació entre convocatòries i la reorganització territorial del 2024. Les regles de neteja resultants s'apliquen en una ETL amb Power Query, que carrega un model dimensional en estrella amb dues taules de fets.
@@ -171,10 +174,12 @@ Sobre aquest model es defineix un catàleg de 12 indicadors clau (KPI), organitz
 
 \vspace{0.5cm}
 \noindent\textbf{Paraules clau:} Quadre de Comandament Integral, \textit{Business Intelligence}, Power BI, qualitat de dades, model dimensional, avaluació educativa, dades obertes.
+\end{revisado}
 \end{otherlanguage}
 
 \begin{otherlanguage}{english}
 \chapter*{Abstract}
+\begin{revisado}
 This bachelor's thesis designs and implements a Balanced Scorecard in Power BI to support decision-making in primary education in Catalonia. The source is the open microdata of the sixth-grade primary assessment published by the Government of Catalonia: more than 1.1 million records from the 2009 to 2025 assessments, with scores by competence and sub-competence and student and school variables. The state of the art shows that the Balanced Scorecard has mostly been applied in higher education and rarely in primary schools, and that none of the tools available for these data links indicators to objectives.
 
 The data are published as a single flat table and the official results are only released as PDF reports, so they cannot be broken down by territory, school type or gender, or tracked over time. A data quality audit carried out before modelling found problems that distort the results unless they are handled, such as rotated score columns in 2016 and 2017, misaligned columns in 2010, coding changes between years and the 2024 territorial reorganisation. The resulting cleaning rules are applied in a Power Query ETL process that loads a dimensional star schema with two fact tables.
@@ -183,6 +188,7 @@ On top of this model, a catalogue of 12 key performance indicators (KPIs) is def
 
 \vspace{0.5cm}
 \noindent\textbf{Keywords:} Balanced Scorecard, Business Intelligence, Power BI, data quality, dimensional modelling, educational assessment, open data.
+\end{revisado}
 \end{otherlanguage}
 
 
@@ -197,6 +203,7 @@ On top of this model, a catalogue of 12 key performance indicators (KPIs) is def
 % CAPÍTULO 1: CONTEXTUALIZACIÓN
 % ------------------------------------------
 \chapter{Contextualización}
+\begin{revisado}
 
 \section{Introducción y contexto}
 Este Trabajo de Final de Grado (TFG) pertenece a la especialidad de Sistemas de Información del Grado en Ingeniería Informática de la Facultad de Informática de Barcelona (FIB), de la Universitat Politècnica de Catalunya (UPC). Es un TFG de modalidad académica, dirigido por Carme Martín Escofet y Maria Hitz Martinez, del Departamento de Ingeniería de Servicios y Sistemas de Información (ESSI). La competencia que más trabaja es la de sistemas de soporte a la decisión y \textit{Business Intelligence} (CSI2.6). También trabaja la concepción y gestión de sistemas de información (CSI2.2 y CSI3.2) y su especificación, diseño e implementación (CSI4.1--CSI4.3).
@@ -247,6 +254,7 @@ La Tabla~\ref{tab:stakeholders} resume los actores implicados, distinguiendo a q
 \caption{Matriz de agentes implicados (\textit{stakeholders}).}
 \label{tab:stakeholders}
 \end{table}
+\end{revisado}
 
 % ------------------------------------------
 % CAPÍTULO 2: JUSTIFICACIÓN
@@ -257,6 +265,7 @@ La Tabla~\ref{tab:stakeholders} resume los actores implicados, distinguiendo a q
 \label{sec:estado_arte}
 
 \subsection{El CMI en el ámbito educativo}
+\begin{revisado}
 El Cuadro de Mando Integral se diseñó para empresas \cite{kaplan1992balanced}, y para usarlo en el sector público hay que adaptar sus perspectivas y situar la misión de la organización en la parte superior del modelo \cite{niven2008balanced}. Esta adaptación se ha aplicado también a la educación.
 
 Rompho \cite{rompho2020balanced} construyó un CMI para las escuelas públicas de Tailandia y lo contrastó con datos de 3.351 centros mediante modelos de ecuaciones estructurales. El estudio confirma que las relaciones entre perspectivas que plantea el modelo también se cumplen en escuelas públicas. Los trabajos anteriores lo daban por supuesto, normalmente porque no tenían datos para comprobarlo. El autor pide prudencia al generalizar, ya que los centros de la muestra recibían apoyo del sector privado.
@@ -266,6 +275,7 @@ El CMI también se usa fuera de la investigación. En Suecia, cuyo alumnado obtu
 En la propia UPC, el Gabinet de Planificació, Avaluació i Qualitat publica en Power BI una aplicación de rendimiento académico con la evolución del acceso, las calificaciones y el abandono de primer curso del estudiantado de grado y máster. Las tasas de rendimiento y de éxito se pueden desglosar por curso, centro, titulación y asignatura, con filtros sincronizados entre informes \cite{gpaq2021rendiment}. Es un cuadro de mando de indicadores, sin perspectivas ni objetivos estratégicos, y se centra en la universidad. Este TFG retoma la misma herramienta y la lleva a primaria, con los indicadores organizados como un CMI.
 
 La mayor parte de la investigación, sin embargo, trata de la universidad. Co\c{s}kun y Nizaeva \cite{coskun2023strategic} revisaron 267 documentos indexados en Scopus sobre el CMI en instituciones educativas y encontraron muchos menos estudios en primaria y secundaria que en educación superior. Este TFG se sitúa en ese hueco: aplica el modelo a la evaluación de 6.\textordmasculine{} de primaria de todo el sistema educativo catalán, a partir de los datos abiertos que publica la Generalitat.
+\end{revisado}
 
 \subsection{Soluciones existentes para los datos de Cataluña}
 Hoy los resultados de 6.\textordmasculine{} de primaria se pueden consultar de tres maneras. Los informes del Consell Superior d'Avaluació \cite{csase_resultats} ofrecen agregados fiables, pero con cortes fijados de antemano que el usuario no puede filtrar ni cruzar. El visor del Portal de Datos Abiertos \cite{transparencia_catalunya_2024} permite hacer consultas y gráficos sencillos sobre la tabla plana, aunque no tiene un modelo dimensional, indicadores ni vistas por perfil. La tercera opción es descargar el fichero y analizarlo con una hoja de cálculo: cada usuario repite el mismo trabajo, es fácil equivocarse y la herramienta se vuelve lenta con más de un millón de filas.
@@ -273,6 +283,7 @@ Hoy los resultados de 6.\textordmasculine{} de primaria se pueden consultar de t
 El sector educativo tiende a apoyar sus decisiones en datos \cite{mandinach2012data}. En el ámbito académico, la analítica educativa (\textit{Educational Data Mining} y \textit{Learning Analytics}) se ha centrado sobre todo en modelos predictivos y en plataformas de aprendizaje en línea \cite{romero2010educational}, y no ofrece un modelo de gestión estratégica para la administración educativa como el CMI. Ninguna de las soluciones existentes se puede reutilizar ni adaptar directamente, así que está justificado diseñar una nueva que aproveche los datos abiertos y una herramienta BI de mercado en lugar de desarrollar software a medida.
 
 \section{Comparativa de alternativas con criterios ponderados}
+\begin{revisado}
 Para elegir la plataforma se han fijado seis criterios, cada uno con un peso según su importancia para el proyecto. Cada alternativa se puntúa de 1 (muy deficiente) a 5 (excelente) y se calcula la puntuación ponderada $S = \sum_i w_i \cdot p_i$ (Tabla~\ref{tab:matriz_decision}).
 
 \begin{table}[H]
@@ -310,8 +321,7 @@ La segunda es el modelo dimensional en estrella \cite{kimball2013data}. Frente a
 La tercera es auditar la calidad de los datos antes de calcular nada. Si los datos tienen errores, los indicadores los heredan, y la auditoría encontró problemas que alteran los resultados si no se tratan, como columnas de puntuación intercambiadas en algunos años. Las reglas de limpieza son explícitas, los datos dudosos se marcan en lugar de borrarse y las medias calculadas se contrastan con las oficiales, de modo que el usuario puede confiar en lo que ve.
 
 El resultado es distinto para cada perfil. El Departamento puede seguir la evolución de las competencias y del alumnado con nivel bajo en toda Cataluña. La inspección puede detectar qué áreas se alejan de la media y dónde hay brechas, para priorizar el refuerzo. La dirección de un centro puede comparar los resultados de centros de su mismo contexto con los de Cataluña.
-
-El capítulo~\ref{cap:alcance} concreta, a partir de estas decisiones, la solución propuesta: sus objetivos, su alcance y sus requisitos.
+\end{revisado}
 
 % ------------------------------------------
 % CAPÍTULO 3: ALCANCE
@@ -321,6 +331,7 @@ El capítulo~\ref{cap:alcance} concreta, a partir de estas decisiones, la soluci
 La solución propuesta es un Cuadro de Mando Integral en Power BI construido sobre los datos abiertos de la evaluación de 6.\textordmasculine{} de primaria. Tiene tres partes: una ETL que audita y depura los datos, un modelo dimensional que los organiza para el análisis y tres cuadros de mando, uno por cada nivel de decisión. Este capítulo fija sus objetivos, lo que entra en el alcance y los requisitos que debe cumplir.
 
 \section{Objetivo general y subobjetivos}
+\begin{revisado}
 \textbf{Objetivo general:} diseñar e implementar un Cuadro de Mando Integral interactivo en Power BI, alimentado por los datos abiertos de la evaluación de 6.\textordmasculine{} de primaria de Cataluña, que dé soporte a la toma de decisiones basada en evidencias del Departamento de Educación, la inspección y las direcciones de centro.
 
 Subobjetivos:
@@ -378,6 +389,7 @@ Eficiencia y progreso (aprendizaje y crecimiento) & Mejora continua & Variación
 \caption{Perspectivas del CMI y catálogo previsto de KPIs.}
 \label{tab:kpis}
 \end{table}
+\end{revisado}
 
 \section{Requisitos}
 \label{sec:requisitos}
@@ -505,6 +517,7 @@ RNF11 & Funcionar sin licencias de pago. & Uso completo con Power BI Desktop gra
 
 \section{Prototipo de la interfaz}
 \label{sec:mockups}
+\begin{revisado}
 Antes de construir los cuadros de mando se ha dibujado un boceto (\textit{mockup}) de cada panel. Los bocetos fijan qué información verá cada perfil y dónde aparecerá, de modo que se pueda comprobar con las directoras que la interfaz responde a las preguntas de decisión (Tabla~\ref{tab:preguntas}) antes de implementarla. Las cifras y la forma de los gráficos son ficticias: indican el tipo de elemento, no un resultado.
 
 Los tres paneles compartirán la misma estructura para que el usuario no tenga que aprender una disposición nueva en cada uno. Arriba irán los filtros y, debajo, una fila de tarjetas con los indicadores principales. Los gráficos ocuparán el centro, y al pie habrá un aviso fijo sobre las limitaciones de los datos (RF15) y las pestañas para cambiar de panel. Cada panel cabrá en un lienzo de 1280 $\times$ 720 píxeles sin desplazamiento (RNF03).
@@ -581,11 +594,13 @@ R6 & Desviación de la planificación por un alcance excesivo & Media (30\%) & A
 \caption{Riesgos identificados, probabilidad estimada e impacto.}
 \label{tab:riesgos}
 \end{table}
+\end{revisado}
 
 % ------------------------------------------
 % CAPÍTULO 4: METODOLOGÍA Y RIGOR
 % ------------------------------------------
 \chapter{Metodología y rigor}
+\begin{revisado}
 
 \section{Metodología de trabajo}
 \label{sec:metodologia}
@@ -610,11 +625,13 @@ Cada subobjetivo tiene un criterio de aceptación verificable:
     \item \textbf{Usabilidad (RNF02):} prueba con al menos 5 usuarios con perfiles representativos, tareas guiadas y el cuestionario SUS \cite{brooke1996sus}, complementada con una evaluación heurística \cite{nielsen1993usability}.
     \item \textbf{Alineación estratégica (SO2):} revisión del catálogo de KPIs con las directoras.
 \end{itemize}
+\end{revisado}
 
 % ------------------------------------------
 % CAPÍTULO 5: PLANIFICACIÓN TEMPORAL
 % ------------------------------------------
 \chapter{Planificación temporal}
+\begin{revisado}
 
 \section{Datos globales del proyecto}
 El TFG tiene una carga de 18 créditos ECTS. La normativa española fija entre 25 y 30 horas de trabajo por crédito \cite{boe_rd1125_2003} y la FIB establece 30 horas por crédito para el TFG \cite{fib_normativa_tfg}, por lo que la dedicación total es de \textbf{18 $\times$ 30 = 540 horas}. El proyecto empezó el 15 de septiembre de 2026 y finaliza con la defensa en el periodo ordinario del primer cuatrimestre (19--25 de enero de 2027): 19 semanas, con una media de 28,4 horas semanales.
@@ -742,6 +759,7 @@ T23 & Preparación de la defensa & 25 & 18--19 & T19, T20 & PM \\ \midrule
 
 \section{Diagrama de Gantt}
 La Figura~\ref{fig:gantt} muestra el calendario en semanas. La concurrencia es explícita: T5 y T6 se desarrollan en paralelo al resto; T12 (limpieza) se adelanta al diseño del modelo porque solo depende del perfilado; T11 avanza en paralelo con la ETL; y T20 valida los KPIs mientras se construyen los paneles. La carga semanal resultante oscila entre 19 y 34 horas.
+\end{revisado}
 
 \begin{landscape}
 \begin{figure}[p]
@@ -806,6 +824,7 @@ La Figura~\ref{fig:gantt} muestra el calendario en semanas. La concurrencia es e
 \label{fig:gantt}
 \end{figure}
 \end{landscape}
+\begin{revisado}
 
 \section{Gestión del riesgo: planes alternativos}
 \label{sec:planesB}
@@ -831,6 +850,7 @@ R6 & Renunciar a las extensiones opcionales y priorizar el alcance mínimo (Tabl
 \end{table}
 
 Con estas medidas, ninguno de los riesgos compromete la defensa en el periodo ordinario.
+\end{revisado}
 
 % ------------------------------------------
 % CAPÍTULO 6: GESTIÓN ECONÓMICA
@@ -1959,6 +1979,8 @@ Para la accesibilidad (RNF05), el estado de los KPIs se lee por el símbolo y la
 
 \subsection{Diseño final de los paneles}
 \label{sec:paneles}
+% PENDIENTE (entrega final): cuando el informe deje de cambiar, sustituir o acompañar estas figuras esquemáticas
+% por capturas reales de los tres paneles en Power BI Desktop (petición de la estudiante, 14/11/2026).
 Las Figuras~\ref{fig:panel_estrategico} a \ref{fig:panel_operativo} muestran la disposición final de cada panel. Se generan con un script a partir de los ficheros del informe, de modo que cada caja tiene la posición, el tamaño, el título y los campos del elemento visual real. La guía de uso del repositorio explica cómo se usa cada panel.
 
 \begin{figure}[H]

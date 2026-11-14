@@ -14,6 +14,9 @@ import argparse
 import html
 import re
 import zipfile
+from datetime import datetime, timezone
+
+AUTORA = "Kiara Kristin Rodríguez Uribe"
 
 NS_COMMENTS = "application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml"
 NS_COMMENTS_EX = "application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml"
@@ -37,6 +40,9 @@ def main():
     ap.add_argument("generado")
     ap.add_argument("salida")
     ap.add_argument("--renombra", action="append", default=[])
+    ap.add_argument("--nuevo", action="append", default=[],
+                    help='comentario nuevo de la estudiante: "texto del párrafo=texto del comentario". '
+                         "Solo una vez: después ya viene en el .docx del Drive.")
     a = ap.parse_args()
     renombra = dict(r.split("=", 1) for r in a.renombra)
 
@@ -56,6 +62,24 @@ def main():
             if viejo in t:
                 t = t.replace(viejo, nuevo)
         anclas[cid] = t
+
+    # Comentarios nuevos de la estudiante, con el mismo formato mínimo que los de Google Docs
+    siguiente = max((int(i) for i in ids), default=-1) + 1
+    for k, nuevo in enumerate(a.nuevo):
+        ancla, cuerpo = nuevo.split("=", 1)
+        cid = str(siguiente + k)
+        para_id = f"{0x7E000000 + int(cid):08X}"
+        fecha = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        comments = comments.replace(
+            "</w:comments>",
+            f'<w:comment w:author="{AUTORA}" w:id="{cid}" w:date="{fecha}" w:initials="KR">'
+            f'<w:p w14:paraId="{para_id}"><w:r><w:t xml:space="preserve">{html.escape(cuerpo)}</w:t></w:r></w:p>'
+            f"</w:comment></w:comments>")
+        if comments_ex:
+            comments_ex = comments_ex.replace(
+                "</w15:commentsEx>", f'<w15:commentEx w15:paraId="{para_id}" w15:done="0"/></w15:commentsEx>')
+        ids.append(cid)
+        anclas[cid] = ancla
 
     zg = zipfile.ZipFile(a.generado)
     doc = zg.read("word/document.xml").decode("utf-8")
