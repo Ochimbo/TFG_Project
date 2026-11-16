@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "p3_seg_naturaleza",
   "position": {
     "x": 267.2,
@@ -28,8 +28,8 @@
               },
               "queryRef": "DimContextoCentro.Naturaleza",
               "nativeQueryRef": "Titularidad",
-              "displayName": "Titularidad",
-              "active": true
+              "active": true,
+              "displayName": "Titularidad"
             }
           ]
         }
@@ -60,6 +60,11 @@
               }
             }
           }
+        }
+      ],
+      "general": [
+        {
+          "properties": {}
         }
       ]
     },
@@ -104,5 +109,23 @@
       "filterChanges": true
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "bf6859957c7b33ca3945",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimContextoCentro"
+              }
+            },
+            "Property": "Naturaleza"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }

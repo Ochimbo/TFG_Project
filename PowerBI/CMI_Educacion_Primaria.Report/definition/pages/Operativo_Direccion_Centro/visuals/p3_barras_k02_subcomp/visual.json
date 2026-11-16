@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "p3_barras_k02_subcomp",
   "position": {
     "x": 16,
@@ -28,8 +28,8 @@
               },
               "queryRef": "DimCompetencia.Subcompetencia",
               "nativeQueryRef": "Subcompetencia",
-              "displayName": "Subcompetencia",
-              "active": true
+              "active": true,
+              "displayName": "Subcompetencia"
             }
           ]
         },
@@ -181,5 +181,51 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "c9cc16435be058a35903",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimCompetencia"
+              }
+            },
+            "Property": "Subcompetencia"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "537b2ca72dc50eac4e7b",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimCompetencia"
+              }
+            },
+            "Property": "Materia"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "2a8703d77d000e6c4b6e",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "K02 Puntuación media subcompetencia"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

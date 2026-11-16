@@ -178,6 +178,20 @@
           ]
         },
         "howCreated": "User"
+      },
+      {
+        "name": "8286397c056e2649e909",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimAnio"
+              }
+            },
+            "Property": "Anio"
+          }
+        },
+        "type": "Advanced"
       }
     ]
   }
