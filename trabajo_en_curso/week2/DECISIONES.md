@@ -13,28 +13,28 @@ define en un solo apartado; los demás lo referencian.
 |---|---|---|---|
 | Diagrama de clases UML del dominio, independiente de la herramienta. Es el diseño conceptual de la base de datos | modelo conceptual | 7.2 (`sec:modelo_conceptual`) | «diseño conceptual» como título o apartado del capítulo 8, «modelo de dominio», «modelo de datos» |
 | Condiciones que el diagrama no expresa (RI1–RI7); RI2, RI3 y RI5 también en OCL | restricciones de integridad | 7.2.1 (`sec:restricciones`, `tab:restricciones`) | «reglas de integridad», «restricciones textuales» |
-| Modelo de la base de datos del sistema: tablas de hechos y dimensiones que se cargan en Power BI | modelo dimensional | 8.1 (`sec:modelo_dimensional`) | «modelo en estrella», «modelo de datos», «modelo lógico», «almacén de datos» |
-| Paso que traduce el modelo conceptual a tablas | diseño lógico | 8.1.1 (`sec:diseno_logico`) | «diseño conceptual», «modelo lógico» |
-| Forma del modelo dimensional (hechos en el centro y dimensiones alrededor) y la figura que la dibuja («diagrama en estrella» de la issue #11) | esquema en estrella | 8.1.1 (`sec:diseno_logico`) | «modelo en estrella», «diagrama de estrella» como concepto distinto |
-| El modelo dimensional ya implementado en Power BI (carpeta `.SemanticModel`) | modelo semántico | 8.1.4 y 8.5 | «modelo» a secas cuando pueda confundirse con el conceptual |
-| Tabla con una fila por hecho medido | tabla de hechos | 8.1.2 (`sec:tablas_hechos`) | «tabla de medidas», «fact» |
-| Nivel de detalle de una tabla de hechos | granularidad | 8.1.2 | «grano» |
-| Tabla de contexto de análisis | dimensión | 8.1.3 (`sec:dimensiones`) | «tabla de dimensiones» como título |
-| Etapas del sistema y recorrido de los datos (fuente, ETL, modelo dimensional, lógica analítica, interfaz) | arquitectura general | 7.3 (`sec:arquitectura`); no se mueve (issue #14) | «arquitectura del sistema» como apartado del capítulo 8 |
-| Carpetas y ficheros del repositorio y control de versiones | organización del repositorio | 8.5 (`sec:organizacion_proyecto`) | «organización del proyecto», «arquitectura» |
-| Etapa que lee, comprueba, limpia y carga los datos (Power Query) | ETL | etapa en 7.3; diseño en 8.2 (`sec:diseno_etl`) | «proceso de carga», «integración» como nombre de la etapa |
-| Reglas R01–R34 de la auditoría que aplica la ETL | reglas de limpieza | 8.2.2 (`sec:reglas_limpieza`); el verbo «depurar» (CU01) designa su aplicación | «reglas de validación», «saneamiento», «normalización» |
-| Comprobación del sistema ya construido | validación | 4.3 (`sec:validacion`); la «validación independiente» en Python, en 7.3 | «validación» para las comprobaciones de la ETL (son «comprobaciones») |
-| Medidas DAX que calculan KPIs, semáforos y regla de las 30 puntuaciones | lógica analítica | etapa en 7.3; diseño en 8.3 (`sec:diseno_dax`) | «capa semántica», «capa de cálculo» |
-| Cada uno de los 12 indicadores K01–K12 del catálogo | KPI (en prosa también «indicador») | 3.3 (`sec:kpis`); fichas en 8.3.1 | «métrica»; «medida» se reserva para la expresión DAX |
-| Lo que ve y maneja el usuario: el informe de Power BI con sus tres paneles | interfaz | prototipo en 3.5; etapa en 7.3; diseño en 8.4 (`sec:diseno_interfaz`) | «presentación», «capa de presentación», «front-end» |
-| Cada una de las tres páginas del informe (E, T, O) | panel | 3.5 y 8.4.2 | «dashboard», «página», «vista» |
+| Modelo de la base de datos del sistema: tablas de hechos y dimensiones que se cargan en Power BI | modelo dimensional | 8.2 (`sec:modelo_dimensional`) | «modelo en estrella», «modelo de datos», «modelo lógico», «almacén de datos» |
+| Paso que traduce el modelo conceptual a tablas | diseño lógico | 8.2.1 (`sec:diseno_logico`) | «diseño conceptual», «modelo lógico» |
+| Forma del modelo dimensional (hechos en el centro y dimensiones alrededor) y la figura que la dibuja («diagrama en estrella» de la issue #11) | esquema en estrella | 8.2.1 (`sec:diseno_logico`) | «modelo en estrella», «diagrama de estrella» como concepto distinto |
+| El modelo dimensional ya implementado en Power BI (carpeta `.SemanticModel`) | modelo semántico | 8.2.4 y 8.6 | «modelo» a secas cuando pueda confundirse con el conceptual |
+| Tabla con una fila por hecho medido | tabla de hechos | 8.2.2 (`sec:tablas_hechos`) | «tabla de medidas», «fact» |
+| Nivel de detalle de una tabla de hechos | granularidad | 8.2.2 | «grano» |
+| Tabla de contexto de análisis | dimensión | 8.2.3 (`sec:dimensiones`) | «tabla de dimensiones» como título |
+| Etapas del sistema y recorrido de los datos (fuente, ETL, modelo dimensional, lógica analítica, interfaz) | arquitectura general | 8.1 (`sec:arquitectura`); movida del 7.3 al capítulo 8 (reunión del 16-11-2026, issue #16) | «arquitectura del sistema» |
+| Carpetas y ficheros del repositorio y control de versiones | organización del repositorio | 8.6 (`sec:organizacion_proyecto`) | «organización del proyecto», «arquitectura» |
+| Etapa que lee, comprueba, limpia y carga los datos (Power Query) | ETL | etapa en 8.1; diseño en 8.3 (`sec:diseno_etl`) | «proceso de carga», «integración» como nombre de la etapa |
+| Reglas R01–R34 de la auditoría que aplica la ETL | reglas de limpieza | 8.3.2 (`sec:reglas_limpieza`); el verbo «depurar» (CU01) designa su aplicación | «reglas de validación», «saneamiento», «normalización» |
+| Comprobación del sistema ya construido | validación | 4.3 (`sec:validacion`); la «validación independiente» en Python, en 8.1 | «validación» para las comprobaciones de la ETL (son «comprobaciones») |
+| Medidas DAX que calculan KPIs, semáforos y regla de las 30 puntuaciones | lógica analítica | etapa en 8.1; diseño en 8.4 (`sec:diseno_dax`) | «capa semántica», «capa de cálculo» |
+| Cada uno de los 12 indicadores K01–K12 del catálogo | KPI (en prosa también «indicador») | 3.3 (`sec:kpis`); fichas en 8.4.1 | «métrica»; «medida» se reserva para la expresión DAX |
+| Lo que ve y maneja el usuario: el informe de Power BI con sus tres paneles | interfaz | prototipo en 3.5; etapa en 8.1; diseño en 8.5 (`sec:diseno_interfaz`) | «presentación», «capa de presentación», «front-end» |
+| Cada una de las tres páginas del informe (E, T, O) | panel | 3.5 y 8.5.2 | «dashboard», «página», «vista» |
 | Bocetos de los paneles previos al diseño | prototipo (de la interfaz) | 3.5 (`sec:mockups`) | «bocetos» en títulos |
-| Valor medible que debe cumplir un requisito no funcional | criterio de aceptación | 3.4.3 (`tab:rnf`) y fichas de 7.4 | «criterio de verificación» |
-| Ficha de cinco campos de cada RNF | ficha Volere | 7.4 (`sec:rnf_volere`) | «tarjeta», «plantilla» para una ficha concreta |
-| Valoración favorable, neutra o desfavorable de un KPI frente a su referencia (medidas `Estado K01`, `Estado K03`, `Estado K10`) | estado del KPI (en plural, «el estado de los KPIs») | 1.2 (definición); 8.3.2 (`sec:semaforos`) | «semáforo» (D-D07) |
+| Valor medible que debe cumplir un requisito no funcional | criterio de aceptación | 3.4.3 (`tab:rnf` y fichas) | «criterio de verificación» |
+| Ficha de cinco campos de cada RNF | ficha Volere | 3.4.3, después de `tab:rnf` (fichas `tab:rnf01`..`tab:rnf11`); movidas del 7.4 (reunión del 16-11-2026, issue #17) | «tarjeta», «plantilla» para una ficha concreta |
+| Valoración favorable, neutra o desfavorable de un KPI frente a su referencia (medidas `Estado K01`, `Estado K03`, `Estado K10`) | estado del KPI (en plural, «el estado de los KPIs») | 1.2 (definición); 8.4.2 (`sec:semaforos`) | «semáforo» (D-D07) |
 
-### Títulos y labels definitivos de los capítulos 7 y 8
+### Títulos y labels definitivos de los capítulos 7 y 8 (actualizado el 18-11-2026, issues #16 y #17)
 
 ```
 7   Especificación                                        cap:especificacion
@@ -42,29 +42,29 @@ define en un solo apartado; los demás lo referencian.
 7.1.1   Descripción de los casos de uso                   (sin label; fichas tab:cu01..tab:cu10)
 7.2   Modelo conceptual                                   sec:modelo_conceptual
 7.2.1   Restricciones de integridad                       sec:restricciones (tab:restricciones)
-7.3   Arquitectura general                                sec:arquitectura
-7.4   Especificación de los requisitos no funcionales     sec:rnf_volere (fichas tab:rnf01..tab:rnf11)
-7.5   Historias de usuario                                sec:historias
+7.3   Historias de usuario                                sec:historias
 8   Diseño                                                cap:diseno
-8.1   Diseño del modelo dimensional                       sec:modelo_dimensional
-8.1.1   Diseño lógico: esquema en estrella                sec:diseno_logico
-8.1.2   Tablas de hechos                                  sec:tablas_hechos
-8.1.3   Dimensiones                                       sec:dimensiones
-8.1.4   Diccionario de datos                              sec:diccionario_datos
-8.2   Diseño de la ETL                                    sec:diseno_etl
-8.2.1   Flujo de consultas                                sec:flujo_consultas
-8.2.2   Reglas de limpieza                                sec:reglas_limpieza
-8.3   Diseño de la lógica analítica                       sec:diseno_dax
-8.3.1   Fichas de los KPIs                                sec:fichas_kpis
-8.3.2   Semáforos y referencias                           sec:semaforos
-8.4   Diseño de la interfaz                               sec:diseno_interfaz
-8.4.1   Estructura común y navegación                     sec:estructura_comun
-8.4.2   Diseño final de los paneles                       sec:paneles
-8.5   Organización del repositorio                        sec:organizacion_proyecto
+8.1   Arquitectura general                                sec:arquitectura
+8.2   Diseño del modelo dimensional                       sec:modelo_dimensional
+8.2.1   Diseño lógico: esquema en estrella                sec:diseno_logico
+8.2.2   Tablas de hechos                                  sec:tablas_hechos
+8.2.3   Dimensiones                                       sec:dimensiones
+8.2.4   Diccionario de datos                              sec:diccionario_datos
+8.3   Diseño de la ETL                                    sec:diseno_etl
+8.3.1   Flujo de consultas                                sec:flujo_consultas
+8.3.2   Reglas de limpieza                                sec:reglas_limpieza
+8.4   Diseño de la lógica analítica                       sec:diseno_dax
+8.4.1   Fichas de los KPIs                                sec:fichas_kpis
+8.4.2   Estado de los KPIs y referencias                  sec:semaforos
+8.5   Diseño de la interfaz                               sec:diseno_interfaz
+8.5.1   Estructura común y navegación                     sec:estructura_comun
+8.5.2   Diseño final de los paneles                       sec:paneles
+8.6   Organización del repositorio                        sec:organizacion_proyecto
 ```
 
-El capítulo 8 no tiene apartado de diseño conceptual: el 8.1 empieza remitiendo al modelo conceptual (7.2) y lo
-traduce en el 8.1.1. Los labels que ya existían no cambian; los de los subapartados son nuevos.
+El capítulo 8 no tiene apartado de diseño conceptual: el 8.2 empieza remitiendo al modelo conceptual (7.2) y lo
+traduce en el 8.2.1. Las fichas Volere de los RNF (antes 7.4) están en el 3.4.3, a continuación de `tab:rnf`, y ya no
+tienen label de sección. Los labels que ya existían no cambian; los de los subapartados son nuevos.
 
 ## Decisiones
 
