@@ -1568,7 +1568,7 @@ HU15 & \textit{Como inspector o inspectora, quiero consultar el CMI desde el nav
 \chapter{Diseño}
 \label{cap:diseno}
 % Nombres vinculantes: trabajo_en_curso/week2/DECISIONES.md, sección «Nombres».
-El diseño describe cómo se construye el sistema especificado en el Capítulo~\ref{cap:especificacion}. Empieza por la arquitectura general (Sección~\ref{sec:arquitectura}), que divide el sistema en etapas y sitúa en ellas los casos de uso. Después dedica un apartado a cada etapa: el modelo dimensional, la ETL, la lógica analítica y la interfaz. El modelo dimensional va antes que la ETL porque la ETL se diseña para cargarlo. El último apartado describe la organización del repositorio, donde se guardan todos los ficheros del proyecto.
+El diseño describe cómo se construye el sistema especificado en el Capítulo~\ref{cap:especificacion}. Empieza por la arquitectura general (Sección~\ref{sec:arquitectura}), que divide el sistema en etapas y sitúa en ellas los casos de uso. Después dedica un apartado a cada etapa: el modelo dimensional, la ETL, la lógica analítica y la interfaz. El modelo dimensional va antes que la ETL porque la ETL se diseña para cargarlo. La implementación de cada etapa se describe en el Capítulo~\ref{cap:implementacion}.
 
 El capítulo recoge las decisiones de diseño y su justificación. El detalle completo está en cuatro documentos del repositorio (Sección~\ref{sec:organizacion_proyecto}): el informe de calidad de los datos, el documento del modelo con el diccionario de datos, las fichas de los KPIs y la guía de uso. Las cifras de filas y de resultados proceden del modelo implementado y se han comprobado con la validación independiente en Python.
 
@@ -2025,6 +2025,13 @@ El diseño final cambia el prototipo en los puntos siguientes. Todos se deben a 
     \item Cada gráfico de evolución tiene encima un segmentador para quitar 2020 del eje (Sección~\ref{sec:estructura_comun}), que el prototipo no tenía.
 \end{enumerate}
 
+% ------------------------------------------
+% CAPÍTULO 9: IMPLEMENTACIÓN
+% ------------------------------------------
+\chapter{Implementación}
+\label{cap:implementacion}
+% Pendiente de redactar (issue #19). En el texto, solo fragmentos cortos de código; los largos van al anexo (issue #21).
+
 \section{Organización del repositorio}
 \label{sec:organizacion_proyecto}
 Todos los ficheros del proyecto están en un repositorio de Git alojado en GitHub. La Figura~\ref{fig:repositorio} muestra sus carpetas principales. La arquitectura general (Sección~\ref{sec:arquitectura}) describe las etapas del sistema; este apartado indica en qué ficheros está cada una.
@@ -2065,10 +2072,53 @@ La carpeta \texttt{PowerBI/} no se edita a mano. Los scripts de \texttt{generado
     \item Se abre el proyecto en Power BI Desktop y se actualizan los datos.
 \end{enumerate}
 
-En la versión actual, el modelo pasa la validación de TOM sin errores, con 9 tablas, 20 medidas y 9 relaciones. Las 11 consultas M son correctas, los 49 ficheros del informe cumplen los esquemas y se superan las 31 pruebas de integridad. La comprobación de los paneles en Power BI Desktop se recogerá con el resto de la validación (Sección~\ref{sec:validacion}).
+En la versión actual, el modelo pasa la validación de TOM sin errores, con 9 tablas, 20 medidas y 9 relaciones. Las 11 consultas M son correctas, los 49 ficheros del informe cumplen los esquemas y se superan las 31 pruebas de integridad. La comprobación de los paneles en Power BI Desktop se recoge con el resto de la validación en el Capítulo~\ref{cap:validacion_pruebas}.
+
+\section{Implementación del modelo dimensional}
+\label{sec:impl_modelo}
+% Pendiente (#19): tablas y relaciones en TMDL, claves y jerarquías.
+
+\section{Implementación de la ETL}
+\label{sec:impl_etl}
+% Pendiente (#19): consultas M, parámetros, reglas de limpieza y detención de la carga.
+
+\section{Implementación de la lógica analítica}
+\label{sec:impl_dax}
+% Pendiente (#19): medidas DAX de los KPIs, estado de los KPIs y regla de las 30 puntuaciones.
+
+\section{Implementación de la interfaz}
+\label{sec:impl_interfaz}
+% Pendiente (#19): informe PBIR, los tres paneles, segmentadores sincronizados y formato.
 
 % ------------------------------------------
-% CAPÍTULO 9: SOSTENIBILIDAD
+% CAPÍTULO 10: VALIDACIÓN Y PRUEBAS
+% ------------------------------------------
+\chapter{Validación y pruebas}
+\label{cap:validacion_pruebas}
+% Pendiente de redactar (issue #20). Aplica los métodos de la Sección~\ref{sec:validacion}.
+
+\section{Pruebas de la ETL y del modelo}
+\label{sec:val_etl}
+% Pendiente (#20): recuentos, pruebas de integridad, restricciones de integridad y reglas de limpieza (RNF07).
+
+\section{Exactitud de los KPIs}
+\label{sec:val_kpis}
+% Pendiente (#20): contraste con los informes oficiales y doble implementación DAX--Python (RNF06).
+
+\section{Rendimiento}
+\label{sec:val_rendimiento}
+% Pendiente (#20): tiempos con el analizador de rendimiento y DAX Studio (RNF01).
+
+\section{Usabilidad y accesibilidad}
+\label{sec:val_usabilidad}
+% Pendiente (#20): prueba con usuarios y cuestionario SUS, evaluación heurística, RNF02--RNF05.
+
+\section{Cumplimiento de los requisitos}
+\label{sec:val_requisitos}
+% Pendiente (#20): resultado de cada RF y RNF frente a su criterio de aceptación.
+
+% ------------------------------------------
+% CAPÍTULO 11: SOSTENIBILIDAD
 % ------------------------------------------
 \chapter{Sostenibilidad y compromiso social}
 \begin{revisado}

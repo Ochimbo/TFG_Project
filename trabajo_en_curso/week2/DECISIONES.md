@@ -16,12 +16,12 @@ define en un solo apartado; los demás lo referencian.
 | Modelo de la base de datos del sistema: tablas de hechos y dimensiones que se cargan en Power BI | modelo dimensional | 8.2 (`sec:modelo_dimensional`) | «modelo en estrella», «modelo de datos», «modelo lógico», «almacén de datos» |
 | Paso que traduce el modelo conceptual a tablas | diseño lógico | 8.2.1 (`sec:diseno_logico`) | «diseño conceptual», «modelo lógico» |
 | Forma del modelo dimensional (hechos en el centro y dimensiones alrededor) y la figura que la dibuja («diagrama en estrella» de la issue #11) | esquema en estrella | 8.2.1 (`sec:diseno_logico`) | «modelo en estrella», «diagrama de estrella» como concepto distinto |
-| El modelo dimensional ya implementado en Power BI (carpeta `.SemanticModel`) | modelo semántico | 8.2.4 y 8.6 | «modelo» a secas cuando pueda confundirse con el conceptual |
+| El modelo dimensional ya implementado en Power BI (carpeta `.SemanticModel`) | modelo semántico | 8.2.4 y 9.1 | «modelo» a secas cuando pueda confundirse con el conceptual |
 | Tabla con una fila por hecho medido | tabla de hechos | 8.2.2 (`sec:tablas_hechos`) | «tabla de medidas», «fact» |
 | Nivel de detalle de una tabla de hechos | granularidad | 8.2.2 | «grano» |
 | Tabla de contexto de análisis | dimensión | 8.2.3 (`sec:dimensiones`) | «tabla de dimensiones» como título |
 | Etapas del sistema y recorrido de los datos (fuente, ETL, modelo dimensional, lógica analítica, interfaz) | arquitectura general | 8.1 (`sec:arquitectura`); movida del 7.3 al capítulo 8 (reunión del 16-11-2026, issue #16) | «arquitectura del sistema» |
-| Carpetas y ficheros del repositorio y control de versiones | organización del repositorio | 8.6 (`sec:organizacion_proyecto`) | «organización del proyecto», «arquitectura» |
+| Carpetas y ficheros del repositorio y control de versiones | organización del repositorio | 9.1 (`sec:organizacion_proyecto`); movida del 8.6 (reunión del 16-11-2026, issue #18) | «organización del proyecto», «arquitectura» |
 | Etapa que lee, comprueba, limpia y carga los datos (Power Query) | ETL | etapa en 8.1; diseño en 8.3 (`sec:diseno_etl`) | «proceso de carga», «integración» como nombre de la etapa |
 | Reglas R01–R34 de la auditoría que aplica la ETL | reglas de limpieza | 8.3.2 (`sec:reglas_limpieza`); el verbo «depurar» (CU01) designa su aplicación | «reglas de validación», «saneamiento», «normalización» |
 | Comprobación del sistema ya construido | validación | 4.3 (`sec:validacion`); la «validación independiente» en Python, en 8.1 | «validación» para las comprobaciones de la ETL (son «comprobaciones») |
@@ -34,7 +34,7 @@ define en un solo apartado; los demás lo referencian.
 | Ficha de cinco campos de cada RNF | ficha Volere | 3.4.3, después de `tab:rnf` (fichas `tab:rnf01`..`tab:rnf11`); movidas del 7.4 (reunión del 16-11-2026, issue #17) | «tarjeta», «plantilla» para una ficha concreta |
 | Valoración favorable, neutra o desfavorable de un KPI frente a su referencia (medidas `Estado K01`, `Estado K03`, `Estado K10`) | estado del KPI (en plural, «el estado de los KPIs») | 1.2 (definición); 8.4.2 (`sec:semaforos`) | «semáforo» (D-D07) |
 
-### Títulos y labels definitivos de los capítulos 7 y 8 (actualizado el 18-11-2026, issues #16 y #17)
+### Títulos y labels definitivos de los capítulos 7 a 10 (actualizado el 18-11-2026, issues #16, #17 y #18)
 
 ```
 7   Especificación                                        cap:especificacion
@@ -59,7 +59,19 @@ define en un solo apartado; los demás lo referencian.
 8.5   Diseño de la interfaz                               sec:diseno_interfaz
 8.5.1   Estructura común y navegación                     sec:estructura_comun
 8.5.2   Diseño final de los paneles                       sec:paneles
-8.6   Organización del repositorio                        sec:organizacion_proyecto
+9   Implementación                                        cap:implementacion
+9.1   Organización del repositorio                        sec:organizacion_proyecto
+9.2   Implementación del modelo dimensional               sec:impl_modelo
+9.3   Implementación de la ETL                            sec:impl_etl
+9.4   Implementación de la lógica analítica               sec:impl_dax
+9.5   Implementación de la interfaz                       sec:impl_interfaz
+10  Validación y pruebas                                  cap:validacion_pruebas
+10.1  Pruebas de la ETL y del modelo                      sec:val_etl
+10.2  Exactitud de los KPIs                               sec:val_kpis
+10.3  Rendimiento                                         sec:val_rendimiento
+10.4  Usabilidad y accesibilidad                          sec:val_usabilidad
+10.5  Cumplimiento de los requisitos                      sec:val_requisitos
+11  Sostenibilidad y compromiso social                    (sin label)
 ```
 
 El capítulo 8 no tiene apartado de diseño conceptual: el 8.2 empieza remitiendo al modelo conceptual (7.2) y lo
