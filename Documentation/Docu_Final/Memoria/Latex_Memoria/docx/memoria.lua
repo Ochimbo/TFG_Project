@@ -247,4 +247,50 @@ local principal = {
   end,
 }
 
-return { { Pandoc = function(doc) recoger(doc) end }, principal }
+-- Anexos: Pandoc ignora \appendix y los numeraría como capítulos (12, 12.1...) delante de la bibliografía.
+-- Los capítulos a partir del que tiene la etiqueta «anexo:...» se numeran con letras (A, A.1...), se sacan de la
+-- numeración automática y se colocan después de la bibliografía, como en el PDF. Las referencias a sus
+-- etiquetas muestran la letra.
+local function anexos(doc)
+  local inicio
+  for i, b in ipairs(doc.blocks) do
+    if b.t == "Header" and b.level == 1 and b.identifier:match("^anexo") then inicio = i; break end
+  end
+  if not inicio then return doc end
+  -- La bibliografía llega al final como un título sin numerar («Bibliografía») seguido del Div «refs»
+  local cuerpo, anexo, refs, titulo_refs = {}, {}, nil, nil
+  for i, b in ipairs(doc.blocks) do
+    if b.t == "Div" and b.identifier == "refs" then refs = b
+    elseif i < inicio then table.insert(cuerpo, b)
+    elseif b.t == "Header" and b.level == 1 and b.classes:includes("unnumbered") then titulo_refs = b
+    else table.insert(anexo, b) end
+  end
+  local letras, letra, sec, etiqueta = "ABCDEFGHIJ", 0, 0, {}
+  for _, b in ipairs(anexo) do
+    if b.t == "Header" and b.level <= 2 then
+      local numero
+      if b.level == 1 then
+        letra, sec = letra + 1, 0
+        numero = letras:sub(letra, letra)
+      else
+        sec = sec + 1
+        numero = letras:sub(letra, letra) .. "." .. sec
+      end
+      if b.identifier ~= "" then etiqueta["#" .. b.identifier] = numero end
+      b.classes:insert("unnumbered")
+      b.content:insert(1, pandoc.Space())
+      b.content:insert(1, pandoc.Str(numero))
+    end
+  end
+  if titulo_refs then table.insert(cuerpo, titulo_refs) end
+  if refs then table.insert(cuerpo, refs) end
+  for _, b in ipairs(anexo) do table.insert(cuerpo, b) end
+  doc.blocks = cuerpo
+  return doc:walk({
+    Link = function(l)
+      if etiqueta[l.target] then l.content = { pandoc.Str(etiqueta[l.target]) }; return l end
+    end,
+  })
+end
+
+return { { Pandoc = function(doc) doc = anexos(doc); recoger(doc); return doc end }, principal }

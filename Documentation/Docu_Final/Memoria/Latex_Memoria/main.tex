@@ -2030,7 +2030,7 @@ El diseño final cambia el prototipo en los puntos siguientes. Todos se deben a 
 % ------------------------------------------
 \chapter{Implementación}
 \label{cap:implementacion}
-% Pendiente de redactar (issue #19). En el texto, solo fragmentos cortos de código; los largos van al anexo (issue #21).
+Este capítulo explica cómo se ha construido cada etapa diseñada en el Capítulo~\ref{cap:diseno}: en qué ficheros está, con qué lenguaje se ha escrito y qué problemas aparecieron al implementarla. Primero se describe la organización del repositorio, que es común a todas las etapas, y después cada etapa en el mismo orden que en el diseño. El texto solo incluye fragmentos cortos de código; los fragmentos más largos están en el Anexo~\ref{anexo:codigo}.
 
 \section{Organización del repositorio}
 \label{sec:organizacion_proyecto}
@@ -2049,7 +2049,7 @@ TFG_Project/
   PowerBI/                     proyecto de Power BI en formato .pbip (generado)
     CMI_Educacion_Primaria.SemanticModel/   modelo semántico en TMDL: tablas,
                                             consultas M, relaciones y medidas
-    CMI_Educacion_Primaria.Report/          informe en PBIR: 3 páginas y 41 visuales
+    CMI_Educacion_Primaria.Report/          informe en PBIR: 3 páginas y 44 visuales
   trabajo_en_curso/
     generadores/               scripts que generan el modelo, las medidas,
                                el informe y las figuras de la memoria
@@ -2072,50 +2072,266 @@ La carpeta \texttt{PowerBI/} no se edita a mano. Los scripts de \texttt{generado
     \item Se abre el proyecto en Power BI Desktop y se actualizan los datos.
 \end{enumerate}
 
-En la versión actual, el modelo pasa la validación de TOM sin errores, con 9 tablas, 20 medidas y 9 relaciones. Las 11 consultas M son correctas, los 49 ficheros del informe cumplen los esquemas y se superan las 31 pruebas de integridad. La comprobación de los paneles en Power BI Desktop se recoge con el resto de la validación en el Capítulo~\ref{cap:validacion_pruebas}.
+Los resultados de estas comprobaciones en la versión actual se recogen en el Capítulo~\ref{cap:validacion_pruebas}.
+
+La Tabla~\ref{tab:codigo} resume el código del proyecto. Los generadores y las consultas M forman el sistema; la validación y las herramientas sirven para comprobarlo y no forman parte del CMI que usa el usuario.
+
+\begin{table}[H]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{4.2cm} >{\raggedright\arraybackslash}p{2.4cm} X @{}}
+\toprule
+\textbf{Ficheros} & \textbf{Lenguaje} & \textbf{Función} \\ \midrule
+\texttt{modelo/m\_*.m} (9 ficheros) & Power Query M & Consultas de la ETL: la tabla intermedia, las seis dimensiones y las dos tablas de hechos (684 líneas). \\ \addlinespace
+\texttt{gen\_modelo.py} & Python & Escribe el modelo en TMDL a partir de las consultas M (254 líneas). \\ \addlinespace
+\texttt{gen\_medidas.py} & Python y DAX & Contiene las 20 medidas y escribe la tabla \texttt{\_Medidas} (628 líneas). \\ \addlinespace
+\texttt{gen\_pbir.py} & Python & Escribe el informe: páginas, elementos visuales, filtros e interacciones (525 líneas). \\ \addlinespace
+\texttt{validacion/} (3 ficheros) & Python y SQL (DuckDB) & Réplica de la ETL, pruebas de integridad y KPIs de referencia (1.662 líneas). \\ \addlinespace
+\texttt{herramientas/} & Python, C\# y JavaScript & Comprobación del modelo con TOM, de las consultas M, del informe y de las claves (855 líneas). \\ \bottomrule
+\end{tabularx}
+\caption{Código del proyecto por función.}
+\label{tab:codigo}
+\end{table}
 
 \section{Implementación del modelo dimensional}
 \label{sec:impl_modelo}
-% Pendiente (#19): tablas y relaciones en TMDL, claves y jerarquías.
+El modelo semántico se guarda en TMDL, un formato de texto con un fichero por tabla. Cada fichero declara las columnas con su tipo, su visibilidad, su columna de orden y su descripción, y la consulta M que carga la tabla. Las nueve relaciones están en un fichero aparte, y otros dos guardan el nivel de compatibilidad del modelo y las consultas compartidas: el parámetro \texttt{RutaDatos} y la tabla intermedia de la ETL. El fragmento siguiente es una columna de \texttt{DimAnio} y una de las relaciones:
+
+\par\vspace{2ex}\noindent\begin{minipage}{\textwidth}\small\setstretch{1.0}
+\begin{verbatim}
+/// Curso escolar de la convocatoria, p. ej. 2016-2017.
+column Curso
+    dataType: string
+    lineageTag: b9f1db9a-5118-51d2-9cb4-86a162b54ecc
+    summarizeBy: none
+    sourceColumn: Curso
+    sortByColumn: Anio
+
+relationship 44523929-6636-5a0f-8728-ef4af65094e4
+    fromColumn: FactPuntuacion.AnioKey
+    toColumn: DimAnio.AnioKey
+\end{verbatim}
+\end{minipage}\par\vspace{2.5ex}
+
+Los ficheros TMDL no se escriben a mano. \texttt{gen\_modelo.py} tiene, para cada tabla, la lista de columnas con sus propiedades y su descripción, y une a cada tabla la consulta M de su fichero \texttt{m\_*.m}. Las descripciones (las líneas que empiezan por \texttt{///}) se ven en Power BI al pasar el ratón por un campo, de modo que el diccionario de datos también está dentro del modelo.
+
+Power BI identifica cada tabla, columna y relación por un identificador único (\texttt{lineageTag}). Si cambiara en cada generación, el historial de Git mostraría todo el modelo modificado aunque solo cambiara una columna. Por eso el generador no usa identificadores aleatorios: los calcula con un UUID de versión~5 a partir del nombre del objeto, de modo que el mismo objeto recibe siempre el mismo identificador y el historial solo recoge los cambios reales (RNF10).
+
+Al abrir el proyecto por primera vez, Power BI Desktop añadió al guardarlo una configuración regional (\texttt{cultures/es-ES.tmdl}), unos ficheros de configuración local y un nivel de compatibilidad más alto (1606). El generador los conserva al regenerar el modelo en lugar de borrarlos, porque sin ellos Desktop los volvería a crear y el historial mostraría cambios en cada guardado.
 
 \section{Implementación de la ETL}
 \label{sec:impl_etl}
-% Pendiente (#19): consultas M, parámetros, reglas de limpieza y detención de la carga.
+La ETL son nueve consultas de Power Query M, una por fichero: la tabla intermedia \texttt{stg\_Evaluaciones}, las seis dimensiones y las dos tablas de hechos. La tabla intermedia es la más larga (297 líneas) porque contiene casi todas las reglas de limpieza de la Tabla~\ref{tab:reglas_etl}. Los pasos que aplican una regla llevan un comentario con su identificador en el informe de calidad, así que se puede seguir una regla desde el informe hasta el código.
+
+El fichero se lee con todas las columnas como texto y sin la detección automática de tipos de Power BI, que decide el tipo a partir de las primeras filas y de la configuración regional del equipo. Cada puntuación se convierte después de forma explícita con la cultura es-ES, que usa la coma decimal del fichero, y se comprueba que está entre 0 y 100. Así el resultado no depende del equipo en que se actualiza el modelo.
+
+La parte más delicada es detener la carga cuando una regla falla (RF05). Cada conversión que encuentra un valor no previsto devuelve un error con el nombre de la regla, pero Power BI cargaría esa celda vacía y solo mostraría un aviso. Por eso, antes de seguir, la consulta busca la primera fila con un error y lo eleva a toda la consulta, con el identificador del registro:
+
+\par\vspace{2ex}\noindent\begin{minipage}{\textwidth}\small\setstretch{1.0}
+\begin{verbatim}
+FilasConError = Table.SelectRowsWithErrors(ConArea, ColumnasValidadas),
+Validado =
+    if Table.IsEmpty(FilasConError) then ConArea
+    else
+        let
+            Fila = Table.First(FilasConError),
+            Intentos = List.Transform(ColumnasValidadas,
+                (columna) => try Record.Field(Fila, columna)),
+            PrimerError = List.First(List.Select(Intentos,
+                (intento) => intento[HasError]))[Error]
+        in
+            error Error.Record(PrimerError[Reason],
+                PrimerError[Message] & " (EvaluacionID "
+                    & Text.From(Fila[EvaluacionID]) & ")",
+                PrimerError[Detail]),
+\end{verbatim}
+\end{minipage}\par\vspace{2.5ex}
+
+La corrección de las columnas rotadas (R03 y R04) tenía un riesgo propio. En lengua castellana de 2017 el valor de \texttt{PCAST} está en \texttt{PCAST\_EE}, el de \texttt{PCAST\_CL} en \texttt{PCAST} y el de \texttt{PCAST\_EE} en \texttt{PCAST\_CL}. Si las columnas se corrigieran una detrás de otra, la segunda leería un valor que la primera ya había movido. La consulta calcula primero todas las columnas corregidas a partir de las originales y solo después sustituye las originales, de modo que la asignación es simultánea. El código está en el Anexo~\ref{anexo:codigo}.
+
+\texttt{FactPuntuacion} despivota las 24 columnas de puntuación y asigna a cada puntuación su competencia, su nivel de logro y su clave de calidad. Las reglas de calidad se escriben como una lista de marcas, columnas y años, y la consulta las convierte una sola vez en un registro que asocia cada pareja de columna y año a su máscara. Así, para cada una de las 17,7 millones de filas basta con una búsqueda en ese registro, en lugar de recorrer todas las reglas.
+
+Las seis dimensiones se implementan de dos formas. Las cinco estáticas escriben sus filas en la propia consulta, como listas de códigos y textos, y no leen el fichero. \texttt{DimAnio} toma los años distintos de la tabla intermedia y genera una fila por año desde 2009 hasta el último con datos. \texttt{IndiceConvocatoria} es la posición del año en la lista de años con datos, y \texttt{TipoConvocatoria} repite en texto si el año tuvo prueba, para el segmentador que quita 2020 de los gráficos de evolución.
 
 \section{Implementación de la lógica analítica}
 \label{sec:impl_dax}
-% Pendiente (#19): medidas DAX de los KPIs, estado de los KPIs y regla de las 30 puntuaciones.
+Las 20 medidas DAX están en \texttt{gen\_medidas.py}, cada una con su nombre, su carpeta, su cadena de formato, su descripción y su expresión. El generador escribe con ellas la tabla \texttt{\_Medidas} del modelo. Las partes que se repiten en varias medidas, como la búsqueda del índice de la convocatoria o la lista de atributos del área que hay que liberar en K09, se escriben una sola vez en el generador y se insertan en cada medida, de modo que una regla común no puede quedar distinta en dos medidas.
+
+Las expresiones de K01 y K10 están en la Sección~\ref{sec:fichas_kpis}. El estado de un KPI es la medida más corta: compara el valor con el umbral y devuelve 1, 0 o $-1$.
+
+\par\vspace{2ex}\noindent\begin{minipage}{\textwidth}\small\setstretch{1.0}
+\begin{verbatim}
+Estado K10 =
+VAR _k10 = [K10 Variación interanual]
+RETURN
+    SWITCH (
+        TRUE (),
+        ISBLANK ( _k10 ), BLANK (),
+        _k10 >= 0.5, 1,
+        _k10 <= -0.5, -1,
+        0
+    )
+\end{verbatim}
+\end{minipage}\par\vspace{2.5ex}
+
+La palabra que ve el usuario la pone la cadena de formato de la medida, que tiene una sección para los valores positivos, otra para los negativos y otra para el cero. La primera validación del modelo con TOM falló por esta cadena: contiene comillas dobles, y TMDL exige escribirlas duplicadas y con todo el valor entre comillas. El generador escribe ahora así cualquier propiedad que contenga comillas.
+
+Las descripciones de las medidas explican qué calcula cada una, qué filtros sustituye, qué puntuaciones excluye y cuándo queda en blanco. Se ven en Power BI junto al campo, y las de K10, K11 y K12 incluyen la advertencia de que las puntuaciones no están equiparadas entre convocatorias. Las medidas se han contrastado una a una con la réplica en Python, que las calcula con otra implementación (Sección~\ref{sec:val_kpis}).
 
 \section{Implementación de la interfaz}
 \label{sec:impl_interfaz}
-% Pendiente (#19): informe PBIR, los tres paneles, segmentadores sincronizados y formato.
+El informe se guarda en PBIR: cada página tiene un fichero \texttt{page.json}, y cada elemento visual, un fichero \texttt{visual.json}. Tiene 3 páginas y 44 elementos visuales (14 en el panel estratégico y 15 en cada uno de los otros dos): 18 tarjetas, 14 segmentadores, 4 cuadros de texto, 3 gráficos de líneas, 3 gráficos de barras, una matriz y una tabla.
+
+\texttt{gen\_pbir.py} tiene una función para cada tipo de elemento visual (tarjeta, segmentador, gráfico de líneas, de barras, tabla y cuadro de texto) que recibe la posición, los campos y los textos, y añade a todos el título y el texto alternativo. La posición se fija en píxeles sobre el lienzo de 1280 $\times$ 720, y el generador asigna el orden de tabulación en el mismo orden en que se colocan los elementos. Cada página guarda también sus interacciones; por ejemplo, la del panel estratégico indica que el segmentador de año no filtra el gráfico de evolución (RF08).
+
+La sincronización de los segmentadores entre paneles (RF10) se consigue con un grupo de sincronización por columna: los segmentadores de año de las tres páginas comparten el grupo \texttt{Anio}, y lo mismo ocurre con la competencia, el área y el resto. El segmentador de año se implementa así:
+
+\par\vspace{2ex}\noindent\begin{minipage}{\textwidth}\small\setstretch{1.0}
+\begin{verbatim}
+def slicer_anio(name, pos):
+    return slicer(name, pos, f_anio(), "Año", "Anio",
+                  single=True, default_in=ANIO_DEFECTO,
+                  solo=(col("DimAnio", "TieneConvocatoria"), ["true"]))
+\end{verbatim}
+\end{minipage}\par\vspace{2.5ex}
+
+Este segmentador tuvo un error que solo se vio al abrir el informe en Power BI Desktop: la lista ofrecía únicamente 2025. La selección inicial se había guardado como filtro del propio segmentador, y un filtro sobre un segmentador limita los valores de su lista en lugar de seleccionarlos. Se corrigió siguiendo los ejemplos oficiales de PBIR: la selección inicial se guarda como estado del segmentador (\texttt{default\_in}), y el filtro solo quita los años sin prueba (\texttt{solo}). Así la lista ofrece de 2009 a 2025 sin 2020 y el informe se abre en 2025.
+
+El generador anota además los campos del modelo que usa el informe, 29 en total (11 columnas y 18 medidas). La comprobación del informe confirma que todos existen en el modelo, de modo que cambiar el nombre de una medida sin actualizar el informe se detecta antes de abrirlo en Power BI.
+
+Cuando se guarda el proyecto desde Power BI Desktop, el programa reescribe algunos ficheros del informe: actualiza la versión de sus esquemas, cambia el orden de algunas propiedades y añade al panel de filtros los campos de cada elemento visual sin ninguna condición. Esos cambios no afectan a los datos ni a las medidas, y se revisan con el historial de Git antes de guardarlos. Si se regenera el informe, el generador vuelve a escribir su versión.
 
 % ------------------------------------------
 % CAPÍTULO 10: VALIDACIÓN Y PRUEBAS
 % ------------------------------------------
 \chapter{Validación y pruebas}
 \label{cap:validacion_pruebas}
-% Pendiente de redactar (issue #20). Aplica los métodos de la Sección~\ref{sec:validacion}.
+Este capítulo aplica los métodos de validación de la Sección~\ref{sec:validacion} y los métodos de evaluación de las fichas de los requisitos no funcionales (Sección~\ref{sec:requisitos}). Las comprobaciones son de dos tipos. Las automáticas se ejecutan con scripts sobre el fichero de datos y sobre los ficheros del proyecto, y se repiten después de cada cambio. Las manuales necesitan Power BI Desktop o usuarios reales: la medición del rendimiento, la prueba de usabilidad y algunas pruebas de carga. Los resultados automáticos que se citan corresponden a la ejecución del 20 de noviembre de 2026.
+% PENDIENTE (entrega final): completar los resultados manuales (10.1 prueba negativa, 10.2 valores en Desktop,
+% 10.3 rendimiento, 10.4 prueba con usuarios y simulador de daltonismo) y actualizar la Tabla tab:cumplimiento_rnf.
 
 \section{Pruebas de la ETL y del modelo}
 \label{sec:val_etl}
-% Pendiente (#20): recuentos, pruebas de integridad, restricciones de integridad y reglas de limpieza (RNF07).
+La validación independiente repite la ETL en Python con DuckDB a partir del mismo fichero y escribe las ocho tablas del modelo. Tarda unos 11 segundos y obtiene 1.102.324 evaluaciones y 17.728.085 puntuaciones, las mismas filas que el modelo de Power BI (Tabla~\ref{tab:hechos}). Sobre esas tablas se ejecutan 31 pruebas de integridad, agrupadas en la Tabla~\ref{tab:pruebas}. Las 31 se superan.
+
+\begin{table}[H]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{2.6cm} >{\centering\arraybackslash}p{1.7cm} X >{\raggedright\arraybackslash}p{2.4cm} @{}}
+\toprule
+\textbf{Grupo} & \textbf{Pruebas} & \textbf{Qué comprueban} & \textbf{Regla o requisito} \\ \midrule
+Recuentos & 4 & Filas de cada tabla, puntuaciones de competencias y de subcompetencias, identificadores de 1 a $N$ y competencias evaluadas por alumno. & RF01, R01 \\ \addlinespace
+Claves & 3 & Claves únicas en las dimensiones, ninguna clave huérfana en los hechos y columnas de orden con un valor por texto. & RI1 \\ \addlinespace
+Columnas rotadas & 4 & Tras la corrección, la global coincide con la ponderada de sus subcompetencias; sin corregir, no coincide (control negativo); los demás años no cambian; la media de castellano de 2017 es 73,51. & R03, R04 \\ \addlinespace
+Códigos y áreas & 2 & Ningún código sin traducir y el área de 2024 asignada a Barcelonès. & R09--R14 \\ \addlinespace
+Alumnado & 5 & Edad y situación de edad fila a fila, fechas de nacimiento dudosas, mes no informado, valores no fiables de 2010 y marca de código de alumno sin guardar el código. & R12, R16--R21, RNF08 \\ \addlinespace
+Rango y convocatorias & 3 & Puntuaciones entre 0 y 100, 2020 sin datos e índice de convocatoria consecutivo. & RI5, RI7 \\ \addlinespace
+Niveles de logro & 3 & Límites exactos (54,99 y 55,00), nivel coherente en todas las filas y tramo bajo de la distribución igual a K03. & RI3, RI4 \\ \addlinespace
+Vigencia & 2 & Ninguna puntuación fuera del periodo de su competencia y periodo de diseño coherente por materia. & RI2 \\ \addlinespace
+Calidad del dato & 3 & Máscara de calidad en los casos conocidos y en las 16 combinaciones. & R25--R28 \\ \addlinespace
+Medias oficiales & 2 & Medias de Cataluña frente a las de los informes oficiales. & RNF06 \\ \bottomrule
+\end{tabularx}
+\caption{Pruebas de integridad de la validación independiente.}
+\label{tab:pruebas}
+\end{table}
+
+La prueba de las columnas rotadas incluye un control negativo: comprueba que, sin la corrección, la puntuación global no coincide con la ponderada. Así se sabe que la prueba es capaz de fallar y que la corrección es necesaria, y no solo que el resultado final es coherente.
+
+Una segunda comprobación enlaza la réplica con el código M del modelo. Extrae de las consultas M los literales de las dimensiones estáticas, reconstruye con ellos cada dimensión y la compara con la que produce la réplica: las cinco coinciden fila a fila. Después recorre todas las combinaciones de códigos que puede producir la tabla intermedia según sus reglas y comprueba que cada clave calculada existe en su dimensión. No hay ninguna combinación huérfana, de modo que ningún registro, ni siquiera de una convocatoria futura con los mismos códigos, puede quedar sin dimensión.
+
+Los ficheros del proyecto se comprueban con las bibliotecas y los esquemas oficiales de Microsoft:
+\begin{itemize}
+    \item \textbf{Modelo:} la biblioteca TOM lo deserializa y lo valida sin errores, con 9 tablas, 20 medidas y 9 relaciones de muchos a uno.
+    \item \textbf{Consultas M:} el analizador oficial de Power Query reconoce los 11 bloques de código M sin errores de sintaxis.
+    \item \textbf{Informe:} los 52 ficheros del informe que escribe el generador cumplen sus esquemas JSON, con 3 páginas y 44 elementos visuales, y los 29 campos que usan existen en el modelo. Los ficheros guardados por Power BI Desktop declaran una versión de esquema más reciente que Microsoft todavía no ha publicado, así que se valida la versión del generador.
+\end{itemize}
+
+Las reglas de limpieza se pueden reproducir (RNF07): cada una está en el informe de calidad con las filas a las que afecta, la réplica las aplica con otra implementación y las pruebas de la Tabla~\ref{tab:pruebas} comprueban su efecto.
+
+La detención de la carga (RF05) se comprueba con una prueba negativa en Power BI Desktop: en una copia del fichero se cambia una puntuación por un valor no válido, como \texttt{150,00} o \texttt{abc}, y la actualización debe fallar con el mensaje de la regla R02 y el identificador del registro.
+% PENDIENTE: resultado de la prueba negativa en Power BI Desktop.
 
 \section{Exactitud de los KPIs}
 \label{sec:val_kpis}
-% Pendiente (#20): contraste con los informes oficiales y doble implementación DAX--Python (RNF06).
+La exactitud de los KPIs (RNF06) se comprueba en dos pasos. Primero, la réplica en Python calcula la media de Cataluña de cada competencia y convocatoria y la compara con la publicada en los informes oficiales \cite{csase_resultats}. Después, los valores que muestra Power BI se comparan con los de la réplica.
+
+La Tabla~\ref{tab:contraste_oficial} resume el primer paso. Las 72 medias quedan a menos de 0,5 puntos de la oficial, que es el criterio de aceptación, con una diferencia media de 0,05 puntos y máxima de 0,30. 65 de las 72 difieren 0,1 puntos o menos. Los informes publican las medias con un decimal, así que parte de la diferencia se debe al redondeo.
+
+\begin{table}[H]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} X >{\centering\arraybackslash}p{1.6cm} >{\centering\arraybackslash}p{2.0cm} >{\centering\arraybackslash}p{2.4cm} >{\centering\arraybackslash}p{2.4cm} @{}}
+\toprule
+\textbf{Competencia} & \textbf{Medias} & \textbf{Años} & \textbf{Diferencia media} & \textbf{Diferencia máxima} \\ \midrule
+Lengua catalana & 16 & 2009--2025 & 0,05 & 0,15 \\
+Lengua castellana & 16 & 2009--2025 & 0,04 & 0,11 \\
+Matemáticas & 16 & 2009--2025 & 0,03 & 0,07 \\
+Lengua inglesa & 15 & 2010--2025 & 0,06 & 0,24 \\
+Ciencias & 7 & 2018--2025 & 0,05 & 0,18 \\
+Lengua francesa & 2 & 2024--2025 & 0,16 & 0,30 \\ \midrule
+\textbf{Total} & \textbf{72} & & \textbf{0,05} & \textbf{0,30} \\ \bottomrule
+\end{tabularx}
+\caption{Diferencia en valor absoluto entre las medias de Cataluña calculadas y las oficiales.}
+\label{tab:contraste_oficial}
+\end{table}
+
+La validación usa también un umbral de alerta interno de 0,2 puntos, más estricto que el criterio. Dos medias lo superan: lengua inglesa de 2016 ($+0{,}24$) y lengua francesa de 2024 ($+0{,}30$). El informe de calidad las analiza y descarta un error de carga. En inglés de 2016 la diferencia se debe a la escala comprimida de dos subcompetencias, y en francés de 2024 basta con una diferencia de pocos alumnos entre el fichero y el informe, porque solo hay 266. La media de castellano de 2017 muestra el efecto de la corrección de las columnas rotadas: sin ella sería de 74,30, 0,9 puntos por encima de la oficial (73,4), y con ella es de 73,51.
+
+La réplica escribe además los valores de referencia de los KPIs en siete ficheros CSV: los de Cataluña por competencia y año, los globales por año, los de cada área y cada subcompetencia en 2025, la distribución por nivel de logro, el estado de los KPIs y el contraste con las medias oficiales. Esos ficheros están versionados, así que cualquier cambio en el modelo que altere un valor aparece en el historial. En la ejecución del 20 de noviembre los siete ficheros salen idénticos a los versionados.
+
+El segundo paso compara en Power BI Desktop los valores de las tarjetas, las tablas y los gráficos con los de esos ficheros. La guía de uso del repositorio lista los valores de control, por ejemplo el número de filas de las dos tablas de hechos, la media de castellano de 2017 y la distribución por nivel de matemáticas de 2025 (22,7, 21,4, 27,8 y 28,2\,\%).
+% PENDIENTE: anotar el resultado de la comparación en Power BI Desktop con la versión final del informe.
 
 \section{Rendimiento}
 \label{sec:val_rendimiento}
-% Pendiente (#20): tiempos con el analizador de rendimiento y DAX Studio (RNF01).
+El criterio de RNF01 es que cada interacción tarde menos de 3 segundos con todas las convocatorias cargadas. La medición se hace con el analizador de rendimiento de Power BI Desktop, en el equipo de desarrollo: en los tres paneles se cambia cada segmentador y se pasa de un panel a otro, tres veces, y se anota el peor tiempo de cada interacción, desde la acción hasta que se actualiza el último elemento visual. Las consultas más lentas se analizan con DAX Studio \cite{dax_studio}.
+
+El diseño ya reduce el trabajo de cada consulta. Los datos están importados en el motor en memoria, las claves son enteras y las relaciones filtran en un solo sentido. Las medidas que previsiblemente costarán más son las que comparan convocatorias o áreas, de K09 a K12, porque evalúan K01 varias veces para cada valor que muestran; son las primeras que se analizarán si alguna interacción supera el límite.
+% PENDIENTE: tabla con el peor tiempo de cada interacción por panel y, si hace falta, análisis con DAX Studio.
 
 \section{Usabilidad y accesibilidad}
 \label{sec:val_usabilidad}
-% Pendiente (#20): prueba con usuarios y cuestionario SUS, evaluación heurística, RNF02--RNF05.
+La usabilidad (RNF02) se evalúa con una prueba con al menos cinco usuarios de perfiles parecidos a los tres destinatarios del CMI. Cada usuario hace en cada panel las tareas de los casos de uso (por ejemplo, comparar un área con Cataluña o encontrar la competencia que más ha bajado) y al terminar responde el cuestionario SUS \cite{brooke1996sus}. El criterio es una puntuación media de 68 o más. La prueba se completa con una evaluación heurística de los tres paneles \cite{nielsen1993usability}.
+% PENDIENTE: resultados de la prueba con usuarios (puntuación SUS, tareas completadas, problemas encontrados).
+
+Los otros tres requisitos de usabilidad se comprueban sin usuarios:
+\begin{itemize}
+    \item \textbf{Un panel por pantalla (RNF03):} las tres páginas miden 1280 $\times$ 720 píxeles y todos los elementos visuales quedan dentro, con el borde derecho más alejado en el píxel 1264 y el inferior en el 708. El generador guarda las páginas con la vista ajustada a la página, de modo que el panel completo cabe en la ventana sin barras de desplazamiento.
+    \item \textbf{Idioma y nombres oficiales (RNF04):} toda la interfaz está en castellano, y las competencias y las áreas usan los nombres de los informes oficiales. La revisión de todos los textos con la lista de comprobación se hará sobre la versión final de los paneles.
+    \item \textbf{Accesibilidad (RNF05):} los tres colores de texto que fija el informe tienen sobre el fondo blanco una razón de contraste de 15,5:1 (texto principal), 6,5:1 (subtítulos) y 7,3:1 (aviso), por encima del mínimo de 4,5:1 de WCAG 2.1 \cite{w3c_wcag21}. El estado de los KPIs se lee por el símbolo y la palabra, los niveles de logro usan una paleta apta para daltonismo y cada elemento visual tiene un texto alternativo. Falta revisar capturas de los tres paneles con un simulador de daltonismo.
+\end{itemize}
 
 \section{Cumplimiento de los requisitos}
 \label{sec:val_requisitos}
-% Pendiente (#20): resultado de cada RF y RNF frente a su criterio de aceptación.
+La Tabla~\ref{tab:cumplimiento_rnf} indica el estado de cada requisito no funcional frente a su criterio de aceptación. \guillemotleft{}Cumple\guillemotright{} significa que el criterio se ha comprobado con el método de su ficha; \guillemotleft{}Pendiente\guillemotright{}, que falta la prueba manual descrita en este capítulo.
+
+\begin{table}[H]
+\centering
+\small
+\setstretch{1.0}\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{} p{1.3cm} >{\raggedright\arraybackslash}p{2.2cm} X @{}}
+\toprule
+\textbf{ID} & \textbf{Estado} & \textbf{Evidencia} \\ \midrule
+RNF01 & Pendiente & Medición con el analizador de rendimiento (Sección~\ref{sec:val_rendimiento}). \\ \addlinespace
+RNF02 & Pendiente & Prueba con usuarios y cuestionario SUS (Sección~\ref{sec:val_usabilidad}). \\ \addlinespace
+RNF03 & Cumple & Lienzo de 1280 $\times$ 720 con todos los elementos dentro. \\ \addlinespace
+RNF04 & Pendiente & Revisión de los textos con la lista de comprobación. \\ \addlinespace
+RNF05 & Cumple en parte & Contraste de 6,5:1 o más en los textos del informe, estado legible sin color y paleta apta para daltonismo; falta la revisión con el simulador. \\ \addlinespace
+RNF06 & Cumple & 72 de 72 medias a menos de 0,5 puntos de las oficiales, con un máximo de 0,30 (Sección~\ref{sec:val_kpis}). \\ \addlinespace
+RNF07 & Cumple & Reglas documentadas en el informe de calidad y reproducidas por la réplica y las 31 pruebas. \\ \addlinespace
+RNF08 & Cumple & El código de alumno no se carga en el modelo; solo se guarda si existía (\texttt{TieneCodigoAlumno}), y ningún panel muestra identificadores. \\ \addlinespace
+RNF09 & Pendiente & Prueba de carga en dos pasos, sin la última convocatoria y con el fichero completo. El diseño la permite: \texttt{DimAnio} se deriva del fichero y las claves son deterministas. \\ \addlinespace
+RNF10 & Cumple & Proyecto en formato \texttt{.pbip}, sin ficheros \texttt{.pbix}, con todo el historial en Git. \\ \addlinespace
+RNF11 & Pendiente & Prueba en un equipo distinto con Power BI Desktop recién instalado y sin cuenta. \\ \bottomrule
+\end{tabularx}
+\caption{Estado de los requisitos no funcionales.}
+\label{tab:cumplimiento_rnf}
+\end{table}
+
+Los requisitos funcionales se comprueban con los casos de uso. Los de integración y calidad de los datos (RF01--RF04) los cubren la réplica y las pruebas de integridad, y RF05 queda pendiente de la prueba negativa. Los de los indicadores (RF11--RF15) se comprueban con los valores de referencia de la Sección~\ref{sec:val_kpis}. Los de análisis y navegación (RF06--RF10) y los de las vistas por perfil (RF16--RF18) están implementados en el informe, como describe el Capítulo~\ref{cap:diseno}; se darán por comprobados cuando se recorran los casos de uso en Power BI Desktop durante la prueba con usuarios.
 
 % ------------------------------------------
 % CAPÍTULO 11: SOSTENIBILIDAD
@@ -2181,5 +2397,179 @@ La Tabla~\ref{tab:matriz_sost} resume el análisis según la matriz de la FIB \c
 % ------------------------------------------
 \bibliographystyle{IEEEtran}
 \bibliography{bibliografia}
+
+% ------------------------------------------
+% ANEXO: FRAGMENTOS DE CÓDIGO
+% ------------------------------------------
+\appendix
+\chapter{Fragmentos de código}
+\label{anexo:codigo}
+Este anexo recoge cinco fragmentos de código más largos que los del Capítulo~\ref{cap:implementacion}. Se han elegido porque muestran las partes menos evidentes de la implementación. Se reproducen como están en el repositorio, con la sangría reducida y algunas líneas partidas para que quepan en la página. Los puntos suspensivos indican pasos omitidos, y en las pruebas se han acortado los mensajes de error. El código completo está en las carpetas de la Sección~\ref{sec:organizacion_proyecto}.
+
+\section{Corrección de las columnas rotadas}
+Fragmento de la consulta \texttt{stg\_Evaluaciones} (\texttt{m\_stg.m}) que aplica las reglas R03 y R04 (Sección~\ref{sec:impl_etl}). Cada terna indica la columna que se corrige, la columna de la que toma el valor y el año. Todas las columnas corregidas se calculan a partir de las originales y solo después las sustituyen.
+
+\begingroup\footnotesize\setstretch{1.0}
+\begin{verbatim}
+Rotaciones = {
+    {"PCAST", "PCAST_EE", 2017}, {"PCAST_CL", "PCAST", 2017},
+    {"PCAST_EE", "PCAST_CL", 2017},
+    {"PFRAN", "PFRAN_EE", 2016}, {"PFRAN_CO", "PFRAN", 2016},
+    {"PFRAN_CE", "PFRAN_CO", 2016}, {"PFRAN_EE", "PFRAN_CE", 2016}
+},
+ConCorregidas = List.Accumulate(
+    Rotaciones,
+    ConAnio,
+    (tabla, rotacion) => Table.AddColumn(
+        tabla,
+        rotacion{0} & "_Corregida",
+        (fila) => if fila[Anio] = rotacion{2}
+                  then Record.Field(fila, rotacion{1})
+                  else Record.Field(fila, rotacion{0}),
+        type nullable number
+    )
+),
+SinDesordenadas = Table.RemoveColumns(ConCorregidas,
+    List.Transform(Rotaciones, (rotacion) => rotacion{0})),
+Rotado = Table.RenameColumns(SinDesordenadas,
+    List.Transform(Rotaciones,
+        (rotacion) => {rotacion{0} & "_Corregida", rotacion{0}})),
+\end{verbatim}
+\endgroup
+
+\section{Marcas de calidad del dato}
+Fragmento de la consulta \texttt{FactPuntuacion} (\texttt{m\_FactPuntuacion.m}) que asigna a cada puntuación su clave de calidad (reglas R25 a R28). Las reglas se expanden una sola vez a un registro que asocia cada pareja de columna y año con su máscara de bits.
+
+\begingroup\footnotesize\setstretch{1.0}
+\begin{verbatim}
+ReglasCalidad = {
+    // R25 NoValida: expresión escrita de inglés 2015 (escala anómala)
+    {1, {"PANG_EE"}, {2015}},
+    // R26 Censurada: suelo artificial en toda la columna-año
+    {2, {"PCAT_EE"}, {2018}},
+    {2, {"PANG", "PANG_CO", "PANG_CE"}, {2015}},
+    // R27 NoComparableSerie: escalas distintas del resto de la serie
+    {4, {"PANG_CO", "PCAT_CL"}, {2011}},
+    {4, {"PANG_EE"}, {2013, 2014, 2015, 2016}},
+    {4, {"PANG_CO", "PANG_CE"}, {2015, 2016}},
+    {4, {"PMAT_NC", "PMAT_EFM", "PMAT_CR"}, {2015}},
+    // R28 NivelNoComparable (solo globales)
+    {8, {"PANG"}, {2015, 2016}},
+    {8, {"PMAT"}, {2015, 2019}},
+    {8, {"PCAT"}, {2018}},
+    {8, {"PFRAN"}, {2022}}
+},
+ParesCalidad = List.Combine(
+    List.Transform(ReglasCalidad, (regla) => List.Combine(
+        List.Transform(regla{1}, (campo) => List.Transform(regla{2},
+            (anio) => {campo & "|" & Text.From(anio), regla{0}}))))),
+MapaCalidad = List.Accumulate(
+    ParesCalidad,
+    [],
+    (mapa, par) =>
+        if Record.HasFields(mapa, par{0})
+        then Record.TransformFields(mapa,
+                 {{par{0}, (bits) => Number.BitwiseOr(bits, par{1})}})
+        else Record.AddField(mapa, par{0}, par{1})
+),
+...
+ConCalidad = Table.AddColumn(
+    ConNivel,
+    "CalidadKey",
+    each Record.FieldOrDefault(MapaCalidad,
+        [CampoOrigen] & "|" & Text.From([AnioKey]), 0),
+    Int64.Type
+),
+\end{verbatim}
+\endgroup
+
+\section{Porcentaje de competencias que mejoran (K12)}
+Medida DAX de K12. Recorre las competencias globales que no son informativas, calcula K10 para cada una y cuenta las que mejoran al menos un punto sobre las que tienen K10. Hereda así todas las condiciones de K10: un solo año, periodo de diseño comparable y mínimo de 30 puntuaciones.
+
+\begingroup\footnotesize\setstretch{1.0}
+\begin{verbatim}
+K12 % competencias que mejoran =
+VAR _materias =
+    CALCULATETABLE (
+        VALUES ( DimCompetencia[CodigoMateria] ),
+        KEEPFILTERS ( DimCompetencia[EsGlobal] = TRUE () ),
+        KEEPFILTERS ( DimCompetencia[EsInformativa] = FALSE () )
+    )
+VAR _variaciones =
+    ADDCOLUMNS ( _materias, "@Variacion", [K10 Variación interanual] )
+VAR _comparables =
+    FILTER ( _variaciones, NOT ISBLANK ( [@Variacion] ) )
+VAR _mejoran =
+    FILTER ( _comparables, [@Variacion] >= 1 )
+RETURN
+    DIVIDE ( COALESCE ( COUNTROWS ( _mejoran ), 0 ), COUNTROWS ( _comparables ) )
+\end{verbatim}
+\endgroup
+
+\section{Segmentadores en el generador del informe}
+Función de \texttt{gen\_pbir.py} que escribe un segmentador desplegable (Sección~\ref{sec:impl_interfaz}). \texttt{default\_in} guarda la selección inicial como estado del segmentador, y \texttt{solo} restringe a propósito los valores de su lista con un filtro de objeto visual.
+
+\begingroup\footnotesize\setstretch{1.0}
+\begin{verbatim}
+def slicer(name, pos, field, display, sync_group,
+           single=False, default_in=None, solo=None):
+    objects = {
+        "data": [{"properties": {"mode": lit("'Dropdown'")}}],
+        "header": [{"properties": {"show": lit("false")}}],
+    }
+    if single:
+        objects["selection"] = [{"properties": {"singleSelect": lit("true")}}]
+    if default_in is not None:
+        seleccion = categorical_filter(f"f_{name}_seleccion", field,
+                                       default_in)["filter"]
+        objects["general"] = [{"properties": {"filter": {"filter": seleccion}}}]
+    vis = {
+        "visualType": "slicer",
+        "query": {"queryState": {"Values": {
+            "projections": [proj(field, display, active=True)]}}},
+        "objects": objects,
+        "visualContainerObjects": container_objects(
+            display, alt=f"Segmentador de {display.lower()}"),
+        "syncGroup": {"groupName": sync_group,
+                      "fieldChanges": True, "filterChanges": True},
+        "drillFilterOtherVisuals": True,
+    }
+    filters = ([categorical_filter(f"f_{name}_solo", solo[0], solo[1])]
+               if solo else None)
+    return visual(name, pos, vis, filters)
+\end{verbatim}
+\endgroup
+
+\section{Prueba de las columnas rotadas con control negativo}
+Dos pruebas de \texttt{test\_modelo.py} (Sección~\ref{sec:val_etl}). La primera exige que, tras la corrección, la global coincida con la media ponderada de sus subcompetencias; la segunda comprueba que, sin corregir, no coincide, de modo que la primera prueba sí puede fallar.
+
+\begingroup\footnotesize\setstretch{1.0}
+\begin{verbatim}
+CASOS_ROTACION = [
+    # (regla, año, global, pesos tras la corrección)
+    ("R03 castellano 2017", 2017, "PCAST", {"PCAST_CL": 0.60, "PCAST_EE": 0.40}),
+    ("R04 francés 2016", 2016, "PFRAN",
+     {"PFRAN_CO": 0.35, "PFRAN_CE": 0.50, "PFRAN_EE": 0.15}),
+]
+
+def test_rotaciones_global_igual_a_ponderada():
+    c = staging()
+    for regla, anio, glob, pesos in CASOS_ROTACION:
+        pct, n = _pct_coherente(c, "stg_evaluaciones", anio, glob, pesos)
+        assert n > 0, f"{regla}: no hay filas con global y subcompetencias"
+        assert pct >= UMBRAL_COHERENCIA, (
+            f"{regla}: tras la corrección la global coincide con la "
+            f"ponderada {pesos} solo en el {pct:.2%} de {n:,} filas")
+
+def test_rotaciones_control_negativo_sin_corregir():
+    c = staging()
+    tabla = _crudo_numerico(c)
+    for regla, anio, glob, pesos in CASOS_ROTACION:
+        pct, n = _pct_coherente(c, tabla, anio, glob, pesos)
+        assert pct < 0.5, (f"{regla}: SIN corregir, la global ya coincide con la "
+                           f"ponderada en el {pct:.2%} de {n:,} filas; "
+                           f"el test de rotación no discrimina")
+\end{verbatim}
+\endgroup
 
 \end{document}
