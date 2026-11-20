@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "p3_linea_k01_cataluna",
   "position": {
     "x": 852,
@@ -28,8 +28,8 @@
               },
               "queryRef": "DimAnio.Anio",
               "nativeQueryRef": "Año",
-              "active": true,
-              "displayName": "Año"
+              "displayName": "Año",
+              "active": true
             }
           ],
           "showAll": true
@@ -178,51 +178,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "c22e677fb96c100c1003",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimAnio"
-              }
-            },
-            "Property": "Anio"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "287d157fd06a7c105ea9",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "K01 Puntuación media competencia"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "acebed65004d3071a99e",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "Puntuación media Cataluña"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }
